@@ -1,0 +1,120 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project-Wide Cursor Rules for LLM-Driven-Marketing-Assistant
+
+**Preamble:** The primary goal is to meticulously execute the `data/docs/YieldFi-Ai-Agent-Implementation.md` plan, step by step. All actions should be grounded in this plan and the provided project files. The current date for any new timestamped entries should be assumed as **2025-05-06**.
+
+## 1. Adhere Strictly to the Implementation Plan (`data/docs/YieldFi-Ai-Agent-Implementation.md`)
+- **Master Document:** The `data/docs/YieldFi-Ai-Agent-Implementation.md` is the single source of truth for project tasks and their order.
+- **Step-by-Step Execution:** Address one step from the implementation plan at a time. Do not jump ahead or combine unrelated steps.
+- **Contextual Awareness:** Before any action, explicitly state which step from the implementation plan you are currently working on.
+- **Dependency Check:** If a step in `data/docs/YieldFi-Ai-Agent-Implementation.md` lists "Step Dependencies," confirm these prerequisite steps are marked as complete (e.g., `[x]`) in the plan before proceeding.
+- **User Instructions Fulfillment:** If "User Instructions" for a step require external input (e.g., API keys, data population from the user's side), clearly state what is needed from the user and await user provision before considering that part of the step complete or moving to tasks that depend on it.
+
+## 2. Understand Before Acting: File Summaries, Plan Details, and Source File Changelogs
+- Always start by reading the top-of-file summary or front matter in relevant source files. Summaries should ideally cover:
+    - What does the file do? (purpose)
+    - Why is it needed? (rationale)
+    - How is it used? (usage)
+    - TODOs and pending work (can be omitted if unclear when generating).
+- If any source file lacks a summary, your job is to generate one based on its content.
+- **Source File Changelog:** When you modify a source file (including adding a generated summary or making changes as per a step), prepend a brief entry to a 'Changelog' comment block at the top of the file. If the block doesn't exist, create it. Example for a Python file:
+    ```python
+    # Changelog:
+    # 2025-05-06 HH:MM - Step X.Y - Brief description of change.
+    # 2025-05-05 HH:MM - Step A.B - Another change.
+    ```
+    (Use appropriate comment syntax for other languages, and use the current time for HH:MM.)
+- Before starting work on a step from `data/docs/YieldFi-Ai-Agent-Implementation.md`, thoroughly review its "Task," "Files" to be modified/created, and any "User Instructions."
+
+## 3. Comprehensive Action and Response within a Single Step
+The workflow for addressing a single step is as follows:
+- **3.0. Think & Strategize:** Before generating or modifying code, explicitly state which step you are working on. Briefly outline your implementation strategy for this step. List 1-2 critical edge cases you've considered and how your proposed approach addresses them. This outline will be part of your initial response for the step, before you present the code.
+- **3.1. Identify Changes:** Based on your strategy, identify all necessary file modifications or creations.
+- **3.2. Implement:** Implement all code changes and create all new files related to this single step.
+- **3.3. Self-Test, Iterate & Troubleshoot (Iterative Internal Loop):**
+    - **a. Predict:** Before running any verification command (e.g., tests, build scripts, linters relevant to the step), state the specific command(s) you will run and predict the expected output or logs.
+    - **b. Execute:** Run the command(s) in the terminal.
+    - **c. Compare & Analyze:** Compare the actual terminal output with your predicted output.
+    - **d. Iterate on Discrepancies:** If there's a discrepancy or errors, analyze the cause. Modify the code (returning to Rule 3.2 for implementation), update your thought process, and repeat from 3.3.a (Predict) for the revised code. Document (for your internal processing, not necessarily for the user at each micro-iteration) the discrepancy, your hypothesis for the fix, and the change made.
+    - **e. Confidence Threshold:** Continue this internal predict-execute-compare-iterate loop until you are reasonably confident that the implemented code meets the step's requirements and relevant checks pass as expected.
+    - **f. Escalation if Stuck:** If, after multiple (e.g., 3-5) iterations, you are unable to resolve an issue, prepare a summary for the user. This summary should include: the original goal for the step, the different approaches/modifications you tried, the last set of commands run and their problematic output, and your analysis of why it might be failing. Ask the user for specific guidance or a suggested approach. Once user guidance is received, resume from Rule 3.2 or 3.3 as appropriate.
+- **3.4. Propose Final Changes & Validation to User:** Once you've reached a confident state (as per 3.3.e), present to the user:
+    - The initial strategy and edge case considerations (from 3.0, if not already presented or if it evolved).
+    - The final implemented code changes (as per Rule 11).
+    - A summary of your self-testing process (e.g., "Ran `pytest tests/test_feature.py`, all tests passed as expected after 2 iterations to fix an initial parsing error.").
+    - Suggest specific actions the user can take on their end to confirm the step has been implemented correctly.
+- **3.5. Await User Approval:** Wait for the user's explicit approval that the relevant step has been properly implemented and they are confident with the changes.
+    - **3.5.1. Handling Disapproval:** If the user does not approve the changes, they will provide feedback. Re-enter the implementation cycle for the *current step* starting from Rule 3.0 (Think & Strategize) or 3.2 (Implement) as appropriate, based on the feedback. Address the concerns raised and proceed through the self-test and proposal cycle again (Rules 3.3, 3.4).
+- **3.6. Document Step Completion (Post-Approval):** Once user approval is received (Rule 3.5), your immediate next actions are to:
+    - Update `data/docs/YieldFi-Ai-Agent-Implementation.md` as detailed in Rule 4.
+    - Update `@rough/all-conversations.md` as per Rule 6.
+    - If applicable (significant feature/milestone), update `@README.md` as per Rule 6.
+    These documentation updates must be part of the response where you acknowledge user approval.
+- **Consolidate Response:** Present information for Rule 3.0, 3.1, 3.2, 3.3 (summary of final successful state), and 3.4 in a single, comprehensive response before awaiting user approval (Rule 3.5). After approval, the response will confirm approval and include the documentation updates (Rule 3.6).
+- **Proceeding to Next Step:** After successfully receiving user approval for the current step's implementation AND confirming all documentation updates (Rule 3.6) have been provided, you may then proceed to the *thinking phase (Rule 3.0)* for the next sequential step in `data/docs/YieldFi-Ai-Agent-Implementation.md`. However, if that *next* step explicitly requires user input *before* it can begin (as per its "User Instructions," or if a dependency is clearly blocked by external factors), or if you have any doubt about proceeding, explicitly state the situation and await user confirmation.
+
+## 4. Document Step Completion in `data/docs/YieldFi-Ai-Agent-Implementation.md`
+- Immediately after receiving user approval for a step's tasks (as per Rule 3.5) and as part of the actions in Rule 3.6:
+    1.  **Mark as Done:** In the `data/docs/YieldFi-Ai-Agent-Implementation.md` file, change the checkbox from `[ ]` to `[x]` for the completed step.
+    2.  **Add Completion Summary:** Directly under the "User Instructions" (or the last item of descriptive text) for that specific step in `data/docs/YieldFi-Ai-Agent-Implementation.md`, insert the following formatted block. Be as explicit as possible, using the current time for HH:MM:
+
+        ```markdown
+        ---
+        **Step Completion Summary (2025-05-06 HH:MM):**
+        * **Status:** Completed & Approved by User
+        * **Files Modified/Created:**
+            * `path/to/file1.ext`
+            * `path/to/file2.ext`
+            * (List all files touched or created for this step)
+        * **Summary of Changes:**
+            * `path/to/file1.ext`: A brief but clear summary of what was implemented, changed, or added in this file specifically for this step. 
+            * `path/to/file2.ext`: A brief but clear summary of what was implemented, changed, or added in this file specifically for this step.
+            * (Provide a summary for each file listed above)
+        ---
+        ```
+    3.  This entire update to `data/docs/YieldFi-Ai-Agent-Implementation.md` (both checking the box and adding the summary block) must be included as part of the response where you acknowledge user approval and confirm task completion for the step.
+
+## 5. Follow Clean Code & Documentation Guidelines
+- Use meaningful names for variables, functions, and classes.
+- Prefer constants over magic numbers or hardcoded strings where appropriate.
+- Strive for functions/methods that have a single responsibility.
+- Document complex logic or non-obvious decisions with "why" comments, not just "what" the code is doing.
+- Include summary blocks (docstrings or equivalent) at the top of all new or significantly modified code files (except for simple data files like JSON where not applicable), as per Rule 2.
+
+## 6. Versioning and Overall Change Logging (Supplementary)
+- As part of Rule 3.6 (Post-Approval Documentation):
+    - **Mandatory:** Append a detailed conversation summary to `@rough/all-conversations.md` (or a similar log file designated by the user) with:
+        - Chat title or key focus
+        - Date and timestamp (e.g., 2025-05-06 HH:MM)
+        - Key decisions made, outputs generated for the step, and user approval.
+    - **Conditional:** If the completed step represents a significant new feature or milestone visible to an end-user, also briefly update the main `@README.md` with a note in a "Progress" or "Change Log" section.
+
+## 7. Minimal Disruption for MVP and Plan Adherence
+- Prioritize minimal, additive changes necessary to complete the current step in `data/docs/YieldFi-Ai-Agent-Implementation.md`.
+- Refactor code only when a step explicitly calls for it, if it's essential for the current step's implementation, or to resolve a critical issue preventing progress. Avoid large, unscheduled rewrites that deviate from the plan, but if the user explicitly mentions that they are okay with those changes, then you can proceed with user confirmation.
+
+## 8. Cursor Navigation Best Practices
+- Reference files using Markdown links when discussing them: e.g., review `@src/utils/helper.py`.
+- Use semantic search for finding concepts or related code snippets.
+- Use exact string/symbol matching (like grep) when looking for specific variable names, function definitions, etc.
+
+## 9. Testing & Quality Assurance (As Per Plan)
+- Implement unit tests or other forms of testing when a step in `data/docs/YieldFi-Ai-Agent-Implementation.md` specifies test creation (e.g., Step 20: Implement automated testing). These tests will be part of your verification in Rule 3.3.
+- If fixing a bug not explicitly covered by a testing step but critical to functionality, aim to write a test that reproduces the bug and then verifies the fix (following Test-Driven Development principles where feasible).
+
+## 10. Handling Ambiguity and Missing Information
+- If the requirements for a step in `data/docs/YieldFi-Ai-Agent-Implementation.md` are unclear, or if necessary information is missing from provided files or the current conversation context:
+    1.  Explicitly state what information is missing or what clarification is needed.
+    2.  Do not make significant assumptions that could lead to deviations from the intended plan or require rework.
+    3.  Propose a sensible default or interpretation if the ambiguity is minor, but highlight it as an assumption and seek confirmation.
+    4.  Await clarification from the user before proceeding with the ambiguous part of the step if the ambiguity is substantial.
+
+## 11. Actionable Output and Code Presentation
+- When providing new code, always present it in complete, well-formatted code blocks that can be easily copied and pasted into the respective files.
+- For modifications to existing files, clearly indicate the file path. If changes are minor, describe them (e.g., "In `src/models/tweet.py`, add the field `reply_count: Optional[int] = None` to the `Tweet` model."). For more substantial changes, present the entire modified function/method or class, or the full file if it's not excessively long. Ensure the per-file changelog (Rule 2) is included in the presented code.
+- When new files are created, state the full intended file path and provide the complete content for that file, including any initial changelog entry (Rule 2).
+- Accompany code with a brief explanation of *what* the code does and *why* it was implemented that way, linking back to the specific requirements of the current step in `data/docs/YieldFi-Ai-Agent-Implementation.md`.

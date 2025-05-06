@@ -1,0 +1,235 @@
+[
+    {
+        "content": "Excited to announce that YieldFi now supports multi-chain yield optimization across Ethereum, Arbitrum, and Optimism! Earn the best yields for your assets seamlessly across networks. #DeFi #YieldFi #CrossChain",
+        "id": "1000000000000000001",
+        "created_at": "2023-05-15T10:30:00Z",
+        "source": "YieldFi Announcement",
+        "author_id": "yieldfi_official",
+        "author_username": "YieldFi_Official",
+        "author_name": "YieldFi",
+        "author_verified": true,
+        "author_follower_count": 25000,
+        "like_count": 432,
+        "retweet_count": 128,
+        "reply_count": 42,
+        "quote_count": 15,
+        "hashtags": [
+            "DeFi",
+            "YieldFi",
+            "CrossChain"
+        ],
+        "topics": [
+            "Announcement",
+            "Product Update"
+        ]
+    },
+    {
+        "content": "Has anyone tried the new YieldFi vaults? I've been getting consistent 8% APY on my stablecoins which is pretty impressive in this market.",
+        "id": "1000000000000000002",
+        "created_at": "2023-05-16T14:20:00Z",
+        "source": "Twitter Web App",
+        "author_id": "defi_user_123",
+        "author_username": "DeFi_Explorer",
+        "author_name": "DeFi Explorer",
+        "author_verified": false,
+        "author_follower_count": 3500,
+        "like_count": 89,
+        "retweet_count": 12,
+        "reply_count": 31,
+        "quote_count": 3,
+        "hashtags": [],
+        "topics": [
+            "Community Feedback"
+        ]
+    },
+    {
+        "content": "Really impressed with @YieldFi_Official's security model. Multi-sig wallets with 3/5 signing threshold is exactly what institutional players need to feel comfortable in DeFi. Great job team!",
+        "id": "1000000000000000003",
+        "created_at": "2023-05-17T09:45:00Z",
+        "source": "Twitter for iPhone",
+        "author_id": "crypto_vc",
+        "author_username": "CryptoVC",
+        "author_name": "Crypto Venture Capital",
+        "author_verified": true,
+        "author_follower_count": 89000,
+        "like_count": 567,
+        "retweet_count": 203,
+        "reply_count": 45,
+        "quote_count": 22,
+        "hashtags": [],
+        "mentioned_users": [
+            "YieldFi_Official"
+        ],
+        "topics": [
+            "Security",
+            "Institutional Adoption"
+        ]
+    },
+    {
+        "content": "Just deployed my first $10K into @YieldFi_Official's YUSD vault. Process was seamless and the dashboard showing real-time yields is amazing. This is how DeFi should be! 🚀",
+        "id": "1000000000000000004",
+        "created_at": "2023-05-18T16:12:00Z",
+        "source": "Twitter for Android",
+        "author_id": "whale_watcher",
+        "author_username": "Whale_Watcher",
+        "author_name": "Crypto Whale",
+        "author_verified": false,
+        "author_follower_count": 12300,
+        "like_count": 212,
+        "retweet_count": 45,
+        "reply_count": 23,
+        "quote_count": 7,
+        "hashtags": [],
+        "mentioned_users": [
+            "YieldFi_Official"
+        ],
+        "topics": [
+            "User Experience",
+            "Investment"
+        ]
+    },
+    {
+        "content": "Thrilled to partner with @YieldFi_Official to bring institutional-grade yield opportunities to our clients. This collaboration marks a significant step in bridging TradFi and DeFi. #FinancialInnovation",
+        "id": "1000000000000000005",
+        "created_at": "2023-05-19T11:30:00Z",
+        "source": "Twitter Web App",
+        "author_id": "tradfi_partner",
+        "author_username": "GlobalFinance",
+        "author_name": "Global Finance Partners",
+        "author_verified": true,
+        "author_follower_count": 156000,
+        "like_count": 876,
+        "retweet_count": 324,
+        "reply_count": 91,
+        "quote_count": 43,
+        "hashtags": [
+            "FinancialInnovation"
+        ],
+        "mentioned_users": [
+            "YieldFi_Official"
+        ],
+        "topics": [
+            "Partnership",
+            "Institutional Adoption"
+        ]
+    },
+    {
+        "content": "Looking at various yield protocols today. @YieldFi_Official and @CompetitorProtocol both offer good returns, but YieldFi's transparency and multi-sig custody gives me more confidence. What do others think?",
+        "id": "1000000000000000006",
+        "created_at": "2023-05-20T13:45:00Z",
+        "source": "Twitter Web App",
+        "author_id": "defi_researcher",
+        "author_username": "DeFi_Researcher",
+        "author_name": "DeFi Research",
+        "author_verified": false,
+        "author_follower_count": 7800,
+        "like_count": 134,
+        "retweet_count": 28,
+        "reply_count": 67,
+        "quote_count": 5,
+        "hashtags": [],
+        "mentioned_users": [
+            "YieldFi_Official",
+            "CompetitorProtocol"
+        ],
+        "topics": [
+            "Comparison",
+            "Investment Decision"
+        ]
+    },
+    {
+        "content": "Congratulations to the @YieldFi_Official team on your successful audit by @HalbornSecurity! It's great to see protocols prioritizing security. #DeFiSecurity",
+        "id": "1000000000000000007",
+        "created_at": "2023-05-21T15:10:00Z",
+        "source": "Twitter for Mac",
+        "author_id": "security_expert",
+        "author_username": "SecurityExpert",
+        "author_name": "Blockchain Security Expert",
+        "author_verified": true,
+        "author_follower_count": 42000,
+        "like_count": 345,
+        "retweet_count": 89,
+        "reply_count": 23,
+        "quote_count": 12,
+        "hashtags": [
+            "DeFiSecurity"
+        ],
+        "mentioned_users": [
+            "YieldFi_Official",
+            "HalbornSecurity"
+        ],
+        "topics": [
+            "Security",
+            "Audit"
+        ]
+    },
+    {
+        "content": "@YieldFi_Official When will you be adding support for $BTC? Would love to deploy my Bitcoin to earn yield through your platform.",
+        "id": "1000000000000000008",
+        "created_at": "2023-05-22T09:30:00Z",
+        "source": "Twitter Web App",
+        "author_id": "bitcoin_hodler",
+        "author_username": "Bitcoin_HODLER",
+        "author_name": "Bitcoin Maximalist",
+        "author_verified": false,
+        "author_follower_count": 5600,
+        "like_count": 45,
+        "retweet_count": 3,
+        "reply_count": 1,
+        "quote_count": 0,
+        "hashtags": [],
+        "mentioned_users": [
+            "YieldFi_Official"
+        ],
+        "topics": [
+            "Product Request",
+            "Bitcoin"
+        ]
+    },
+    {
+        "content": "Just compared the governance models of leading DeFi protocols. @YieldFi_Official's approach to progressive decentralization stands out for balancing security with community input. Great case study for the industry.",
+        "id": "1000000000000000009",
+        "created_at": "2023-05-23T14:25:00Z",
+        "source": "Twitter Web App",
+        "author_id": "defi_professor",
+        "author_username": "DeFi_Professor",
+        "author_name": "DeFi Research Professor",
+        "author_verified": true,
+        "author_follower_count": 31000,
+        "like_count": 267,
+        "retweet_count": 92,
+        "reply_count": 38,
+        "quote_count": 15,
+        "hashtags": [],
+        "mentioned_users": [
+            "YieldFi_Official"
+        ],
+        "topics": [
+            "Governance",
+            "Research"
+        ]
+    },
+    {
+        "content": "The YieldFi dashboard just got a major upgrade! Loving the new portfolio analytics and yield forecasting features. Really helps me plan my DeFi strategy. @YieldFi_Official keeps delivering! 💯",
+        "id": "1000000000000000010",
+        "created_at": "2023-05-24T18:50:00Z",
+        "source": "Twitter for iPhone",
+        "author_id": "defi_enthusiast",
+        "author_username": "DeFi_Enthusiast",
+        "author_name": "DeFi Daily",
+        "author_verified": false,
+        "author_follower_count": 8900,
+        "like_count": 178,
+        "retweet_count": 34,
+        "reply_count": 27,
+        "quote_count": 8,
+        "hashtags": [],
+        "mentioned_users": [
+            "YieldFi_Official"
+        ],
+        "topics": [
+            "User Experience",
+            "Product Update"
+        ]
+    }
+]

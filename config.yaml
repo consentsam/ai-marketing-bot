@@ -1,0 +1,38 @@
+app:
+  name: YieldFi AI Agent
+  version: 0.1.0
+  debug: false
+
+data_source:
+  type: mock  # Options: mock, twitter
+  twitter:
+    # Twitter API credentials should be set in .env file, not here
+
+ai:
+  provider: xai  # Options: xai, google_palm
+  fallback_provider: google_palm
+  max_tokens: 1000
+  temperature: 0.7
+
+tweet_categories:
+  - announcement
+  - product-updates
+  - community-updates
+  - events
+
+tone_analysis:
+  enabled: true
+  method: textblob  # Options: textblob, xai, google_palm
+
+logging:
+  level: INFO
+  file: yieldfi_ai_agent.log
+
+ui:
+  theme: light  # Options: light, dark
+  show_debug_info: false
+
+data_paths:
+  input: data/input
+  output: data/output
+  knowledge: data/docs 

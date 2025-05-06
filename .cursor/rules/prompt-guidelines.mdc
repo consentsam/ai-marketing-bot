@@ -1,0 +1,60 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# YieldFi AI Agent - Prompt Generation Guidelines (Cursor Rules)
+
+> **Summary:**
+> - **Purpose:** Establish best practices for crafting prompts for the YieldFi AI Agent's Twitter reply generation task.
+> - **Rationale:** Improve consistency, quality, context-awareness, and maintainability of generated tweet replies.
+> - **Usage:** Follow these guidelines for every prompt used in the Twitter reply generation workflow.
+
+## 1. Prompt Structure & Persona Definition
+-   **1.1. Define Role Clearly:** Start the prompt by defining the agent's specific persona and goal.
+    * _Example:_ "You are the YieldFi social media assistant. Your goal is to generate context-aware, engaging, and accurate Twitter replies based on the provided information."
+-   **1.2. Specify Context Sections:** Use clear, distinct sections (or placeholders/variables) for different types of input context. Structure is key for clarity.
+    * `Original_Tweet_Content`: Text of the tweet being replied to. Use placeholders like `{{original_tweet}}`.
+    * `YieldFi_Account_Type`: (e.g., Official, Intern). Placeholder: `{{yieldfi_account_type}}`.
+    * `Sender_Account_Type`: (e.g., Partner, Big Account, KOL, Intern). Placeholder: `{{sender_account_type}}`.
+    * `YieldFi_Knowledge_Context`: Relevant, up-to-date YieldFi data (e.g., current pool APYs, new strategies, fetched via tools/APIs). Placeholder: `{{yieldfi_context}}`.
+    * `Interaction_Style_Guidelines`: Tone (professional, casual), goals (engagement, support), specific examples, length constraints (Twitter limits), emoji usage, brand voice. Placeholder: `{{style_guidelines}}`.
+    * `Conversation_History` (Optional): Key points from relevant past interactions. Placeholder: `{{history}}`.
+-   **1.3. State the Task Explicitly:** Define the desired output.
+    * _Example:_ "Generate a Twitter reply."
+-   **1.4. Be Concise:** Keep prompt instructions clear and to the point. Avoid jargon.
+
+## 2. Context Gathering & Validation
+-   **2.1. Prioritize Information Sources:** Instruct the agent to prioritize `YieldFi_Knowledge_Context` first, then `Conversation_History` (if relevant), then `Original_Tweet_Content`, and finally general knowledge only if necessary.
+-   **2.2. Proactive Data Fetching:** The system *calling* the LLM should ensure `YieldFi_Knowledge_Context` is up-to-date. If the prompt *itself* needs to trigger fetching (less ideal), instruct the agent clearly: "If current APY for 'Pool X' is needed and not provided in `{{yieldfi_context}}`, try to fetch it first and if not able to find a source to fetch from, ask the user to provide this information"
+-   **2.3. Input Sanitization:** While less critical for processing tweets, ensure no injection risks if user input is directly used in prompts.
+-   **2.4. Constraint Awareness:** Explicitly state the Twitter character limit (currently 280). "Ensure the reply is under 280 characters."
+-   **2.5. Infer Context:** Instruct the agent to analyze the `Original_Tweet_Content` for sentiment, key topics, and sender's intent.
+-   **2.6. Handle Ambiguity:** If the original tweet is unclear, instruct the agent to generate a safe/neutral reply or one seeking clarification, rather than guessing.
+
+## 3. Generation Process & Constraints
+-   **3.1. Planning Step (Internal):** Include a brief internal "thinking" step outline within the prompt.
+    * _Example:_ "Internal Plan: 1. Analyze sender type (`{{sender_account_type}}`) and tweet sentiment. 2. Determine reply goal (e.g., address query, engage). 3. Identify needed YieldFi data from `{{yieldfi_context}}`. 4. Draft reply according to `{{style_guidelines}}`. 5. Verify length and accuracy."
+-   **3.2. Style Adaptation:** Instruct the agent: "Adapt tone and style based on `{{yieldfi_account_type}}` interacting with `{{sender_account_type}}`, following `{{style_guidelines}}`."
+-   **3.3. Data Accuracy:** "If using data from `{{yieldfi_context}}` (like APYs), ensure it's presented accurately. If the data has a timestamp, consider mentioning its freshness if relevant (e.g., 'current APY is X%')."
+-   **3.4. Safety & Privacy:** "Do not reveal internal YieldFi strategies, unreleased features, or any non-public information. Avoid using or requesting Personally Identifiable Information (PII)."
+-   **3.5. Error Handling/Fallback:** "If essential information from `{{yieldfi_context}}` is missing or cannot be fetched, generate a polite holding reply or indicate that the specific data is currently unavailable."
+-   **3.6. Persistence:** "Ensure the generated reply fully addresses the relevant parts of the `{{original_tweet}}`."
+
+## 4. Output Format & Validation
+-   **4.1. Define Output Schema:** "Output only the final Twitter reply text, ready to be posted."
+-   **4.2. Enforce Constraints:** "The final reply MUST be under 280 characters."
+-   **4.3. Validation (Internal):** "Before outputting the final reply, verify it meets all criteria: tone, length, accuracy, addresses the original tweet, contains no sensitive information."
+-   **4.4. Direct Output:** "Generate only the reply text. Do not include conversational openings like 'Here's a draft:' or closings."
+-   **4.5. Citation:** Not typically needed for tweet replies unless quoting an external article, which should be rare. If necessary: "If quoting an external source, attribute it clearly within the tweet."
+-   **4.6. Handle Assets:** "If the original tweet contains images or links, refer to them contextually if relevant, but do not attempt to embed media in the reply text."
+
+## 5. Evaluation & Versioning
+-   **5.1. Metrics:** Evaluate replies based on engagement potential, adherence to tone/style, accuracy, and character limits.
+-   **5.2. Benchmarking:** Maintain test cases for various interaction types (Official->Partner, Intern->Community, etc.).
+-   **5.3. Versioning:** Tag prompt versions (e.g., `twitter_reply_v1.1`) and log changes with rationale.
+
+## 6. Additional Agent-Specific Rules
+-   **6.1. Tool Justification (Internal):** The system calling the LLM should handle data fetching logic. If the prompt *must* guide tool use: "Internally justify data fetches (e.g., 'Need APY for Pool X because tweet asks about performance')."
+-   **6.2. Suggest Follow-ups (Optional):** "Optionally, suggest 1-2 relevant internal follow-up actions for the YieldFi team (e.g., 'Flag user for follow-up DMs'). Do *not* include these in the generated tweet."
+-   **6.3. Memory/Preferences:** "If user-specific interaction history or preferences (`{{history}}`) are provided, incorporate them into the reply style or content."

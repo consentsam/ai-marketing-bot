@@ -1,0 +1,43 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+# Backend Rules for YieldFi AI Agent
+
+> Summary:
+> - Purpose: Define server/API conventions and best practices for `app.py` & `src/`.
+> - Rationale: Maintain consistent error handling, logging, configuration, and code structure across backend services related to the AI Agent.
+> - Usage: Apply these rules to all backend development tasks (API endpoints, data fetching, knowledge base interaction) and code reviews for this project.
+> - TODOs: Add database migration and caching strategy guidelines if/when a dedicated DB is used for YieldFi knowledge or user interactions.
+
+## 1. File & Folder Organization
+- Group code by domain or feature under `src/` (e.g., `src/twitter`, `src/knowledge`, `src/ai_core`).
+- Follow a clear separation of concerns within modules: `handlers` (API endpoints if applicable), `services` (business logic, e.g., response generation), `models` (data structures like `Tweet`, `Account`, `YieldFiData`), `utils`.
+- Name modules in snake_case (e.g., `response_generator.py`, `knowledge_retrieval.py`).
+- Keep `app.py` (if using Flask/FastAPI) minimal: only import and register routes/blueprints, configure extensions (like API clients).
+
+## 2. Request/Response Schema & Validation (If Applicable)
+- *If building an API frontend for the agent:* Define Pydantic or Marshmallow models for request inputs (e.g., tweet URL, context parameters) and response schemas (e.g., suggested replies).
+- Validate incoming data at the boundary (e.g., in API handlers) before passing to core logic.
+- Use a standardized error response format for API calls:
+  ```json
+  {"error": {"code": "FETCH_FAILED", "message": "Could not retrieve tweet data."}}
+  ```
+
+## 3. Error Handling & Logging
+- Use structured logging (e.g., `structlog` or built-in `logging` with JSON formatter) throughout backend modules.
+- Capture and log exceptions with stack traces, especially during external API calls (Twitter, xAI, YieldFi data sources) or knowledge retrieval.
+- Return user-friendly error messages or fallback suggestions (e.g., "Could not generate reply due to missing data.") if errors occur during reply generation. Do not expose internal stack traces in outputs intended for end-users (like suggested replies).
+
+## 4. Configuration & Secrets Management
+- Load configuration (API keys for xAI/Twitter, YieldFi data URLs, etc.) from environment variables or `.env` files using `python-dotenv`.
+- Keep secrets (`.env`) out of source control. Use `.env.example` as a template.
+- Centralize settings in `src/config/settings.py` using a `Config` class or similar structure.
+
+## 5. Testing: Unit & Integration
+- Write unit tests (`pytest`) for core logic like prompt engineering (`src/ai/prompt_engineering.py`), response generation (`src/ai/response_generator.py`), and knowledge retrieval (`src/knowledge/retrieval.py`).
+- Write integration tests for end-to-end flows, mocking external APIs (Twitter, xAI, YieldFi data sources) as needed.
+- If an API is built, use `httpx` or a framework's test client to test endpoints.
+- Use fixtures to manage test data (sample tweets, mock YieldFi data) and environment setup.

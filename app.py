@@ -5,6 +5,12 @@ from langchain import FewShotPromptTemplate
 from langchain.prompts.example_selector import LengthBasedExampleSelector
 from dotenv import load_dotenv
 import os
+import tweepy
+import requests
+from textblob import TextBlob
+from src.ai.xai_client import XAIClient
+from src.config.settings import get_config
+from src.data_sources.mock import MockTweetDataSource
 
 load_dotenv()
 
@@ -131,31 +137,82 @@ def get_LLM_response(query,age_group,task):
     
     return response
 
+def get_xAI_response(query, task, context=None):
+    # Placeholder for xAI API integration
+    # In a real scenario, this would call the xAI API with appropriate prompts
+    client = XAIClient()
+    try:
+        return client.generate_response(query, task, context)
+    except Exception as e:
+        return f"Error generating xAI response: {str(e)}"
+
+def get_tweet_content(tweet_url):
+    # Use the configured data source to fetch tweet content
+    data_source_type = get_config('data_source.type', 'mock')
+    if data_source_type == 'mock':
+        data_source = MockTweetDataSource()
+    else:
+        # Fallback to direct Twitter API if needed
+        client = tweepy.Client(bearer_token=os.environ['TWITTER_BEARER_TOKEN'])
+        try:
+            tweet_id = tweet_url.split('/')[-1]
+            tweet = client.get_tweet(tweet_id, tweet_fields=['text', 'author_id'])
+            return tweet.data['text']
+        except Exception as e:
+            return f"Error fetching tweet: {str(e)}"
+    tweet = data_source.get_tweet_by_url(tweet_url)
+    return tweet.content if tweet else f"Tweet not found: {tweet_url}"
+
+def analyze_tone(text):
+    blob = TextBlob(text)
+    sentiment = blob.sentiment.polarity
+    if sentiment > 0:
+        return "Positive"
+    elif sentiment < 0:
+        return "Negative"
+    else:
+        return "Neutral"
 
 # Frontend
 
+st.set_page_config(page_title="YieldFi AI Marketing Assistant",
+                   page_icon='💰',
+                   layout='centered',
+                   initial_sidebar_state='collapsed')
+st.header("💰 YieldFi AI Marketing Assistant")
 
-st.set_page_config(page_title="LLM-Driven Marketing Assistant",
-                    page_icon='💼',
-                    layout = 'centered',
-                    initial_sidebar_state = 'collapsed')
-st.header("💼 LLM-Driven Marketing Assistant")
-
-form_input = st.text_input("Enter the product")
+form_input = st.text_input("Enter the product, tweet URL, or content idea")
 
 task = st.selectbox(
     "Please select the task to be performed",
-    ('Write a sales copy','Create a tweet','Write product description'),key=1)
+    ('Write a sales copy', 'Create a tweet', 'Write product description', 'Generate Twitter Reply', 'Create Tweet by Category'), key=1)
 
-age_group = st.selectbox(
+target_audience = st.selectbox(
     "Select the Target Audience",
-    ("Kids","Adults","Senior Citizens"),key=2)
+    ("Web3 Community", "DeFi Enthusiasts", "Yield Farmers", "Crypto Investors"), key=2)
+
+category = None
+if task == 'Create Tweet by Category':
+    category = st.selectbox(
+        "Select Tweet Category",
+        ("Announcement", "Product Updates", "Community Updates", "Events", "YieldFi Security", "YieldFi Transparency"), key=3)
 
 submit = st.button("Generate")
 
 if submit:
-    st.write(get_LLM_response(form_input,task,age_group))
-    
+    if task == 'Generate Twitter Reply':
+        tweet_content = get_tweet_content(form_input)
+        tone = analyze_tone(tweet_content)
+        response = get_xAI_response(tweet_content, task, context=f"Tone: {tone}, Target: {target_audience}")
+        st.write(f"Tweet Content: {tweet_content}")
+        st.write(f"Tone Analysis: {tone}")
+        st.write(response)
+    elif task == 'Create Tweet by Category':
+        response = get_xAI_response(form_input, task, context=f"Category: {category}, Target: {target_audience}")
+        st.write(response)
+    else:
+        response = get_xAI_response(form_input, task, context=f"Target: {target_audience}")
+        st.write(response)
 
 def set_bg_from_url(url, opacity=1):
     

@@ -10,10 +10,12 @@ This package contains interfaces and implementations for different tweet data so
 
 from src.data_sources.base import TweetDataSource
 from src.data_sources.mock import MockTweetDataSource
+from src.data_sources.twitter import TwitterDataSource
 
 __all__ = [
     'TweetDataSource',
-    'MockTweetDataSource'
+    'MockTweetDataSource',
+    'TwitterDataSource'
 ]
 
 # src/data_sources/__init__.py - Created 2025-05-07 

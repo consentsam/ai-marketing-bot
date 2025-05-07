@@ -182,8 +182,15 @@ def get_config(key_path: str, default: Any = None) -> Any:
         if found_key is not None:
             current_level = current_level[found_key]
         else:
+            # Add this debug print statement before returning default
+            # if key_path.lower() == "ai.xai_api_key":
+            #     print(f"DEBUG: get_config for 'ai.xai_api_key' - key '{key}' not found in current_level. Returning default: {default}")
             return default # Key not found at this level
             
+    # Add this debug print statement before the final return
+    # if key_path.lower() == "ai.xai_api_key":
+    #     print(f"DEBUG: get_config for 'ai.xai_api_key' is returning: {current_level}")
+
     if isinstance(current_level, (dict, list)):
         return copy.deepcopy(current_level)
     return current_level

@@ -489,7 +489,7 @@ The YieldFi AI Agent aims to enhance YieldFi's social media presence by automati
 
 ## Category-Based Tweet Generation
 
-- [ ] **Step 17: Implement category definition system**
+- [x] **Step 17: Implement category definition system**
     -   **Task**: Create `src/models/category.py` defining a `TweetCategory` dataclass/enum. Populate `data/input/categories.json` with a list of categories (name, description, example prompts/keywords) relevant to YieldFi (e.g., Announcement, Product Update, Community Update, Event, Security, Transparency).
         -   **EXPLANATION**: A structured way to define categories makes it easier to manage them and for the AI to generate targeted content. JSON is a good choice for configurable category data.
     -   **Key Considerations/Sub-Tasks**:
@@ -502,32 +502,98 @@ The YieldFi AI Agent aims to enhance YieldFi's social media presence by automati
         * Update `src/models/__init__.py`
     -   **Step Dependencies**: Step 2 (for base model understanding).
     -   **User Instructions**: Customize `data/input/categories.json` with YieldFi-specific categories, providing clear descriptions and keywords/examples for each to guide AI generation.
+---
+**Step Completion Summary (2025-05-07 HH:MM):**
+* **Status:** Completed & Approved by User
+* **Files Modified/Created:**
+    * `src/models/category.py`
+    * `data/input/categories.json`
+    * `src/models/__init__.py`
+    * `config.yaml`
+* **Summary of Changes:**
+    * `src/models/category.py`: Implemented the `TweetCategory` dataclass with `name`, `description`, `prompt_keywords`, and `style_guidelines` attributes, including `from_dict` and `to_dict` methods.
+    * `data/input/categories.json`: Created and populated with initial tweet categories (Product Update, Event Announcement, Community Highlight, Educational Content, Security Announcement, General Announcement, Partnership Announcement).
+    * `src/models/__init__.py`: Updated to export `TweetCategory`.
+    * `config.yaml`: Removed the old `tweet_categories` list as it's now superseded by `categories.json`. Added `data_paths.input` for specifying the input data directory.
+---
 
-- [ ] **Step 18: Create category-based prompt engineering**
-    -   **Task**: Extend `src/ai/prompt_engineering.py` (or create `src/ai/category_prompts.py`) with functions to generate prompts tailored for creating new tweets based on a selected category, topic, and YieldFi knowledge.
-        -   **EXPLANATION**: Prompts for generating new tweets will differ significantly from reply prompts and vary by category.
+- [x] **Step 18: Create category-based prompt engineering**
+    -   **Task**: Enhance `src/ai/prompt_engineering.py` to include a function `generate_new_tweet_prompt(category: TweetCategory, active_account: Account, topic: Optional[str], yieldfi_knowledge_snippet: Optional[str], platform: str)` that uses the `TweetCategory` object (from Step 17) to tailor prompts for generating new tweets.
+        -   **EXPLANATION**: This makes prompt generation for new tweets more targeted and consistent with predefined content strategies for each category.
     -   **Key Considerations/Sub-Tasks**:
-        * Function like `generate_new_tweet_prompt(category: TweetCategory, topic: Optional[str], yieldfi_knowledge_snippet: str, active_account_info: Account)`.
-        * Use `category.description`, `category.prompt_keywords`, and `category.style_guidelines` to construct the prompt.
-        * Incorporate the `topic` provided by the user.
+        * The function should incorporate `category.name`, `category.description`, `category.prompt_keywords`, and `category.style_guidelines` into the prompt structure.
+        * Adapt persona and core messaging based on `active_account`.
+        * Integrate `topic` and `yieldfi_knowledge_snippet` naturally.
     -   **Files**:
-        * Modify `src/ai/prompt_engineering.py` or create `src/ai/category_prompts.py`.
-    -   **Step Dependencies**: Step 7, Step 17.
-    -   **User Instructions**: Review generated prompts for different categories to ensure they accurately reflect the category's intent and provide good guidance to the LLM.
+        * `src/ai/prompt_engineering.py` (Updated)
+        * `tests/ai/test_prompt_engineering.py` (Updated)
+    -   **Step Dependencies**: Step 17 (relies on `TweetCategory` model).
+    -   **User Instructions**: Test with various categories and topics to ensure prompts are well-formed and incorporate category-specific details effectively.
+---
+**Step Completion Summary (2025-05-08 02:00):**
+* **Status:** Completed & Approved by User
+* **Files Modified/Created:**
+    * `src/ai/prompt_engineering.py`
+    * `tests/ai/test_prompt_engineering.py`
+* **Summary of Changes:**
+    * `src/ai/prompt_engineering.py`:
+        * Implemented `generate_new_tweet_prompt(category: TweetCategory, active_account: Account, ...)` function.
+        * This function now takes a `TweetCategory` object as input.
+        * It dynamically constructs prompts using the category's name, description, prompt_keywords, and style_guidelines.
+        * It also incorporates the active account's persona, an optional user-provided topic, and any relevant YieldFi knowledge snippets.
+        * Ensured `TweetCategory` model is correctly imported and used.
+    * `tests/ai/test_prompt_engineering.py`:
+        * Added new test cases specifically for `generate_new_tweet_prompt`.
+        * These tests verify that prompts correctly include details from the `TweetCategory` object (name, description, keywords, style guidelines) and other provided context like topic and persona.
+        * Confirmed that `TWEET_CATEGORIES` dictionary was removed and tests were updated accordingly.
+---
 
-- [ ] **Step 19: Develop category selection UI**
-    -   **Task**: In `src/ui/category_select.py` (or `app.py`), create UI components for selecting a tweet category (from Step 17), inputting a topic/brief, and triggering the generation of a new tweet.
-        -   **EXPLANATION**: Provides the user interface to leverage the category-based tweet generation functionality.
+- [x] **Step 19: Category Selection UI in Streamlit**
+    -   **Task**: In `app.py` (or a new `src/ui/category_select.py` module), create a UI section that allows users to select a tweet category (from `categories.json`), input a topic/brief, and trigger the generation of a new tweet using the `generate_new_tweet` function from `src/ai/response_generator.py` (which will use the category-specific prompt from Step 18).
+        -   **EXPLANATION**: Provides a user-facing way to leverage the category-based tweet generation.
     -   **Key Considerations/Sub-Tasks**:
-        * `st.selectbox` to choose from available categories.
-        * `st.text_area` for the user to provide a topic or key points for the tweet.
-        * Button to generate the tweet.
-        * Logic to call `response_generator.generate_new_tweet()`.
-        * Display the generated tweet using response visualization components (from Step 16).
+        * Load categories from `data/input/categories.json` for the selection dropdown.
+        * UI elements: dropdown for category, text area for topic/brief, "Generate" button.
+        * Display the generated tweet and its tone.
+        * Integrate with `generate_new_tweet` (Step 9, to be updated to use Step 18 prompts).
     -   **Files**:
-        * `src/ui/category_select.py` (or modify `app.py`)
-    -   **Step Dependencies**: Step 16 (for response display), Step 17 (for category list).
-    -   **User Instructions**: Test the category selection and topic input. Ensure the correct information is passed to the backend and the generated tweet is displayed.
+        * `src/ui/category_select.py` (New or `app.py` updated)
+        * `app.py` (Updated to call the new UI section)
+        * `tests/ui/test_category_select.py` (New, if a separate module is created)
+    -   **Step Dependencies**: Step 17, Step 18, Step 9 (Response Generator).
+    -   **User Instructions**: Test the UI thoroughly by selecting different categories, providing various topics, and verifying that the generated tweets align with the selected category's intent and style.
+---
+**Step Completion Summary (2025-05-08 02:00):**
+* **Status:** Completed & Approved by User
+* **Files Modified/Created:**
+    * `src/ui/category_select.py`
+    * `src/ai/response_generator.py`
+    * `src/utils/logging.py`
+    * `config.yaml`
+    * `app.py` (minor import/call changes if `category_select` is separate)
+* **Summary of Changes:**
+    * `src/ui/category_select.py`:
+        * Implemented `display_new_tweet_by_category_ui` function.
+        * Added UI elements: category `selectbox` (populated from `data/input/categories.json` via `load_tweet_categories`), topic `text_area`, and "Generate" button.
+        * Calls `generate_new_tweet` from `response_generator` using the selected `TweetCategory` object and topic.
+        * Displays the AI-generated tweet content and its analyzed tone.
+        * Added robust logging throughout the UI interaction and generation process.
+        * Fixed `TypeError` for `copy_button` by removing `key_suffix`.
+        * Fixed `ImportError` by removing usage of old `TWEET_CATEGORIES` and correctly using `load_tweet_categories`.
+        * Fixed `AttributeError` by using `response.content` instead of `response.reply`.
+        * Improved tweet visibility with updated CSS styling (lighter background, darker text).
+    * `src/ai/response_generator.py`:
+        * Modified `generate_new_tweet` to accept a `TweetCategory` object.
+        * Integrated tone analysis: calls `analyze_tone` on the generated tweet content and populates the `AIResponse.tone` field.
+    * `src/utils/logging.py`:
+        * Enhanced logging to use timestamped log files in a dedicated 'logs' directory.
+        * Improved log formatter for more detail.
+        * Added option for separate console log level.
+    * `config.yaml`:
+        * Added `logging.show_raw_response_in_ui` and `logging.console_level` options.
+        * Updated `data_paths.input` to be used by `category_select.py` for loading categories.
+    * `app.py`: Ensured `display_new_tweet_by_category_ui` is called correctly.
+---
 
 ## Testing and Evaluation
 

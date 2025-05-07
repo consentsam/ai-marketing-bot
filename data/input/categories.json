@@ -1,0 +1,76 @@
+[
+    {
+        "name": "Product Update",
+        "description": "Announce new features, improvements, or releases related to YieldFi products. Highlight benefits and value to users.",
+        "prompt_keywords": [
+            "new feature alert",
+            "product launch",
+            "update live",
+            "enhancement deployed",
+            "version release",
+            "platform upgrade"
+        ],
+        "style_guidelines": {
+            "tone": "Informative, exciting, professional",
+            "length": "Concise, ideally under 240 characters, clear call to action",
+            "emojis": "Use sparingly, relevant emojis like ✨🚀💡",
+            "hashtags": "Include #YieldFi #DeFi #ProductUpdate and relevant feature-specific hashtags",
+            "call_to_action": "Encourage users to try the new feature, read the blog post, or check the app."
+        }
+    },
+    {
+        "name": "Announcement",
+        "description": "Share important news, partnerships, or significant milestones for YieldFi.",
+        "prompt_keywords": [
+            "big news",
+            "major announcement",
+            "partnership confirmed",
+            "milestone achieved",
+            "important update"
+        ],
+        "style_guidelines": {
+            "tone": "Official, confident, positive",
+            "length": "To the point, clearly state the news",
+            "emojis": "Appropriate for the announcement, e.g., 🎉🤝📈",
+            "hashtags": "#YieldFi #Announcement #[Topic]",
+            "call_to_action": "Link to official statements, press releases, or further details."
+        }
+    },
+    {
+        "name": "Community Engagement",
+        "description": "Interact with the community, ask questions, run polls, share user-generated content, or provide educational snippets.",
+        "prompt_keywords": [
+            "community love",
+            "ask YieldFi",
+            "#YieldFiPoll",
+            "user spotlight",
+            "DeFi education",
+            "what do you think?"
+        ],
+        "style_guidelines": {
+            "tone": "Friendly, approachable, inclusive, conversational",
+            "length": "Short and engaging, suitable for replies or starting conversations",
+            "emojis": "Use freely to convey emotion and friendliness 😊🤔💬",
+            "hashtags": "#YieldFiCommunity #DeFiDiscussion #[RelevantTopic]",
+            "call_to_action": "Encourage replies, participation in polls, or sharing of opinions."
+        }
+    },
+    {
+        "name": "Security Update",
+        "description": "Inform users about security best practices, platform security enhancements, or address security concerns.",
+        "prompt_keywords": [
+            "security first",
+            "platform security",
+            "protect your assets",
+            "security audit",
+            "phishing warning"
+        ],
+        "style_guidelines": {
+            "tone": "Serious, reassuring, transparent, authoritative",
+            "length": "Clear and unambiguous",
+            "emojis": "Use with caution, perhaps 🛡️🔒✅",
+            "hashtags": "#YieldFiSecurity #DeFiSafety #ProtectYourCrypto",
+            "call_to_action": "Direct to official security guides, support channels, or status updates."
+        }
+    }
+]

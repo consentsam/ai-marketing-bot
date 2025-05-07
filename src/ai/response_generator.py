@@ -17,8 +17,9 @@ from src.models.account import Account, AccountType # type: ignore
 from src.models.response import AIResponse, ResponseType # type: ignore
 from src.ai.xai_client import XAIClient, APIError as XAIAPIError # type: ignore
 from src.ai.prompt_engineering import generate_interaction_prompt, generate_new_tweet_prompt # type: ignore
-from src.ai.tone_analyzer import analyze_tweet_tone # type: ignore
+from src.ai.tone_analyzer import analyze_tweet_tone, analyze_tone # type: ignore
 from src.utils.logging import get_logger # type: ignore
+from src.models.category import TweetCategory # Ensure this is imported if using type hints for category
 # from src.knowledge.retrieval import KnowledgeRetriever # Step 11 - Mock for now
 
 logger = get_logger(__name__)
@@ -140,7 +141,7 @@ def generate_tweet_reply(
         logger.error(f"Unexpected error in generate_tweet_reply: {e}", exc_info=True)
         ai_generated_content = f"[Error: Unexpected error during response generation - {str(e)}]"
 
-    return AIResponse(
+    response_obj = AIResponse(
         content=ai_generated_content,
         response_type=ResponseType.TWEET_REPLY,
         model_used=model_used,
@@ -151,9 +152,11 @@ def generate_tweet_reply(
         generation_time=datetime.now(timezone.utc),
         tone=final_tone # Tone of the original post, or could be tone of the response if analyzed
     )
+    logger.debug(f"Returning AIResponse from generate_tweet_reply: {response_obj.to_dict()}")
+    return response_obj
 
 def generate_new_tweet(
-    category: str,
+    category: TweetCategory,
     responding_as_type: AccountType,
     topic: Optional[str] = None,
     platform: str = "Twitter",
@@ -194,10 +197,9 @@ def generate_new_tweet(
         prompt_str = generate_new_tweet_prompt(
             category=category,
             topic=topic,
-            active_account_info=responding_as_account,
+            active_account=responding_as_account,
             yieldfi_knowledge_snippet=knowledge_snippet,
             platform=platform,
-            additional_instructions=additional_instructions
         )
         logger.debug(f"Generated new tweet prompt: {prompt_str[:300]}...")
 
@@ -233,16 +235,34 @@ def generate_new_tweet(
         logger.error(f"Unexpected error in generate_new_tweet: {e}", exc_info=True)
         ai_generated_content = f"[Error: Unexpected error during new tweet generation - {str(e)}]"
 
-    return AIResponse(
+    # 4. Analyze tone of the generated content
+    analyzed_tone_data: Optional[Dict[str, Any]] = None
+    final_tone_str: Optional[str] = None
+    if ai_generated_content and not ai_generated_content.startswith("[Error:") and not ai_generated_content.startswith("[Warning:"):
+        try:
+            logger.debug(f"Analyzing tone for new tweet content: '{ai_generated_content[:100]}...'")
+            analyzed_tone_data = analyze_tone(ai_generated_content)
+            final_tone_str = analyzed_tone_data.get("tone")
+            logger.info(f"Tone analysis for new tweet complete. Detected tone: {final_tone_str}. Full analysis: {analyzed_tone_data}")
+        except Exception as e:
+            logger.error(f"Error during tone analysis for new tweet: {e}", exc_info=True)
+            final_tone_str = "Error/N/A" # Indicate an error in tone analysis
+    else:
+        logger.warning("Skipping tone analysis for new tweet due to error/warning in content generation or empty content.")
+        final_tone_str = "N/A" # Default if content is an error/warning message or empty
+
+    response_obj = AIResponse(
         content=ai_generated_content,
-        response_type=ResponseType.NEW_TWEET, # Or more specific based on category?
+        response_type=ResponseType.NEW_TWEET, 
         model_used=model_used,
         prompt_used=prompt_str,
         responding_as=responding_as_account.account_type.value,
         target_account=None,
         generation_time=datetime.now(timezone.utc),
-        tone=None # Tone of new tweet could be analyzed post-generation if needed
+        tone=final_tone_str # Use the analyzed tone
     )
+    logger.debug(f"Returning AIResponse from generate_new_tweet: {response_obj.to_dict()}")
+    return response_obj
 
 if __name__ == '__main__':
     # Basic Test Setup (requires config for XAIClient, even if mocked by tests later)

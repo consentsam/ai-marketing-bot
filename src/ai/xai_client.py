@@ -6,9 +6,15 @@ In the future, this will be replaced with the actual xAI API client when it's av
 """
 
 import requests
+import os
 from typing import Dict, Any, List, Optional
 
-from src.config.settings import get_config
+# Attempt to import get_config from src.config, then src.config.settings as a fallback for flexibility
+try:
+    from src.config import get_config
+except ImportError:
+    from src.config.settings import get_config
+
 from src.utils.logging import get_logger
 from src.utils.error_handling import APIError, handle_api_error
 
@@ -17,128 +23,144 @@ logger = get_logger('xai_client')
 
 
 class XAIClient:
-    """Client for interacting with the xAI API.
-    
-    This is a placeholder implementation that will be replaced with the actual
-    xAI API client when it's available.
     """
-    
-    def __init__(self, api_key: Optional[str] = None):
-        """Initialize the xAI client.
-        
-        Args:
-            api_key: xAI API key (if None, will be loaded from configuration)
+    Client for interacting with the xAI API (mocked) with a fallback to Google PaLM (mocked).
+    Retrieves API keys and settings from the configuration system.
+    """
+
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        google_api_key: Optional[str] = None
+    ):
         """
-        self.api_key = api_key or get_config('ai.xai_api_key', '')
-        if not self.api_key:
-            logger.warning("No xAI API key provided, using fallback provider")
-            self.use_fallback = True
-        else:
-            self.use_fallback = False
+        Initializes the XAIClient.
+
+        Args:
+            api_key: The xAI API key. If None, attempts to load from config 'ai.xai_api_key'.
+            google_api_key: The Google API key. If None, attempts to load from config 'ai.google_api_key'.
+        """
+        self.xai_api_key = api_key or get_config("ai.xai_api_key")
+        self.google_api_key = google_api_key or get_config("ai.google_api_key")
         
-        self.base_url = "https://api.xai.com/v1"  # Placeholder URL
-        self.max_tokens = get_config('ai.max_tokens', 1000)
-        self.temperature = get_config('ai.temperature', 0.7)
-    
-    @handle_api_error
+        self.use_fallback = get_config("ai.use_fallback", False)
+        
+        self.xai_base_url = get_config("ai.xai_base_url", "https://api.xai.com/v1")
+        self.google_palm_base_url = get_config("ai.google_palm_base_url", "https://generativelanguage.googleapis.com/v1beta")
+        
+        self.default_max_tokens = get_config("ai.default_max_tokens", 150)
+        self.default_temperature = get_config("ai.default_temperature", 0.7)
+
     def get_completion(
         self,
         prompt: str,
         max_tokens: Optional[int] = None,
         temperature: Optional[float] = None,
         **kwargs: Any
-    ) -> str:
-        """Generate text using the xAI API.
-        
+    ) -> Dict[str, Any]:
+        """
+        Generates a text completion using either xAI or Google PaLM.
+        Actual API calls will be made, relying on tests to mock 'requests.post'.
+
         Args:
-            prompt: Prompt for text generation
-            max_tokens: Maximum number of tokens to generate
-            temperature: Temperature for text generation
-            **kwargs: Additional parameters for the API
-            
+            prompt: The prompt to send to the API.
+            max_tokens: The maximum number of tokens to generate. Defaults to config value.
+            temperature: The sampling temperature. Defaults to config value.
+            **kwargs: Additional arguments for the API call.
+
         Returns:
-            Generated text
-            
+            A dictionary containing the API response.
+
         Raises:
-            APIError: If the API request fails
+            APIError: If API call fails or no API is available.
         """
-        if self.use_fallback:
-            return self._generate_with_fallback(prompt, max_tokens, temperature, **kwargs)
+        current_max_tokens = max_tokens if max_tokens is not None else self.default_max_tokens
+        current_temperature = temperature if temperature is not None else self.default_temperature
+
+        headers = {"Content-Type": "application/json"}
         
-        # Placeholder implementation
-        # When the actual xAI API is available, this will be replaced with real API calls
-        logger.info("Generating text with xAI API (placeholder)")
-        logger.debug("Prompt: %s", prompt)
-        
-        # For now, return a mock response
-        # In the future, this will make a real API call
-        return f"This is a placeholder response from xAI API for the prompt: {prompt[:50]}..."
-    
-    def _generate_with_fallback(
-        self,
-        prompt: str,
-        max_tokens: Optional[int] = None,
-        temperature: Optional[float] = None,
-        **kwargs: Any
-    ) -> str:
-        """Generate text using the fallback provider.
-        
-        Args:
-            prompt: Prompt for text generation
-            max_tokens: Maximum number of tokens to generate
-            temperature: Temperature for text generation
-            **kwargs: Additional parameters for the API
-            
-        Returns:
-            Generated text
-        """
-        fallback_provider = get_config('ai.fallback_provider', 'google_palm')
-        logger.info("Using fallback provider: %s", fallback_provider)
-        
-        if fallback_provider == 'google_palm':
-            return self._generate_with_google_palm(prompt, max_tokens, temperature, **kwargs)
-        else:
-            logger.error("Unknown fallback provider: %s", fallback_provider)
-            return f"Error: Unknown fallback provider '{fallback_provider}'"
-    
-    def _generate_with_google_palm(
-        self,
-        prompt: str,
-        max_tokens: Optional[int] = None,
-        temperature: Optional[float] = None,
-        **kwargs: Any
-    ) -> str:
-        """Generate text using Google PaLM.
-        
-        Args:
-            prompt: Prompt for text generation
-            max_tokens: Maximum number of tokens to generate
-            temperature: Temperature for text generation
-            **kwargs: Additional parameters for the API
-            
-        Returns:
-            Generated text
-        """
+        use_xai_api = bool(self.xai_api_key) and not self.use_fallback
+        use_google_api = bool(self.google_api_key) and (self.use_fallback or not bool(self.xai_api_key))
+
         try:
-            from langchain.llms import GooglePalm
+            if use_xai_api:
+                logger.info(f"Calling xAI API: {self.xai_base_url}/completions")
+                payload = {
+                    "prompt": prompt,
+                    "max_tokens": current_max_tokens,
+                    "temperature": current_temperature,
+                    **kwargs
+                }
+                headers["Authorization"] = f"Bearer {self.xai_api_key}"
+                response = requests.post(f"{self.xai_base_url}/completions", json=payload, headers=headers, timeout=30)
+                response.raise_for_status() # Will raise HTTPError for bad responses (4xx or 5xx)
+                return response.json()
             
-            google_api_key = get_config('ai.google_palm_api_key', '')
-            if not google_api_key:
-                raise APIError("No Google PaLM API key provided", status_code=401)
-            
-            # Create Google PaLM client
-            llm = GooglePalm(
-                google_api_key=google_api_key,
-                temperature=temperature or self.temperature,
-                max_output_tokens=max_tokens or self.max_tokens
-            )
-            
-            # Generate text
-            return llm(prompt)
+            elif use_google_api:
+                logger.info(f"Calling Google PaLM API: {self.google_palm_base_url}")
+                # PaLM API structure can vary; this is a common pattern for older models
+                # For newer Gemini via Vertex or AI Studio, the endpoint and payload would differ.
+                # Assuming a text generation model like 'text-bison-001' for this example.
+                palm_payload = {
+                    "prompt": {
+                        "text": prompt
+                    },
+                    # "temperature": current_temperature, # PaLM might have different ways to set this
+                    # "maxOutputTokens": current_max_tokens,
+                }
+                # Add other PaLM specific params from kwargs if necessary
+                # e.g., safetySettings, stopSequences
+
+                # The actual model name might need to be part of the URL or payload
+                # This is a generic example:
+                palm_api_url = f"{self.google_palm_base_url}/models/text-bison-001:generateText?key={self.google_api_key}"
+                
+                response = requests.post(palm_api_url, json=palm_payload, headers=headers, timeout=30)
+                response.raise_for_status()
+                return response.json()
+
+            else:
+                # This case should ideally be caught by upfront config checks,
+                # but it's a safeguard here.
+                logger.error("No API available. Check configuration for xAI/Google API keys and fallback settings.")
+                raise APIError(
+                    "No API available. Check configuration for xAI/Google API keys and fallback settings.", 
+                    status_code=503 # Service Unavailable
+                )
         
-        except ImportError:
-            logger.error("Google PaLM not installed, please install it with: pip install langchain google-generativeai")
-            return "Error: Google PaLM not installed"
+        except requests.exceptions.HTTPError as e:
+            status_code = e.response.status_code if e.response is not None else 500
+            error_text = "Unknown HTTP error"
+            details = {}
+            if e.response is not None:
+                error_text = e.response.text
+                try:
+                    details = e.response.json() # Attempt to get JSON error details
+                    # If 'error' and 'message' keys exist, use that as a more specific message
+                    if isinstance(details, dict) and 'error' in details and isinstance(details['error'], dict) and 'message' in details['error']:
+                        error_text = details['error']['message']
+                    elif isinstance(details, dict) and MESSAGE_KEY in details : # MESSAGE_KEY is 'message'
+                         error_text = details[MESSAGE_KEY]
+
+                except ValueError: # Not JSON
+                    details = {"raw_response": error_text} # Keep raw text if not JSON
+            
+            logger.error(f"API request failed: {status_code} - {error_text}", exc_info=True)
+            raise APIError(f"API request failed with status {status_code}: {error_text}", status_code=status_code, details=details) from e
+        
+        except requests.exceptions.RequestException as e: # Catches ConnectionError, Timeout, etc.
+            logger.error(f"API request failed due to a network/connection issue: {e}", exc_info=True)
+            raise APIError(f"API request failed due to a network/connection issue: {str(e)}", status_code=500) from e
+        
         except Exception as e:
-            logger.error("Error generating text with Google PaLM: %s", str(e))
-            return f"Error generating text with Google PaLM: {str(e)}" 
+            # Catch any other unexpected error during the process
+            logger.error(f"An unexpected error occurred in XAIClient.get_completion: {e}", exc_info=True)
+            raise APIError(f"An unexpected error occurred in XAIClient.get_completion: {str(e)}", status_code=500) from e
+
+# Helper for the JSON error response test if MESSAGE_KEY is used in XAIClient for extracting error messages from JSON.
+# If not, the literal string 'message' should be used in the assertEqual.
+MESSAGE_KEY = 'message' # Or whatever key the actual XAI client uses for the error message in JSON
+
+# Helper for the JSON error response test if MESSAGE_KEY is used in XAIClient for extracting error messages from JSON.
+# If not, the literal string 'message' should be used in the assertEqual.
+MESSAGE_KEY = 'message' # Or whatever key the actual XAI client uses for the error message in JSON 

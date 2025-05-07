@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 
 # Backend Rules for YieldFi AI Agent
@@ -13,31 +13,42 @@ alwaysApply: false
 > - TODOs: Add database migration and caching strategy guidelines if/when a dedicated DB is used for YieldFi knowledge or user interactions.
 
 ## 1. File & Folder Organization
-- Group code by domain or feature under `src/` (e.g., `src/twitter`, `src/knowledge`, `src/ai_core`).
-- Follow a clear separation of concerns within modules: `handlers` (API endpoints if applicable), `services` (business logic, e.g., response generation), `models` (data structures like `Tweet`, `Account`, `YieldFiData`), `utils`.
+- Group code by domain or feature under `src/` (e.g., `src/ai`, `src/knowledge`, `src/data_sources`).
+- Follow a clear separation of concerns within modules: `handlers` (API endpoints if applicable), `services` (business logic, e.g., response generation), `models` (data structures like `Tweet`, `Account`, `AIResponse`), `utils`.
 - Name modules in snake_case (e.g., `response_generator.py`, `knowledge_retrieval.py`).
-- Keep `app.py` (if using Flask/FastAPI) minimal: only import and register routes/blueprints, configure extensions (like API clients).
+- Keep `app.py` (if used for a web framework like Flask/FastAPI, or Streamlit entry point) focused on initialization, routing/UI layout, and orchestrating calls to service modules. Avoid putting complex business logic directly in `app.py`.
 
 ## 2. Request/Response Schema & Validation (If Applicable)
 - *If building an API frontend for the agent:* Define Pydantic or Marshmallow models for request inputs (e.g., tweet URL, context parameters) and response schemas (e.g., suggested replies).
-- Validate incoming data at the boundary (e.g., in API handlers) before passing to core logic.
+- Validate incoming data at the boundary (e.g., in API handlers or Streamlit input processing) before passing to core logic. Use defined models for validation.
 - Use a standardized error response format for API calls:
   ```json
   {"error": {"code": "FETCH_FAILED", "message": "Could not retrieve tweet data."}}
   ```
 
 ## 3. Error Handling & Logging
-- Use structured logging (e.g., `structlog` or built-in `logging` with JSON formatter) throughout backend modules.
-- Capture and log exceptions with stack traces, especially during external API calls (Twitter, xAI, YieldFi data sources) or knowledge retrieval.
-- Return user-friendly error messages or fallback suggestions (e.g., "Could not generate reply due to missing data.") if errors occur during reply generation. Do not expose internal stack traces in outputs intended for end-users (like suggested replies).
+- Use structured logging (e.g., Python's built-in `logging` configured as per `src/utils/logging.py`) throughout backend modules. Log relevant context information (e.g., input parameters, state variables).
+- Capture and log exceptions with stack traces using `logger.exception()` or `logger.error(..., exc_info=True)`, especially during external API calls (Twitter, xAI, YieldFi data sources) or complex data processing.
+- Implement specific exception classes (like `APIError` in `src/utils/error_handling.py`) for known error conditions.
+- Return user-friendly error messages or fallback suggestions from functions intended to interact with the UI or external systems. Do not expose internal stack traces in these user-facing outputs.
 
 ## 4. Configuration & Secrets Management
-- Load configuration (API keys for xAI/Twitter, YieldFi data URLs, etc.) from environment variables or `.env` files using `python-dotenv`.
+- Load configuration (API keys for xAI/Twitter, YieldFi data URLs, etc.) from environment variables or `.env` files using `python-dotenv` via the system defined in `src/config/settings.py`.
 - Keep secrets (`.env`) out of source control. Use `.env.example` as a template.
-- Centralize settings in `src/config/settings.py` using a `Config` class or similar structure.
+- Access configuration values exclusively through the functions provided in `src/config/settings.py` (e.g., `get_config`).
 
 ## 5. Testing: Unit & Integration
-- Write unit tests (`pytest`) for core logic like prompt engineering (`src/ai/prompt_engineering.py`), response generation (`src/ai/response_generator.py`), and knowledge retrieval (`src/knowledge/retrieval.py`).
-- Write integration tests for end-to-end flows, mocking external APIs (Twitter, xAI, YieldFi data sources) as needed.
+- Write unit tests (`pytest`) for core logic in service modules (`src/ai`, `src/knowledge`, `src/data_sources/mock.py`), utility functions, and model validation logic.
+- Mock external dependencies (like `XAIClient`, live `TwitterDataSource`) during unit testing to isolate the component under test.
+- Write integration tests for end-to-end flows (e.g., from receiving input in `app.py` through `response_generator` to getting a mock AI response), potentially mocking only the final external API call (e.g., the xAI call itself).
 - If an API is built, use `httpx` or a framework's test client to test endpoints.
-- Use fixtures to manage test data (sample tweets, mock YieldFi data) and environment setup.
+- Use `pytest` fixtures (`conftest.py`) to manage test data (sample `Tweet`, `Account` objects, mock configurations) and reusable setup/teardown logic.
+- Adhere to testing requirements specified in the main implementation plan (Step 20) and project-wide rules (Rule 9).
+
+## 6. Backend Debugging Approach
+- **6.1. Analyze the Issue:** Clearly identify the problem. What is the expected behavior versus the actual behavior? Examine logs (Rule 3), error messages, and input data that triggers the issue. Understand the relevant code flow.
+- **6.2. Hypothesize & Plan Fixes:** Brainstorm potential root causes and corresponding solutions. Consider 2-3 likely approaches based on the analysis.
+- **6.3. Prioritize & Implement Best Approach:** Select the most promising approach based on likelihood of success and simplicity. Implement the necessary code changes methodically.
+- **6.4. Test & Verify:** Use the self-testing methods outlined in the project-wide rules (Rule 3.3: Predict, Execute, Compare). Run relevant unit tests, integration tests, or application execution steps (like running `streamlit run app.py` and testing the specific feature) to verify if the fix works and hasn't introduced regressions.
+- **6.5. Iterate if Necessary:** If the first approach doesn't resolve the issue or fails verification, analyze the results and insights gained. Select the next best hypothesis/approach from step 6.2 (or formulate a new one based on the new information) and return to step 6.3 (Implement) and 6.4 (Test).
+- **6.6. Escalate if Stuck:** If the issue persists after several (e.g., 3-5) well-reasoned attempts, follow the escalation procedure defined in the project-wide rules (Rule 3.3.f). Prepare a clear summary of the problem, the approaches tried, the results observed (including logs/errors), and ask the user for guidance.

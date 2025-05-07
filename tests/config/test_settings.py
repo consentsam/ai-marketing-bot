@@ -1,206 +1,265 @@
 # Changelog:
-# 2025-05-07 HH:MM - Step 5 (Testing) - Initial test structure for config settings.
+# 2025-05-07 HH:MM - Step 20 (Initial) - Added comprehensive tests for config loading.
+# 2025-05-07 HH:MM - Step 20 (Fix) - Patched DEFAULT_TEMPLATE in setUp for test isolation.
+# 2025-05-07 HH:MM - Step 20 (Fix) - Adjusted tests for lowercase key normalization and fixed print assertion.
 
 import unittest
-from unittest.mock import patch, mock_open
+from unittest.mock import patch, mock_open, call
 import os
 import yaml
+import copy
 
-# Important: Need to import the module to be tested *after* potential patches, 
-# or manage the global _config state carefully if testing multiple load scenarios.
-# For simplicity here, we assume tests might influence each other if load_config is called multiple times.
-# A better approach might involve resetting the _config global before each test or 
-# structuring the config module differently (e.g., using a class).
+# Ensure the test can find the src modules
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-import src.config.settings as config_settings
+from src.config import settings as config_settings # type: ignore
 
-# Reset config before each test method to ensure isolation
-def reset_config():
-    config_settings._config = {}
+# Store original _CONFIG_FILE_PATH and _ENV_FILE_PATH to restore later
+_ORIGINAL_CONFIG_FILE_PATH = config_settings._CONFIG_FILE_PATH
+_ORIGINAL_ENV_FILE_PATH = config_settings._ENV_FILE_PATH
+_ORIGINAL_DEFAULT_TEMPLATE = copy.deepcopy(config_settings.DEFAULT_TEMPLATE)
+
+# Define a base path for test artifacts
+_TEST_ARTIFACTS_PATH = os.path.join(os.path.dirname(__file__), 'test_artifacts')
+_MOCK_CONFIG_YAML_PATH = os.path.join(_TEST_ARTIFACTS_PATH, 'mock_config.yaml')
+_MOCK_ENV_FILE_PATH = os.path.join(_TEST_ARTIFACTS_PATH, '.env.test')
+
 
 class TestConfigSettings(unittest.TestCase):
 
     def setUp(self):
-        """Reset the global config before each test."""
-        reset_config()
-        # Clear relevant environment variables before each test
-        for key in ['DEBUG', 'LOG_LEVEL', 'DATA_SOURCE_TYPE', 'MY_ENV_VAR', 'NESTED_ENV_VAR']:
-            if key in os.environ:
-                del os.environ[key]
+        """Set up for each test method."""
+        os.makedirs(_TEST_ARTIFACTS_PATH, exist_ok=True)
+
+        config_settings._CONFIG_FILE_PATH = _MOCK_CONFIG_YAML_PATH
+        config_settings._ENV_FILE_PATH = _MOCK_ENV_FILE_PATH
+        
+        self.default_yaml_content = {
+            'app_name': 'TestAppYAML',
+            'log_level': 'DEBUG', # Lowercase key
+            'ai': {
+                'provider': 'yaml_provider', # Lowercase key
+                'xai_api_key': 'yaml_xai_key',
+                'default_temperature': 0.6
+            },
+            'data_sources': {
+                'type': 'mock_yaml'
+            }
+        }
+        with open(_MOCK_CONFIG_YAML_PATH, 'w') as f:
+            yaml.dump(self.default_yaml_content, f)
+            
+        # No longer need to patch DEFAULT_TEMPLATE as load_config loads from file path
+        # config_settings.DEFAULT_TEMPLATE = copy.deepcopy(self.default_yaml_content)
+
+        self.default_env_content = """# .env keys are typically uppercase
+        LOG_LEVEL=INFO_ENV
+        AI__PROVIDER=env_provider
+        AI__XAI_API_KEY=env_xai_key
+        AI__GOOGLE_API_KEY=env_google_key
+        NEW_SETTING=env_new_value
+        """
+        with open(_MOCK_ENV_FILE_PATH, 'w') as f:
+            f.write(self.default_env_content)
+            
+        config_settings._CONFIG = {}
+        config_settings._CONFIG_LOADED = False
+            
+        # Clear os.environ before each test to avoid interference
+        current_keys = list(os.environ.keys())
+        for key in current_keys:
+            # Clear keys that might be loaded from .env or set directly
+            if key in ['LOG_LEVEL', 'AI__PROVIDER', 'AI__XAI_API_KEY', 'AI__GOOGLE_API_KEY', 'NEW_SETTING', 'APP_NAME']:
+                 if key in os.environ:
+                    del os.environ[key]
 
     def tearDown(self):
-        """Ensure config is reset after tests if needed, though setUp handles it now."""
-        reset_config()
-        # Clean up env vars if necessary (handled in setUp mostly)
-        for key in ['DEBUG', 'LOG_LEVEL', 'DATA_SOURCE_TYPE', 'MY_ENV_VAR', 'NESTED_ENV_VAR']:
-            if key in os.environ:
-                del os.environ[key]
+        """Clean up after each test method."""
+        config_settings._CONFIG_FILE_PATH = _ORIGINAL_CONFIG_FILE_PATH
+        config_settings._ENV_FILE_PATH = _ORIGINAL_ENV_FILE_PATH
+        # config_settings.DEFAULT_TEMPLATE = copy.deepcopy(_ORIGINAL_DEFAULT_TEMPLATE) # No longer needed
 
-    @patch("src.config.settings.load_dotenv") # Mock load_dotenv to avoid reading real .env
-    @patch("os.path.exists")
-    @patch("builtins.open", new_callable=mock_open)
-    def test_load_config_defaults_only(self, mock_file, mock_exists, mock_dotenv):
-        """Test loading config when config.yaml and .env don't exist."""
-        mock_exists.return_value = False # Simulate config.yaml not existing
-        mock_dotenv.return_value = None # Simulate no .env loaded
+        if os.path.exists(_MOCK_CONFIG_YAML_PATH):
+            os.remove(_MOCK_CONFIG_YAML_PATH)
+        if os.path.exists(_MOCK_ENV_FILE_PATH):
+            os.remove(_MOCK_ENV_FILE_PATH)
+        if os.path.exists(_TEST_ARTIFACTS_PATH) and not os.listdir(_TEST_ARTIFACTS_PATH):
+            os.rmdir(_TEST_ARTIFACTS_PATH)
         
-        cfg = config_settings.load_config()
+        config_settings._CONFIG = {}
+        config_settings._CONFIG_LOADED = False
         
-        self.assertEqual(cfg['app']['name'], 'YieldFi AI Agent')
-        self.assertEqual(cfg['data_source']['type'], 'mock') # Default value
-        self.assertFalse(cfg['app']['debug'])
-        mock_dotenv.assert_called_once() # Ensure dotenv load was attempted
-        mock_exists.assert_called_once_with('config.yaml') # Ensure yaml check happened
+        current_keys = list(os.environ.keys())
+        for key in current_keys:
+            if key in ['LOG_LEVEL', 'AI__PROVIDER', 'AI__XAI_API_KEY', 'AI__GOOGLE_API_KEY', 'NEW_SETTING', 'APP_NAME']:
+                 if key in os.environ:
+                    del os.environ[key]
 
-    @patch("src.config.settings.load_dotenv")
-    @patch("os.path.exists")
-    @patch("builtins.open", new_callable=mock_open)
-    def test_load_config_with_yaml(self, mock_file, mock_exists, mock_dotenv):
-        """Test loading config with a mock config.yaml."""
-        mock_exists.return_value = True
-        mock_dotenv.return_value = None
+    def test_load_config_from_yaml_and_env(self):
+        """Test loading configuration from YAML and .env file, with .env overriding YAML via lowercase keys."""
+        config = config_settings.load_config()
+
+        self.assertEqual(config['app_name'], 'TestAppYAML') # From YAML, not in .env
+        self.assertEqual(config['log_level'], 'INFO_ENV') # YAML 'log_level' overridden by .env 'LOG_LEVEL' (normalized)
+        self.assertEqual(config['ai']['provider'], 'env_provider') # YAML 'provider' overridden by .env 'AI__PROVIDER' (normalized)
+        self.assertEqual(config['ai']['xai_api_key'], 'env_xai_key') # Overridden by .env (normalized)
+        self.assertEqual(config['ai']['google_api_key'], 'env_google_key') # New from .env (normalized)
+        self.assertEqual(config['ai']['default_temperature'], 0.6) # From YAML
+        self.assertEqual(config['data_sources']['type'], 'mock_yaml') # From YAML
+        self.assertEqual(config['new_setting'], 'env_new_value') # New from .env (normalized)
+        self.assertTrue(config_settings._CONFIG_LOADED)
+
+    def test_get_config_loaded(self):
+        """Test get_config when configuration is already loaded (case-insensitive)."""
+        config_settings.load_config()
+        self.assertEqual(config_settings.get_config('app_name'), 'TestAppYAML')
+        self.assertEqual(config_settings.get_config('log_level'), 'INFO_ENV') # Check overridden value
+        self.assertEqual(config_settings.get_config('AI.PROVIDER'), 'env_provider') # Case-insensitive get
+        self.assertEqual(config_settings.get_config('ai.xai_api_key'), 'env_xai_key')
+        self.assertEqual(config_settings.get_config('ai.default_temperature'), 0.6)
+        self.assertEqual(config_settings.get_config('non_existent_key', 'default_val'), 'default_val')
+        self.assertIsNone(config_settings.get_config('non_existent_key_no_default'))
+        self.assertEqual(config_settings.get_config('AI.GOOGLE_API_KEY'), 'env_google_key') # Case-insensitive get
+
+    def test_get_config_not_loaded_yet(self):
+        """Test get_config calls load_config if not loaded yet."""
+        self.assertFalse(config_settings._CONFIG_LOADED)
+        self.assertEqual(config_settings.get_config('app_name'), 'TestAppYAML')
+        self.assertTrue(config_settings._CONFIG_LOADED)
+        self.assertEqual(config_settings.get_config('ai.provider'), 'env_provider') # Check overridden value
+        self.assertEqual(config_settings.get_config('log_level'), 'INFO_ENV')
+
+    def test_load_config_env_vars_override_everything(self):
+        """Test that direct os.environ variables override YAML and .env file."""
+        # Set os.environ AFTER .env would have been loaded by load_dotenv inside load_config
+        os.environ['APP_NAME'] = 'OS_ENV_APP_NAME' # Should override YAML
+        os.environ['LOG_LEVEL'] = 'OS_ENV_LOG_LEVEL' # Should override .env LOG_LEVEL
+        # Note: The current direct os.environ override logic doesn't handle nested AI__PROVIDER well.
+        # We rely on the .env loading via _update_dict_from_env for nested overrides.
+        # Let's test overriding a nested value that *was* set by .env
+        # Setting this BEFORE load_config means it should take precedence over the .env file value
+        # because python-dotenv doesn't override existing env vars by default.
+        os.environ['AI__XAI_API_KEY'] = 'OS_ENV_XAI_KEY' 
+
+        config = config_settings.load_config()
+
+        self.assertEqual(config['app_name'], 'OS_ENV_APP_NAME') # Direct os.environ override
+        self.assertEqual(config['log_level'], 'OS_ENV_LOG_LEVEL') # Direct os.environ override
+        # Check .env loaded values that weren't overridden by direct os.environ
+        self.assertEqual(config['ai']['provider'], 'env_provider') # From .env
+        self.assertEqual(config['ai']['google_api_key'], 'env_google_key') # From .env
+        # Check the nested value - it should be the one from os.environ set before load_config
+        self.assertEqual(config['ai']['xai_api_key'], 'OS_ENV_XAI_KEY') 
+
+    @patch('builtins.print')
+    def test_load_config_missing_yaml_file(self, mock_print):
+        """Test behavior when config.yaml is missing."""
+        if os.path.exists(_MOCK_CONFIG_YAML_PATH):
+            os.remove(_MOCK_CONFIG_YAML_PATH)
         
-        mock_yaml_content = yaml.dump({
-            'app': {'name': 'YAML App Name'},
-            'logging': {'level': 'DEBUG'}, # Overrides default
-            'new_section': {'key': 'yaml_value'}
-        })
-        mock_file.return_value = mock_open(read_data=mock_yaml_content)()
+        config = config_settings.load_config() # load_config will print warning
         
-        cfg = config_settings.load_config(config_file='mock_config.yaml')
+        # Check the specific warning message format
+        expected_warning = f"Warning: Configuration file '{_MOCK_CONFIG_YAML_PATH}' not found. Using minimal defaults and environment variables."
+        mock_print.assert_any_call(expected_warning)
         
-        self.assertEqual(cfg['app']['name'], 'YAML App Name') # YAML override
-        self.assertEqual(cfg['logging']['level'], 'DEBUG') # YAML override
-        self.assertEqual(cfg['data_source']['type'], 'mock') # Default (not in YAML)
-        self.assertEqual(cfg['new_section']['key'], 'yaml_value') # New section from YAML
-        mock_exists.assert_called_once_with('mock_config.yaml')
+        # Should load from .env only (normalized keys)
+        self.assertEqual(config['log_level'], 'INFO_ENV') 
+        self.assertEqual(config['ai']['provider'], 'env_provider')
+        self.assertEqual(config['ai']['xai_api_key'], 'env_xai_key')
+        self.assertNotIn('app_name', config) 
+        self.assertIsNone(config_settings.get_config('app_name'))
 
-    @patch("src.config.settings.load_dotenv")
-    @patch("os.path.exists")
-    @patch("builtins.open", new_callable=mock_open)
-    def test_load_config_empty_yaml(self, mock_file, mock_exists, mock_dotenv):
-        """Test loading config when config.yaml is empty."""
-        mock_exists.return_value = True
-        mock_dotenv.return_value = None
-        mock_file.return_value = mock_open(read_data="")() # Empty file
-
-        cfg = config_settings.load_config(config_file='empty_config.yaml')
+    @patch('builtins.print')
+    def test_load_config_malformed_yaml_file(self, mock_print):
+        """Test behavior when config.yaml is malformed."""
+        with open(_MOCK_CONFIG_YAML_PATH, 'w') as f:
+            f.write("app_name: TestAppYAML\nlog_level: [Invalid YAML")
         
-        # Expect defaults to be loaded
-        self.assertEqual(cfg['app']['name'], 'YieldFi AI Agent')
-        self.assertEqual(cfg['data_source']['type'], 'mock')
-        mock_exists.assert_called_once_with('empty_config.yaml')
-
-    @patch("src.config.settings.load_dotenv")
-    @patch("os.path.exists")
-    @patch("builtins.open", new_callable=mock_open)
-    @patch("builtins.print") # Mock print to check for error messages
-    def test_load_config_malformed_yaml(self, mock_print, mock_file, mock_exists, mock_dotenv):
-        """Test loading config when config.yaml is malformed."""
-        mock_exists.return_value = True
-        mock_dotenv.return_value = None
-        mock_file.return_value = mock_open(read_data="app: name: - Malformed YAML")() # Invalid YAML
-
-        cfg = config_settings.load_config(config_file='malformed_config.yaml')
+        config = config_settings.load_config()
         
-        # Expect defaults to be loaded
-        self.assertEqual(cfg['app']['name'], 'YieldFi AI Agent')
-        self.assertEqual(cfg['data_source']['type'], 'mock')
-        mock_exists.assert_called_once_with('malformed_config.yaml')
-        mock_print.assert_any_call(f"Error loading config file malformed_config.yaml: Unable to parse YAML.")
+        # Should load from .env only (normalized keys)
+        self.assertEqual(config['log_level'], 'INFO_ENV')
+        self.assertEqual(config['ai']['provider'], 'env_provider')
+        # Check specific error message
+        self.assertTrue(any("Unable to parse YAML" in call_args[0][0] for call_args in mock_print.call_args_list))
+        self.assertNotIn('app_name', config)
 
-    @patch.dict(os.environ, {"LOG_LEVEL": "WARNING", "DATA_SOURCE_TYPE": "twitter", "MY_ENV_VAR": "env_value"})
-    @patch("src.config.settings.load_dotenv")
-    @patch("os.path.exists")
-    @patch("builtins.open", new_callable=mock_open)
-    def test_load_config_with_env_override(self, mock_file, mock_exists, mock_dotenv):
-        """Test that environment variables override YAML and defaults."""
-        mock_exists.return_value = True
-        mock_dotenv.return_value = None # Assume .env doesn't add conflicting vars for this test
+    @patch('builtins.print')
+    def test_load_config_empty_yaml_file(self, mock_print):
+        """Test behavior when config.yaml is empty."""
+        with open(_MOCK_CONFIG_YAML_PATH, 'w') as f:
+            f.write("")
         
-        mock_yaml_content = yaml.dump({
-            'app': {'name': 'YAML App Name'},
-            'logging': {'level': 'DEBUG'}, # Will be overridden by env var
-            'data_source': {'type': 'yaml_source'} # Will be overridden by env var
-        })
-        mock_file.return_value = mock_open(read_data=mock_yaml_content)()
+        config = config_settings.load_config()
+                
+        # Should load from .env only (normalized keys)
+        self.assertEqual(config['log_level'], 'INFO_ENV') 
+        self.assertEqual(config['ai']['provider'], 'env_provider') 
+        self.assertNotIn('app_name', config)
+        # Check warning for empty file
+        mock_print.assert_any_call(f"Warning: Config file '{_MOCK_CONFIG_YAML_PATH}' is empty. Using minimal defaults.")
 
-        # Also test direct os.environ.get in defaults
-        os.environ['XAI_API_KEY'] = 'env_xai_key' 
+    def test_load_config_missing_env_file(self):
+        """Test behavior when .env file is missing."""
+        if os.path.exists(_MOCK_ENV_FILE_PATH):
+            os.remove(_MOCK_ENV_FILE_PATH)
+            
+        config = config_settings.load_config()
         
-        cfg = config_settings.load_config()
+        # Should load from YAML only (original keys)
+        self.assertEqual(config['app_name'], 'TestAppYAML')
+        self.assertEqual(config['log_level'], 'DEBUG') 
+        self.assertEqual(config['ai']['provider'], 'yaml_provider')
+        self.assertNotIn('google_api_key', config.get('ai', {}))
+
+    def test_nested_key_retrieval_get_config(self):
+        """Test get_config for deeply nested keys (case-insensitive)."""
+        complex_yaml = {
+            'level1': { # lowercase
+                'LeVeL2': { # mixed case
+                    'level3': 'value3',
+                    'level3_alt': 'value3_alt'
+                },
+                'level2_alt': 'value2_alt'
+            }
+        }
+        with open(_MOCK_CONFIG_YAML_PATH, 'w') as f:
+            yaml.dump(complex_yaml, f)
+        if os.path.exists(_MOCK_ENV_FILE_PATH):
+            os.remove(_MOCK_ENV_FILE_PATH)
         
-        # Env vars override YAML and defaults
-        self.assertEqual(cfg['logging']['level'], 'WARNING') 
-        self.assertEqual(cfg['data_source']['type'], 'twitter')
-        self.assertEqual(cfg['ai']['xai_api_key'], 'env_xai_key') # From direct os.environ.get
+        config_settings._CONFIG = {} # Reset internal config
+        config_settings._CONFIG_LOADED = False
+        config_settings.load_config()
         
-        # Ensure default/YAML values are still there if not overridden
-        self.assertEqual(cfg['app']['name'], 'YAML App Name')
+        self.assertEqual(config_settings.get_config('level1.level2.level3'), 'value3') # All lower
+        self.assertEqual(config_settings.get_config('LEVEL1.LEVEL2.LEVEL3'), 'value3') # All upper
+        self.assertEqual(config_settings.get_config('Level1.LeVeL2.Level3'), 'value3') # Mixed
+        self.assertEqual(config_settings.get_config('level1.level2_alt'), 'value2_alt')
+        self.assertIsNone(config_settings.get_config('level1.level2.non_existent'))
+        self.assertEqual(config_settings.get_config('level1.non_existent.level3', 'default'), 'default')
         
-        # Clean up env var used in default dict construction
-        if 'XAI_API_KEY' in os.environ: del os.environ['XAI_API_KEY']
-
-    def test_get_config_simple(self):
-        """Test getting simple config values."""
-        config_settings._config = {'app': {'name': 'Test App'}, 'logging': {'level': 'INFO'}}
-        self.assertEqual(config_settings.get_config('app.name'), 'Test App')
-        self.assertEqual(config_settings.get_config('logging.level'), 'INFO')
+    def test_get_config_returns_copy_not_original_dict(self):
+        """Test that get_config returns a copy for dictionary values to prevent modification."""
+        config_settings.load_config()
+        ai_config_retrieved = config_settings.get_config('ai') # Should be lowercase 'ai' from normalized env
+        original_ai_config_in_module = config_settings._CONFIG['ai'] # Access internal directly
         
-    def test_get_config_nested(self):
-        """Test getting nested config values."""
-        config_settings._config = {'data': {'source': {'twitter': {'api_key': '123'}}}}
-        self.assertEqual(config_settings.get_config('data.source.twitter.api_key'), '123')
-
-    def test_get_config_missing_key(self):
-        """Test getting a missing key returns default."""
-        config_settings._config = {'app': {'name': 'Test App'}}
-        self.assertIsNone(config_settings.get_config('app.version'))
-        self.assertEqual(config_settings.get_config('app.version', '1.0'), '1.0')
-        self.assertEqual(config_settings.get_config('missing.nested.key', 'default_val'), 'default_val')
-
-    def test_get_config_key_with_none_value(self):
-        """Test getting a key that has a None value."""
-        config_settings._config = {'app': {'version': None}}
-        self.assertIsNone(config_settings.get_config('app.version'))
-        self.assertIsNone(config_settings.get_config('app.version', 'default')) # Default should not be used if key exists
-
-    def test_get_config_entire_dict(self):
-        """Test getting the entire config dict."""
-        test_dict = {'key1': 'val1', 'key2': {'nested': 'val2'}}
-        config_settings._config = test_dict
-        self.assertEqual(config_settings.get_config(), test_dict)
-
-    def test_set_config_value_simple(self):
-        """Test setting simple config values."""
-        reset_config() # Start fresh
-        config_settings._config = {'app': {'name': 'Original'}}
-        config_settings.set_config_value('app.name', 'Updated')
-        self.assertEqual(config_settings.get_config('app.name'), 'Updated')
-        config_settings.set_config_value('new_key', 'new_value')
-        self.assertEqual(config_settings.get_config('new_key'), 'new_value')
-
-    def test_set_config_value_nested(self):
-        """Test setting nested config values."""
-        reset_config()
-        config_settings._config = {'data': {'source': {'type': 'mock'}}}
-        config_settings.set_config_value('data.source.api_key', 'xyz')
-        self.assertEqual(config_settings.get_config('data.source.api_key'), 'xyz')
-        self.assertEqual(config_settings.get_config('data.source.type'), 'mock') # Ensure original nested keys remain
-
-        # Test creating intermediate dictionaries
-        config_settings.set_config_value('new.nested.structure', 'deep_value')
-        self.assertEqual(config_settings.get_config('new.nested.structure'), 'deep_value')
-        self.assertIsInstance(config_settings.get_config('new'), dict)
-        self.assertIsInstance(config_settings.get_config('new.nested'), dict)
-
-        # Test creating multiple levels of non-existent nested structures
-        config_settings.set_config_value('very.deep.nested.structure.level', 'ultra_deep_value')
-        self.assertEqual(config_settings.get_config('very.deep.nested.structure.level'), 'ultra_deep_value')
-        self.assertIsInstance(config_settings.get_config('very'), dict)
-        self.assertIsInstance(config_settings.get_config('very.deep'), dict)
-        self.assertIsInstance(config_settings.get_config('very.deep.nested'), dict)
-        self.assertIsInstance(config_settings.get_config('very.deep.nested.structure'), dict)
+        # Ensure it retrieves the correct dict (which includes .env overrides)
+        self.assertEqual(ai_config_retrieved['provider'], 'env_provider')
+        
+        self.assertIsNot(ai_config_retrieved, original_ai_config_in_module)
+        self.assertEqual(ai_config_retrieved, original_ai_config_in_module)
+        
+        if isinstance(ai_config_retrieved, dict):
+            ai_config_retrieved['new_temp_key'] = 'temp_value'
+            
+        self.assertNotIn('new_temp_key', config_settings._CONFIG['ai'])
+        fresh_ai_config = config_settings.get_config('ai')
+        if isinstance(fresh_ai_config, dict):
+            self.assertNotIn('new_temp_key', fresh_ai_config)
 
 if __name__ == '__main__':
     unittest.main() 

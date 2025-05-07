@@ -1,6 +1,7 @@
 # src/app.py (or app.py at root, depending on final structure for Streamlit execution)
 # Changelog:
 # 2025-05-06 HH:MM - Step 14 (Initial) - Basic structure for YieldFi AI Agent Streamlit app.
+# 2025-05-07 21:00 - Step 14 (Complete) - Uncommented imports and UI structure for the main application.
 
 """
 YieldFi AI Agent Streamlit Application.
@@ -21,18 +22,20 @@ TODOs:
 import streamlit as st
 from dotenv import load_dotenv
 
-# from src.config.settings import load_config, get_config # Assuming settings.py is in src.config
-# from src.ai.response_generator import generate_tweet_reply, generate_new_tweet # Example imports
-# from src.data_sources.mock import MockTweetDataSource # Example import
-# from src.models.tweet import Tweet # Example import
-# from src.models.account import Account, AccountType # Example import
+from src.config.settings import load_config, get_config
+from src.ai.response_generator import generate_tweet_reply, generate_new_tweet
+from src.data_sources.mock import MockTweetDataSource
+from src.models.tweet import Tweet
+from src.models.account import Account, AccountType
+from src.ui.components import status_badge, placeholder_component, copy_button
+from src.ui.tweet_input import display_tweet_reply_ui
 
 def main():
     """
     Main function to run the Streamlit application.
     """
     load_dotenv()
-    # load_config() # Load application configuration
+    load_config()  # Load application configuration
 
     st.set_page_config(
         page_title="YieldFi AI Agent",
@@ -41,40 +44,56 @@ def main():
     )
 
     st.title("YieldFi AI Agent 🤖")
+    st.markdown("""
+    Generate Twitter replies and new tweets with AI assistance.
+    This agent understands YieldFi's core messaging and adapts to different persona types.
+    """)
 
     # --- Sidebar for Configuration/Mode Selection ---
     st.sidebar.header("Agent Configuration")
-    # active_account_type_str = st.sidebar.selectbox(
-    #     "Respond as:",
-    #     options=[acc_type.value for acc_type in AccountType if acc_type in [AccountType.OFFICIAL, AccountType.INTERN]], # Limit to relevant types
-    #     key="active_account"
-    # )
-    # active_account_type = AccountType(active_account_type_str)
+    active_account_type_str = st.sidebar.selectbox(
+        "Respond as:",
+        options=[
+            AccountType.OFFICIAL.value, 
+            AccountType.INTERN.value
+        ],
+        key="active_account"
+    )
+    active_account_type = AccountType(active_account_type_str)
+    
+    # Display basic account info
+    st.sidebar.markdown(f"**Selected Persona:** {active_account_type_str}")
+    if active_account_type == AccountType.OFFICIAL:
+        st.sidebar.markdown("*The official YieldFi voice - professional, authoritative, and informative.*")
+    elif active_account_type == AccountType.INTERN:
+        st.sidebar.markdown("*A friendly, enthusiastic voice - approachable and conversational.*")
 
     # --- Main Interaction Area ---
-    # interaction_type = st.radio(
-    # "Select Interaction Type:",
-    # ("Generate Tweet Reply", "Create New Tweet by Category"),
-    # key="interaction_type"
-    # )
+    interaction_type = st.radio(
+        "Select Interaction Type:",
+        ("Generate Tweet Reply", "Create New Tweet by Category"),
+        key="interaction_type"
+    )
 
-    # if interaction_type == "Generate Tweet Reply":
-        # display_tweet_reply_ui() # To be implemented in Step 15 & 16
-        # pass
-    # elif interaction_type == "Create New Tweet by Category":
-        # display_new_tweet_ui() # To be implemented in Step 17 & 19
-        # pass
+    if interaction_type == "Generate Tweet Reply":
+        display_tweet_reply_ui(active_account_type)
+    elif interaction_type == "Create New Tweet by Category":
+        display_new_tweet_ui(active_account_type)
 
-    st.write("UI implementation will follow Steps 14-19 of the Implementation Plan.")
-    st.caption(f"Refer to data/docs/YieldFi-Ai-Agent-Implementation.md for details.")
+    # Footer
+    st.markdown("---")
+    st.caption("YieldFi AI Agent - Powered by langchain and xAI")
 
-# def display_tweet_reply_ui():
-#     st.subheader("Generate Tweet Reply")
-#     # ... (Implementation for Step 15 & 16)
-
-# def display_new_tweet_ui():
-#     st.subheader("Create New Tweet by Category")
-#     # ... (Implementation for Step 17 & 19)
+def display_new_tweet_ui(active_account_type):
+    """Placeholder for new tweet UI until Step 17 & 19 implementation."""
+    st.subheader("Create New Tweet by Category")
+    
+    # Placeholders for Step 17 & 19
+    st.info("This section will allow you to select categories and topics for new tweet generation.")
+    st.selectbox("Category (Coming in Step 17)", options=["Announcement", "Product Update", "Community Update"], key="category_placeholder", disabled=True)
+    
+    # Use the placeholder component
+    placeholder_component("New Tweet Generator", "This will be implemented in Step 17 & 19")
 
 if __name__ == "__main__":
     main()

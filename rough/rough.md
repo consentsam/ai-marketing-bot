@@ -142,3 +142,35 @@ I WANT to generate rules for this whole project so that I could build this proje
 - Write clear commit messages
 - Make small, focused commits
 - Use meaningful branch names
+
+
+
+
+-------
+
+
+        curl -X POST https://api.x.ai.com/v1/completions \
+        -H "Authorization: Bearer xai-6T2raFcnQMCnhIWv9bgBfzcA3EkeNRYZ3jmK2tiY7ONSbNdGKq2enOqxI1BvIH2jXRrrDWqPA1f5oP7E" \
+        -H "Content-Type: application/json" \
+        -d '{"prompt": "This is a test prompt", "max_tokens": 10}'
+
+
+        curl -X POST https://api.x.ai/v1/completions \
+-H "Authorization: Bearer {YOUR_XAI_API_KEY}" \
+-H "Content-Type: application/json" \
+-d '{"prompt": "This is a test prompt", "max_tokens": 10}'
+Failed to deserialize the JSON body into the target type: missing field `model` at line 1 column 53venv
+
+
+
+curl -X POST https://api.x.ai/v1/completions \
+  -H "Authorization: Bearer xai-6T2raFcnQMCnhIWv9bgBfzcA3EkeNRYZ3jmK2tiY7ONSbNdGKq2enOqxI1BvIH2jXRrrDWqPA1f5oP7E" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "model": "grok-beta",          # or any other model you have access to
+        "prompt": "This is a test prompt",
+        "max_tokens": 10,
+        "temperature": 0.7
+      }'
+
+      

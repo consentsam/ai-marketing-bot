@@ -19,8 +19,12 @@ data_source:
 
 ai:
   provider: "xai" # or "google_palm"
+  # API Keys are sourced from .env using AI__XAI_API_KEY and AI__GOOGLE_API_KEY respectively
+  xai_api_key: null
+  google_api_key: null
+  xai_model: "grok-3-latest"
   use_fallback: false
-  xai_base_url: "https://api.xai.com/v1" # Placeholder
+  xai_base_url: "https://api.x.ai/v1"
   google_palm_base_url: "https://generativelanguage.googleapis.com/v1beta" # Placeholder
   default_max_tokens: 150
   default_temperature: 0.7

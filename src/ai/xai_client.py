@@ -45,7 +45,8 @@ class XAIClient:
         
         self.use_fallback = get_config("ai.use_fallback", False)
         
-        self.xai_base_url = get_config("ai.xai_base_url", "https://api.xai.com/v1")
+        self.xai_base_url = get_config("ai.xai_base_url", "https://api.x.ai/v1")
+        self.xai_model = get_config("ai.xai_model", "grok-3-latest")
         self.google_palm_base_url = get_config("ai.google_palm_base_url", "https://generativelanguage.googleapis.com/v1beta")
         
         self.default_max_tokens = get_config("ai.default_max_tokens", 150)
@@ -84,15 +85,22 @@ class XAIClient:
 
         try:
             if use_xai_api:
-                logger.info(f"Calling xAI API: {self.xai_base_url}/completions")
+                logger.info(f"Calling xAI API: {self.xai_base_url}/chat/completions")
+                # Construct the messages payload for chat completions
+                messages = [
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": prompt}
+                ]
                 payload = {
-                    "prompt": prompt,
+                    "messages": messages,
+                    "model": self.xai_model,
                     "max_tokens": current_max_tokens,
                     "temperature": current_temperature,
+                    "stream": False,
                     **kwargs
                 }
                 headers["Authorization"] = f"Bearer {self.xai_api_key}"
-                response = requests.post(f"{self.xai_base_url}/completions", json=payload, headers=headers, timeout=30)
+                response = requests.post(f"{self.xai_base_url}/chat/completions", json=payload, headers=headers, timeout=30)
                 response.raise_for_status() # Will raise HTTPError for bad responses (4xx or 5xx)
                 return response.json()
             

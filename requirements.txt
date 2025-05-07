@@ -3,7 +3,7 @@ python-dotenv
 pyyaml
 streamlit
 langchain>=0.0.339
-google-palm>=0.2.0
+google-generativeai>=0.8.5
 tweepy>=4.14.0
 requests>=2.31.0
 textblob>=0.17.1

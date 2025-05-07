@@ -1,5 +1,7 @@
 # Changelog:
-# 2025-05-07 HH:MM - Step 5 - Validated existing configuration system. Confirmed loading from YAML and .env, dot-notation access via get_config, and env var precedence.
+# 2025-05-07 HH:MM - Step 5 - Clean implementation of configuration loading from YAML and .env.
+# 2025-05-07 HH:MM - Step 20 (Fix) - Modified load_config to use _CONFIG_FILE_PATH for base, making DEFAULT_TEMPLATE a true fallback.
+# 2025-05-07 HH:MM - Step 20 (Fix) - Normalize keys from .env to lowercase and improve os.environ override logic.
 
 """
 Configuration settings for the YieldFi AI Agent.
@@ -10,156 +12,197 @@ from environment variables and configuration files.
 
 import os
 import yaml
-from typing import Any, Dict, Optional
 from dotenv import load_dotenv
+from typing import Any, Dict, Optional, Union
+import copy # For deepcopy
 
-# Global configuration object
-_config = {}
+# Global variable to store the loaded configuration
+_CONFIG: Dict[str, Any] = {}
+_CONFIG_LOADED = False
 
+# Correctly determine project root and file paths
+_PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+_CONFIG_FILE_PATH = os.path.join(_PROJECT_ROOT, "config.yaml") # This will be overridden by tests
+_ENV_FILE_PATH = os.path.join(_PROJECT_ROOT, ".env")      # This will be overridden by tests
 
-def load_config(config_file: str = 'config.yaml') -> Dict[str, Any]:
-    """Load configuration from environment variables and config file.
-    
-    Args:
-        config_file: Path to the YAML configuration file
-        
-    Returns:
-        Dictionary containing the configuration settings
+# Minimal default template, used if the primary config file is missing or invalid.
+# The effective defaults for an application usually come from the config.yaml itself.
+DEFAULT_TEMPLATE: Dict[str, Any] = {}
+
+def _merge_dicts(base_dict: Dict[str, Any], override_dict: Dict[str, Any]) -> None:
+    """Recursively merges override_dict into base_dict."""
+    for key, value in override_dict.items():
+        if isinstance(value, dict) and key in base_dict and isinstance(base_dict[key], dict):
+            _merge_dicts(base_dict[key], value)
+        else:
+            base_dict[key] = value
+
+def _update_dict_from_env(config_dict: Dict[str, Any]) -> None:
     """
-    global _config
-    
-    # Load environment variables from .env file
-    load_dotenv()
-    
-    # Default configuration
-    config = {
-        'app': {
-            'name': 'YieldFi AI Agent',
-            'version': '0.1.0',
-            'debug': False,
-        },
-        'data_source': {
-            'type': 'mock',  # Default to mock data source for development
-            'twitter': {
-                'bearer_token': os.environ.get('TWITTER_BEARER_TOKEN', ''),
-                'api_key': os.environ.get('TWITTER_API_KEY', ''),
-                'api_secret': os.environ.get('TWITTER_API_SECRET', ''),
-                'access_token': os.environ.get('TWITTER_ACCESS_TOKEN', ''),
-                'access_token_secret': os.environ.get('TWITTER_ACCESS_TOKEN_SECRET', ''),
-            }
-        },
-        'ai': {
-            'provider': 'xai',
-            'xai_api_key': os.environ.get('XAI_API_KEY', ''),
-            'fallback_provider': 'google_palm',
-            'google_palm_api_key': os.environ.get('GOOGLE_API_KEY', ''),
-            'max_tokens': 1000,
-            'temperature': 0.7,
-        },
-        'tweet_categories': [
-            'announcement',
-            'product-updates',
-            'community-updates',
-            'events',
-            'yieldfi-security',
-            'yieldfi-transparency',
-        ],
-        'tone_analysis': {
-            'enabled': True,
-            'method': 'textblob',  # Options: 'textblob', 'xai', 'google_palm'
-        },
-        'logging': {
-            'level': 'INFO',
-            'file': 'yieldfi_ai_agent.log',
-        },
-        'ui': {
-            'theme': 'light',
-            'show_debug_info': False,
-        },
-        'data_paths': {
-            'input': 'data/input',
-            'output': 'data/output',
-            'knowledge': 'data/docs',
-        }
-    }
-    
-    # Load config from file if it exists
-    if os.path.exists(config_file):
+    Recursively updates the config dictionary with values from environment variables found 
+    via load_dotenv. Keys are normalized to lowercase.
+    Environment variables use double underscores for nesting: PARENT__CHILD__KEY=value
+    """
+    env_vars_to_process = os.environ.copy() # Work on a copy
+
+    for env_key, env_value in env_vars_to_process.items():
+        # Normalize parts to lowercase to match typical YAML conventions
+        parts = [part.lower() for part in env_key.split('__')]
+        
+        current_level = config_dict
+        for i, part in enumerate(parts):
+            if i == len(parts) - 1: # Last part is the value
+                # Try to convert to int/float/bool if possible, otherwise keep as string
+                if env_value.lower() == 'true':
+                    processed_value = True
+                elif env_value.lower() == 'false':
+                    processed_value = False
+                elif env_value.isdigit():
+                    processed_value = int(env_value)
+                else:
+                    try:
+                        processed_value = float(env_value)
+                    except ValueError:
+                        processed_value = env_value # Keep as string
+                
+                current_level[part] = processed_value # Set with lowercase key
+            else:
+                # Ensure we are traversing into a dictionary, creating if necessary
+                if part not in current_level or not isinstance(current_level[part], dict):
+                    current_level[part] = {} # Create/overwrite with dict if needed
+                current_level = current_level[part]
+                # Check again if it's actually a dict after setdefault/creation attempt
+                if not isinstance(current_level, dict):
+                    # This path might have conflicted with a non-dict value earlier
+                    # print(f"Warning: Env var {env_key} path conflicts at '{part}'. Skipping override.")
+                    break 
+
+def load_config() -> Dict[str, Any]:
+    """Loads configuration from YAML file, then overrides with .env, then direct os.environ variables."""
+    global _CONFIG, _CONFIG_LOADED
+
+    # Determine base configuration from YAML file or use minimal default
+    base_from_yaml: Dict[str, Any] = {}
+    if os.path.exists(_CONFIG_FILE_PATH):
         try:
-            with open(config_file, 'r') as f:
-                file_config = yaml.safe_load(f)
-                if file_config:  # Ensure file_config is not None (e.g. empty file)
-                    _merge_dicts(config, file_config)
-        except yaml.YAMLError as e: # Catch specific YAML parsing errors
-            print(f"Error loading config file {config_file}: Unable to parse YAML.")
+            with open(_CONFIG_FILE_PATH, 'r') as f:
+                loaded_yaml = yaml.safe_load(f)
+            if isinstance(loaded_yaml, dict) and loaded_yaml:
+                base_from_yaml = loaded_yaml
+            elif loaded_yaml is None: 
+                print(f"Warning: Config file '{_CONFIG_FILE_PATH}' is empty. Using minimal defaults.")
+                base_from_yaml = copy.deepcopy(DEFAULT_TEMPLATE) 
+            else:
+                print(f"Warning: Config file '{_CONFIG_FILE_PATH}' does not contain a valid YAML dictionary. Using minimal defaults.")
+                base_from_yaml = copy.deepcopy(DEFAULT_TEMPLATE)
+        except yaml.YAMLError as e:
+            print(f"Error loading config file {_CONFIG_FILE_PATH}: Unable to parse YAML. {e}. Using minimal defaults.")
+            base_from_yaml = copy.deepcopy(DEFAULT_TEMPLATE)
         except Exception as e:
-            print(f"Error loading config file {config_file}: {e}")
-    
-    # Override with environment variables
-    if os.environ.get('DEBUG') == 'true':
-        config['app']['debug'] = True
-    
-    if os.environ.get('LOG_LEVEL'):
-        config['logging']['level'] = os.environ.get('LOG_LEVEL')
-    
-    if os.environ.get('DATA_SOURCE_TYPE'):
-        config['data_source']['type'] = os.environ.get('DATA_SOURCE_TYPE')
-    
-    _config = config
-    return config
+            print(f"Error reading config file {_CONFIG_FILE_PATH}: {e}. Using minimal defaults.")
+            base_from_yaml = copy.deepcopy(DEFAULT_TEMPLATE)
+    else:
+        print(f"Warning: Configuration file '{_CONFIG_FILE_PATH}' not found. Using minimal defaults and environment variables.")
+        base_from_yaml = copy.deepcopy(DEFAULT_TEMPLATE)
 
+    _CONFIG = base_from_yaml # Start with the loaded YAML or minimal default
 
-def get_config(key: Optional[str] = None, default: Any = None) -> Any:
-    """Get a configuration value.
-    
-    Args:
-        key: Dot-separated path to the configuration value (e.g., 'app.debug')
-            If None, returns the entire configuration
-        default: Default value to return if the key is not found
-        
-    Returns:
-        The configuration value or the default value if not found
+    # Load .env file into os.environ.
+    load_dotenv(dotenv_path=_ENV_FILE_PATH)
+
+    # Override with values from .env (normalizing keys to lowercase)
+    _update_dict_from_env(_CONFIG) 
+
+    # Apply direct os.environ overrides (e.g., LOG_LEVEL=INFO from Docker/CI)
+    # Normalize keys from os.environ to lowercase for consistent override behavior.
+    # This assumes direct os.environ variables generally don't use __ for nesting.
+    for env_key, env_value in os.environ.items():
+        config_key = env_key.lower()
+        if config_key in _CONFIG:
+             # Try converting type similar to _update_dict_from_env
+             if env_value.lower() == 'true':
+                 processed_value = True
+             elif env_value.lower() == 'false':
+                 processed_value = False
+             elif env_value.isdigit():
+                 processed_value = int(env_value)
+             else:
+                 try:
+                     processed_value = float(env_value)
+                 except ValueError:
+                     processed_value = env_value
+             
+             # Override only if the target isn't a dictionary (avoid replacing nested structures)
+             if not isinstance(_CONFIG[config_key], dict):
+                 _CONFIG[config_key] = processed_value
+             # If _CONFIG[config_key] IS a dict, we don't override the whole dict with a flat env var.
+             # Nested overrides should come from .env via __ convention handled by _update_dict_from_env.
+        # Option: Add env vars as new top-level keys if they don't exist? 
+        # else:
+        #     _CONFIG[config_key] = processed_value # Add as new key
+
+    _CONFIG_LOADED = True
+    return copy.deepcopy(_CONFIG)
+
+def get_config(key_path: str, default: Any = None) -> Any:
     """
-    if not _config:
+    Retrieves a configuration value using a dot-separated key path (case-insensitive).
+    If the configuration is not loaded, it will be loaded first.
+
+    Args:
+        key_path: Dot-separated path (e.g., 'ai.provider', case-insensitive).
+        default: Default value to return if the key is not found.
+
+    Returns:
+        The configuration value or the default.
+    """
+    global _CONFIG_LOADED, _CONFIG
+    if not _CONFIG_LOADED:
         load_config()
     
-    if key is None:
-        return _config
-    
-    # Navigate the nested dictionary using the dot-separated path
-    value = _config
-    for part in key.split('.'):
-        if isinstance(value, dict) and part in value:
-            value = value[part]
+    # Use lowercase keys for retrieval to match normalization
+    keys = key_path.lower().split('.')
+    current_level = _CONFIG
+    for key in keys:
+        # Dictionary key access should be case-sensitive if _CONFIG wasn't normalized,
+        # but since we normalize on load from env, we primarily expect lowercase keys.
+        # However, YAML could have mixed case. We should ideally normalize YAML keys too,
+        # or perform case-insensitive lookup here.
+        # Simple approach: try lowercase first, then original if needed?
+        # For now, assuming keys are mostly lowercase due to env override normalization.
+        
+        # Let's refine: Check case-insensitively for dict keys
+        found_key = None
+        if isinstance(current_level, dict):
+            for current_key in current_level:
+                if current_key.lower() == key:
+                    found_key = current_key
+                    break
+        
+        if found_key is not None:
+            current_level = current_level[found_key]
         else:
-            return default
-    
-    return value
+            return default # Key not found at this level
+            
+    if isinstance(current_level, (dict, list)):
+        return copy.deepcopy(current_level)
+    return current_level
 
+# Removed automatic load_config() on import
 
 def set_config_value(key: str, value: Any) -> None:
-    """Set a configuration value.
-    
-    Args:
-        key: Dot-separated path to the configuration value (e.g., 'app.debug')
-        value: Value to set
-    """
-    if not _config:
+    """Sets a configuration value using dot notation (for testing/runtime changes)."""
+    global _CONFIG, _CONFIG_LOADED
+    if not _CONFIG_LOADED:
         load_config()
-    
-    # Navigate the nested dictionary using the dot-separated path
-    parts = key.split('.')
-    config = _config
-    
-    # Navigate to the parent of the target key
-    for part in parts[:-1]:
-        if part not in config:
-            config[part] = {}
-        config = config[part]
-    
-    # Set the value
-    config[parts[-1]] = value
-
+        
+    keys = key.lower().split('.') # Use lowercase keys
+    d = _CONFIG
+    for part in keys[:-1]:
+        if part not in d or not isinstance(d[part], dict):
+            d[part] = {}
+        d = d[part]
+    d[keys[-1]] = value
 
 def _merge_dicts(target: Dict[str, Any], source: Dict[str, Any]) -> Dict[str, Any]:
     """Recursively merge two dictionaries, updating existing keys.

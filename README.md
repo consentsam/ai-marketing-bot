@@ -97,6 +97,54 @@ This project aims to streamline social media management, ensure brand consistenc
 
 ## Development
 
++**Prerequisite:** Make sure you are in the project root directory (where `venv/` resides):
+
+```bash
+cd /Users/sattu/Dropbox/ai/LLM-Driven-Marketing-Assistant
+```
+
+### Running Tests
+
+Ensure your virtual environment is activated:
+
+```bash
+source venv/bin/activate
+```
+
+Then run:
+
+```bash
+pytest tests/
+```
+
+Alternatively, invoke pytest through Python:
+
+```bash
+python -m pytest tests/
+```
+
+#### Ensuring pytest is in your PATH
+
+If `pytest tests/` still fails with "command not found":
+
+```bash
+# Add the venv's bin directory to your PATH
+export PATH="$(pwd)/venv/bin:$PATH"
+```
+
+Verify that you're using the venv's pytest:
+
+```bash
+which pytest
+# Expect output similar to /Users/sattu/Dropbox/ai/LLM-Driven-Marketing-Assistant/venv/bin/pytest
+```
+
+Now you should be able to run:
+
+```bash
+pytest tests/
+```
+
 Follow the steps outlined in `data/docs/YieldFi-Ai-Agent-Implementation.md`.
 Adhere to the rules defined in `.cursor/rules/project-wide-cursor-rules.mdc`.
 

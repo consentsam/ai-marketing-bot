@@ -44,7 +44,7 @@ class MockKnowledgeRetriever:
 
 def generate_tweet_reply(
     original_tweet: Tweet,
-    responding_as_type: AccountType,
+    responding_as: Account,
     target_account: Optional[Account] = None,
     platform: str = "Twitter",
     interaction_details: Optional[Dict[str, Any]] = None,
@@ -55,19 +55,10 @@ def generate_tweet_reply(
     Generates a reply to a given tweet.
     Orchestrates tone analysis, knowledge retrieval (mocked), prompt engineering, and AI client call.
     """
-    # Create a mock 'responding_as_account' based on the type
-    # In a real system, you might fetch this from a DB or config
-    # For now, creating a minimal mock Account object
-    responding_as_username = f"YieldFi_{responding_as_type.value.replace(' ', '')}"
-    responding_as_account = Account(
-        account_id=f"yieldfi_{responding_as_type.value.lower().replace(' ', '_')}",
-        username=responding_as_username,
-        display_name=f"YieldFi {responding_as_type.value}",
-        account_type=responding_as_type,
-        platform="Twitter" # Default or derive as needed
-    )
+    # Use provided account directly for the responder
+    responding_as_account = responding_as
 
-    logger.info(f"Generating reply for tweet ID: {original_tweet.metadata.tweet_id} as {responding_as_account.username} (Type: {responding_as_type.value})")
+    logger.info(f"Generating reply for tweet ID: {original_tweet.metadata.tweet_id} as {responding_as_account.username} (Type: {responding_as_account.account_type.value})")
     prompt_str = ""
     ai_generated_content = "[Error: Could not generate AI response]"
     model_used = "Unknown"
@@ -98,7 +89,8 @@ def generate_tweet_reply(
             target_account_info=target_account,
             yieldfi_knowledge_snippet=knowledge_snippet,
             interaction_details=interaction_details if interaction_details else {},
-            platform=platform
+            platform=platform,
+            original_post_tone=final_tone
         )
         logger.debug(f"Generated interaction prompt: {prompt_str[:300]}...")
 
@@ -147,7 +139,7 @@ def generate_tweet_reply(
         model_used=model_used,
         prompt_used=prompt_str,
         source_tweet_id=original_tweet.metadata.tweet_id,
-        responding_as=responding_as_account.account_type.value,
+        responding_as=responding_as_account.username,
         target_account=target_account.username if target_account else None,
         generation_time=datetime.now(timezone.utc),
         tone=final_tone # Tone of the original post, or could be tone of the response if analyzed
@@ -156,8 +148,8 @@ def generate_tweet_reply(
     return response_obj
 
 def generate_new_tweet(
-    category: TweetCategory,
-    responding_as_type: AccountType,
+    category,
+    responding_as: Account,
     topic: Optional[str] = None,
     platform: str = "Twitter",
     additional_instructions: Optional[Dict[str, Any]] = None,
@@ -168,17 +160,10 @@ def generate_new_tweet(
     Generates a new tweet based on a category, topic, and other details.
     Orchestrates knowledge retrieval (mocked), prompt engineering, and AI client call.
     """
-    # Create a mock 'responding_as_account' based on the type
-    responding_as_username = f"YieldFi_{responding_as_type.value.replace(' ', '')}"
-    responding_as_account = Account(
-        account_id=f"yieldfi_{responding_as_type.value.lower().replace(' ', '_')}",
-        username=responding_as_username,
-        display_name=f"YieldFi {responding_as_type.value}",
-        account_type=responding_as_type,
-        platform="Twitter" # Default or derive as needed
-    )
+    # Use provided account directly for the responder
+    responding_as_account = responding_as
 
-    logger.info(f"Generating new '{category}' tweet on topic '{topic}' as {responding_as_account.username} (Type: {responding_as_type.value})")
+    logger.info(f"Generating new '{category}' tweet on topic '{topic}' as {responding_as_account.username} (Type: {responding_as_account.account_type.value})")
     prompt_str = ""
     ai_generated_content = "[Error: Could not generate AI response]"
     model_used = "Unknown"
@@ -188,18 +173,20 @@ def generate_new_tweet(
         knowledge_snippet: Optional[str] = None
         # For Step 11: if knowledge_retriever:
         current_retriever = knowledge_retriever if knowledge_retriever else MockKnowledgeRetriever()
-        knowledge_query = topic if topic else category
-        knowledge_snippet = current_retriever.search_knowledge_for_topic(knowledge_query, category)
+        # Accept category as string or object
+        category_name = category.name if hasattr(category, 'name') else category
+        knowledge_snippet = current_retriever.search_knowledge_for_topic(topic, category_name)
         if knowledge_snippet:
             logger.info(f"Retrieved knowledge snippet for new tweet: {knowledge_snippet[:100]}...")
 
         # 2. Generate prompt
         prompt_str = generate_new_tweet_prompt(
-            category=category,
+            category=category_name,
             topic=topic,
-            active_account=responding_as_account,
+            active_account_info=responding_as_account,
             yieldfi_knowledge_snippet=knowledge_snippet,
             platform=platform,
+            additional_instructions=additional_instructions
         )
         logger.debug(f"Generated new tweet prompt: {prompt_str[:300]}...")
 
@@ -253,10 +240,11 @@ def generate_new_tweet(
 
     response_obj = AIResponse(
         content=ai_generated_content,
-        response_type=ResponseType.NEW_TWEET, 
+        response_type=ResponseType.NEW_TWEET,
         model_used=model_used,
         prompt_used=prompt_str,
-        responding_as=responding_as_account.account_type.value,
+        source_tweet_id=None,
+        responding_as=responding_as_account.username,
         target_account=None,
         generation_time=datetime.now(timezone.utc),
         tone=final_tone_str # Use the analyzed tone
@@ -327,7 +315,7 @@ if __name__ == '__main__':
 
     reply_response = generate_tweet_reply(
         original_tweet=test_tweet,
-        responding_as_type=AccountType.OFFICIAL,
+        responding_as=official_account,
         target_account=target_user_account
     )
     print(f"Generated Reply AIResponse content: {reply_response.content}")
@@ -341,7 +329,7 @@ if __name__ == '__main__':
     print("\n--- Testing generate_new_tweet ---")
     new_tweet_response = generate_new_tweet(
         category="Product Update",
-        responding_as_type=AccountType.OFFICIAL,
+        responding_as=official_account,
         topic="Announcing our new YieldBoost feature!"
     )
     print(f"Generated New Tweet AIResponse content: {new_tweet_response.content}")

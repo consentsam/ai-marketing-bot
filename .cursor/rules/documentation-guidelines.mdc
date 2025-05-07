@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # Documentation & Structure Guidelines for YieldFi AI Agent Project
 
@@ -57,4 +57,4 @@ alwaysApply: false
 ## 5. Linking Conventions (within Docs)
 - Use relative paths for links between documentation files (if more than README exists).
 - Use backticks for code references (e.g., `response_generator.py`).
-- Refer to sections using Markdown headers (e.g., `See [Setup Instructions](#setup-instructions)`).
+- Refer to sections using Markdown headers (e.g., `See [Setup Instructions](mdc:#setup-instructions)`).

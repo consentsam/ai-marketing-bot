@@ -1,0 +1,16 @@
+# Changelog:
+# 2025-05-07 12:30 - Step 22 - Create docker-compose for local orchestration.
+
+version: '3.8'
+services:
+  ai-agent:
+    build: .
+    container_name: yieldfi-ai-agent
+    ports:
+      - "8501:8501"
+    environment:
+      - STREAMLIT_ENV=production
+    volumes:
+      - ./:/app
+      - ./.env:/app/.env:ro
+    command: streamlit run app.py --server.port=8501 --server.address=0.0.0.0 

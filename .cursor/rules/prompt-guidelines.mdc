@@ -1,7 +1,7 @@
 ---
 description: 
 globs: 
-alwaysApply: false
+alwaysApply: true
 ---
 # YieldFi AI Agent - Prompt Generation Guidelines (Cursor Rules)
 

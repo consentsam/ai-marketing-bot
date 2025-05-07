@@ -175,3 +175,9 @@ Adhere to the rules defined in `.cursor/rules/project-wide-cursor-rules.mdc`.
     - Created `__init__.py` files for Python package structure.
     - Instructed user on manual creation of `.env.example`.
 ---
+
+## Documentation
+
+- **API Reference:** docs/api.md
+- **Usage Guide:** docs/usage.md
+- **Deployment Guide:** docs/deployment.md

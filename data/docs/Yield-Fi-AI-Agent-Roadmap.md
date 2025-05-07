@@ -27,9 +27,10 @@ Automates the process of crafting Twitter replies by suggesting context-aware re
 - Prompts
 
     Prompt Repo for twitter reply guys @Web3Aryan
-    Official to Institution: [https://chatgpt.com/share/68108324-ccfc-8002-88cc-5a7ccd31542e](https://chatgpt.com/share/68108324-ccfc-8002-88cc-5a7ccd31542e)
-    Intern to Intern: [https://chatgpt.com/share/68108309-4844-8002-b775-af5660a55a18](https://chatgpt.com/share/68108309-4844-8002-b775-af5660a55a18)
-    Official to partner: [https://chatgpt.com/share/6810a4c2-993c-8002-a899-e6612da00c06](https://chatgpt.com/share/6810a4c2-993c-8002-a899-e6612da00c06)
+    Official to Institution: [https://chatgpt.com/share/68108324-ccfc-8002-88cc-5a7ccd31542e](https://chatgpt.com/share/68108324-ccfc-8002-88cc-5a7ccd31542e) [InstructionsForOfficialToInstitution.md](InstructionsForOfficialToInstitution.md)
+    Intern to Intern: [https://chatgpt.com/share/68108309-4844-8002-b775-af5660a55a18](https://chatgpt.com/share/68108309-4844-8002-b775-af5660a55a18) [InstructionsForInternToIntern.md](InstructionsForInternToIntern.md)
+    Official to partner: [https://chatgpt.com/share/6810a4c2-993c-8002-a899-e6612da00c06](https://chatgpt.com/share/6810a4c2-993c-8002-a899-e6612da00c06) [InstructionsForOfficialToPartner.md](InstructionsForOfficialToPartner.md)
+   
 
     Last updated 29th April
 

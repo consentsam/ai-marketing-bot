@@ -99,23 +99,25 @@
         ]
     },
     {
-        "account_id": "tradfi_partner",
-        "username": "GlobalFinance",
-        "display_name": "Global Finance Partners",
+        "account_id": "arbitrum_partner_sample",
+        "username": "arbitrum",
+        "display_name": "Arbitrum",
         "account_type": "PARTNER",
-        "follower_count": 156000,
+        "follower_count": 787000,
         "following_count": 2200,
         "verified": true,
         "is_following_yieldfi": true,
         "followed_by_yieldfi": true,
-        "bio": "Bridge between traditional finance and the future. Serving institutional clients for over 30 years.",
-        "location": "London, UK",
-        "website": "https://globalfinance.com",
-        "created_at": "2015-02-14T00:00:00Z",
+        "bio": "Arbitrum is a leading Ethereum Layer 2 scaling solution, offering ultra-fast, low-cost transactions for dApps and users. Building the future of decentralized applications.",
+        "location": "Global",
+        "website": "https://arbitrum.io",
+        "created_at": "2021-05-28T10:00:00Z",
         "tags": [
             "Partner",
-            "TradFi",
-            "Institutional"
+            "L2",
+            "Ethereum",
+            "Scaling",
+            "Blockchain"
         ]
     },
     {
@@ -216,22 +218,24 @@
         ]
     },
     {
-        "account_id": "competitor_protocol",
-        "username": "CompetitorProtocol",
-        "display_name": "Competitor Yield Protocol",
+        "account_id": "yearn_finance_competitor_sample",
+        "username": "iearnfinance",
+        "display_name": "Yearn Finance",
         "account_type": "COMPETITOR",
-        "follower_count": 18500,
+        "follower_count": 241000,
         "following_count": 950,
         "verified": true,
         "is_following_yieldfi": false,
         "followed_by_yieldfi": true,
-        "bio": "The original yield aggregator. Optimizing returns across DeFi since 2020.",
-        "location": "Blockchain",
-        "website": "https://competitor.finance",
-        "created_at": "2020-01-10T00:00:00Z",
+        "bio": "Yearn Finance is a decentralized suite of products helping individuals, DAOs, and other protocols earn yield on their digital assets. #DeFi #YieldAggregator",
+        "location": "Decentralized",
+        "website": "https://yearn.finance",
+        "created_at": "2020-07-17T10:00:00Z",
         "tags": [
             "Competitor",
-            "Protocol"
+            "Protocol",
+            "YieldAggregator",
+            "DeFi"
         ]
     }
 ]

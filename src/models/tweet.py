@@ -2,6 +2,9 @@
 Tweet data models.
 
 This module defines the data structures for representing tweets and their metadata.
+
+# Changelog:
+# 2025-05-07 HH:MM - Step 2 - Validated existing Tweet and TweetMetadata models. Ensured from_dict/to_dict (handled via nested Tweet methods) and docstrings are present. Noted pre-existing additional fields.
 """
 
 from dataclasses import dataclass, field
@@ -74,9 +77,22 @@ class Tweet:
         Returns:
             A new Tweet instance
         """
+        # Check for required fields
+        if 'id' not in data:
+            raise KeyError('id')
+        if 'content' not in data:
+            raise KeyError('content')
+
+        created_at_str = data.get('created_at')
+        created_at_dt = None
+        if created_at_str:
+            if created_at_str.endswith('Z'):
+                created_at_str = created_at_str[:-1] + '+00:00'
+            created_at_dt = datetime.fromisoformat(created_at_str)
+
         metadata = TweetMetadata(
             tweet_id=data.get('id'),
-            created_at=datetime.fromisoformat(data['created_at']) if 'created_at' in data else None,
+            created_at=created_at_dt,
             source=data.get('source', 'manual'),
             author_id=data.get('author_id'),
             author_username=data.get('author_username'),

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment
+.env
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependencies
+venv/
+env/
+.venv/
+build/
+dist/
+*.egg-info/
+
+# Data files (if large or sensitive, otherwise depends on project)
+# data/output/*
+# data/input/* # Comment out if input data should be versioned
+
+# Operating System
+.DS_Store
+Thumbs.db 

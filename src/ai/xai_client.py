@@ -41,7 +41,7 @@ class XAIClient:
         self.temperature = get_config('ai.temperature', 0.7)
     
     @handle_api_error
-    def generate_text(
+    def get_completion(
         self,
         prompt: str,
         max_tokens: Optional[int] = None,

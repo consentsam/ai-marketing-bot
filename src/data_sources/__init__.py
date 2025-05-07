@@ -1,3 +1,7 @@
+# Changelog:
+# 2025-05-07 HH:MM - Step 3 - Confirmed TweetDataSource is exported.
+# 2025-05-07 HH:MM - Step 1 - Initial creation.
+
 """
 Data source interfaces and implementations for the YieldFi AI Agent.
 
@@ -10,4 +14,6 @@ from src.data_sources.mock import MockTweetDataSource
 __all__ = [
     'TweetDataSource',
     'MockTweetDataSource'
-] 
+]
+
+# src/data_sources/__init__.py - Created 2025-05-07 

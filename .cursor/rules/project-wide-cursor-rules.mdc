@@ -5,12 +5,17 @@ alwaysApply: true
 ---
 # Project-Wide Cursor Rules for LLM-Driven-Marketing-Assistant
 
-**Preamble:** The primary goal is to meticulously execute the `data/docs/YieldFi-Ai-Agent-Implementation.md` plan, step by step. All actions should be grounded in this plan and the provided project files. The current date for any new timestamped entries should be assumed as **2025-05-06**.
+**Preamble:** The primary goal is to meticulously execute the `data/docs/YieldFi-Ai-Agent-Implementation.md` plan, step by step. All actions should be grounded in this plan and the provided project files. The current date for any new timestamped entries should be assumed as **2025-05-07**.
+
+## 0. Session Initialization and Context Grounding
+-   **0.1. Initial Context:** At the start of every new conversation, the user will provide a comprehensive initial context prompt. This prompt will define your role as an AI/Web3 software developer for the YieldFi AI Agent, list key reference documents (Implementation Plan, Roadmap, YieldFi Docs, Interaction Instructions), and point to all relevant Cursor rule files (`project-wide`, `backend`, `frontend`, `documentation`, `prompt`).
+-   **0.2. Current Task Focus:** Crucially, this initial user-provided prompt will specify the **"Current Step in Implementation Plan"** (from `@data/docs/YieldFi-Ai-Agent-Implementation.md`) and **"Today's Specific Task(s)"**. All your actions in the session must be focused on completing this specified step and task(s).
+-   **0.3. Acknowledge and Prioritize:** You must acknowledge understanding of this initial context and always prioritize the current step and task as defined by the user for the session.
 
 ## 1. Adhere Strictly to the Implementation Plan (`data/docs/YieldFi-Ai-Agent-Implementation.md`)
 - **Master Document:** The `data/docs/YieldFi-Ai-Agent-Implementation.md` is the single source of truth for project tasks and their order.
 - **Step-by-Step Execution:** Address one step from the implementation plan at a time. Do not jump ahead or combine unrelated steps.
-- **Contextual Awareness:** Before any action, explicitly state which step from the implementation plan you are currently working on.
+- **Contextual Awareness:** Before any action (after the initial context setting), explicitly state which step from the implementation plan you are currently working on, referencing the number provided by the user in the initial prompt.
 - **Dependency Check:** If a step in `data/docs/YieldFi-Ai-Agent-Implementation.md` lists "Step Dependencies," confirm these prerequisite steps are marked as complete (e.g., `[x]`) in the plan before proceeding.
 - **User Instructions Fulfillment:** If "User Instructions" for a step require external input (e.g., API keys, data population from the user's side), clearly state what is needed from the user and await user provision before considering that part of the step complete or moving to tasks that depend on it.
 
@@ -24,15 +29,15 @@ alwaysApply: true
 - **Source File Changelog:** When you modify a source file (including adding a generated summary or making changes as per a step), prepend a brief entry to a 'Changelog' comment block at the top of the file. If the block doesn't exist, create it. Example for a Python file:
     ```python
     # Changelog:
-    # 2025-05-06 HH:MM - Step X.Y - Brief description of change.
-    # 2025-05-05 HH:MM - Step A.B - Another change.
+    # 2025-05-07 HH:MM - Step X.Y - Brief description of change.
+    # 2025-05-06 HH:MM - Step A.B - Another change.
     ```
     (Use appropriate comment syntax for other languages, and use the current time for HH:MM.)
 - Before starting work on a step from `data/docs/YieldFi-Ai-Agent-Implementation.md`, thoroughly review its "Task," "Files" to be modified/created, and any "User Instructions."
 
 ## 3. Comprehensive Action and Response within a Single Step
 The workflow for addressing a single step is as follows:
-- **3.0. Think & Strategize:** Before generating or modifying code, explicitly state which step you are working on. Briefly outline your implementation strategy for this step. List 1-2 critical edge cases you've considered and how your proposed approach addresses them. This outline will be part of your initial response for the step, before you present the code.
+- **3.0. Think & Strategize:** Before generating or modifying code, explicitly state which step you are working on (as per Rule 1. Contextual Awareness). Briefly outline your implementation strategy for this step. List 1-2 critical edge cases you've considered and how your proposed approach addresses them. This outline will be part of your initial response for the step, before you present the code.
 - **3.1. Identify Changes:** Based on your strategy, identify all necessary file modifications or creations.
 - **3.2. Implement:** Implement all code changes and create all new files related to this single step.
 - **3.3. Self-Test, Iterate & Troubleshoot (Iterative Internal Loop):**
@@ -64,14 +69,14 @@ The workflow for addressing a single step is as follows:
 
         ```markdown
         ---
-        **Step Completion Summary (2025-05-06 HH:MM):**
+        **Step Completion Summary (2025-05-07 HH:MM):**
         * **Status:** Completed & Approved by User
         * **Files Modified/Created:**
             * `path/to/file1.ext`
             * `path/to/file2.ext`
             * (List all files touched or created for this step)
         * **Summary of Changes:**
-            * `path/to/file1.ext`: A brief but clear summary of what was implemented, changed, or added in this file specifically for this step. 
+            * `path/to/file1.ext`: A brief but clear summary of what was implemented, changed, or added in this file specifically for this step.
             * `path/to/file2.ext`: A brief but clear summary of what was implemented, changed, or added in this file specifically for this step.
             * (Provide a summary for each file listed above)
         ---
@@ -89,7 +94,7 @@ The workflow for addressing a single step is as follows:
 - As part of Rule 3.6 (Post-Approval Documentation):
     - **Mandatory:** Append a detailed conversation summary to `@rough/all-conversations.md` (or a similar log file designated by the user) with:
         - Chat title or key focus
-        - Date and timestamp (e.g., 2025-05-06 HH:MM)
+        - Date and timestamp (e.g., 2025-05-07 HH:MM)
         - Key decisions made, outputs generated for the step, and user approval.
     - **Conditional:** If the completed step represents a significant new feature or milestone visible to an end-user, also briefly update the main `@README.md` with a note in a "Progress" or "Change Log" section.
 

@@ -1,3 +1,6 @@
+# Changelog:
+# 2025-05-07 HH:MM - Step 3 - Validated and adopted existing TweetDataSource abstract base class. Confirmed all required abstract methods, properties, and docstrings are present.
+
 """
 Base classes for tweet data sources.
 

@@ -1,3 +1,6 @@
+# Changelog:
+# 2025-05-07 HH:MM - Step 5 - Validated existing configuration system. Confirmed loading from YAML and .env, dot-notation access via get_config, and env var precedence.
+
 """
 Configuration settings for the YieldFi AI Agent.
 
@@ -85,8 +88,10 @@ def load_config(config_file: str = 'config.yaml') -> Dict[str, Any]:
         try:
             with open(config_file, 'r') as f:
                 file_config = yaml.safe_load(f)
-                # Merge file config with default config
-                _merge_dicts(config, file_config)
+                if file_config:  # Ensure file_config is not None (e.g. empty file)
+                    _merge_dicts(config, file_config)
+        except yaml.YAMLError as e: # Catch specific YAML parsing errors
+            print(f"Error loading config file {config_file}: Unable to parse YAML.")
         except Exception as e:
             print(f"Error loading config file {config_file}: {e}")
     

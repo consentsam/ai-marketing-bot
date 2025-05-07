@@ -93,11 +93,11 @@
         "id": "1000000000000000005",
         "created_at": "2023-05-19T11:30:00Z",
         "source": "Twitter Web App",
-        "author_id": "tradfi_partner",
-        "author_username": "GlobalFinance",
-        "author_name": "Global Finance Partners",
+        "author_id": "arbitrum_partner_sample",
+        "author_username": "arbitrum",
+        "author_name": "Arbitrum",
         "author_verified": true,
-        "author_follower_count": 156000,
+        "author_follower_count": 787000,
         "like_count": 876,
         "retweet_count": 324,
         "reply_count": 91,
@@ -114,7 +114,7 @@
         ]
     },
     {
-        "content": "Looking at various yield protocols today. @YieldFi_Official and @CompetitorProtocol both offer good returns, but YieldFi's transparency and multi-sig custody gives me more confidence. What do others think?",
+        "content": "Looking at various yield protocols today. @YieldFi_Official and @iearnfinance both offer good returns, but YieldFi's transparency and multi-sig custody gives me more confidence. What do others think?",
         "id": "1000000000000000006",
         "created_at": "2023-05-20T13:45:00Z",
         "source": "Twitter Web App",
@@ -130,7 +130,7 @@
         "hashtags": [],
         "mentioned_users": [
             "YieldFi_Official",
-            "CompetitorProtocol"
+            "iearnfinance"
         ],
         "topics": [
             "Comparison",

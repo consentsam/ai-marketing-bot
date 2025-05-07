@@ -123,7 +123,16 @@ def generate_interaction_prompt(
         interaction_details = {}
 
     persona = get_base_yieldfi_persona(responding_as_account.account_type)
-    target_persona_str = f"The original tweet is from @{original_tweet.author_username} (Display Name: {target_account.display_name if target_account else original_tweet.author_username}, Account Type: {target_account.account_type.value if target_account else original_tweet.account_type.value})."
+    # Determine original author and target usernames
+    original_username = original_tweet.metadata.author_username or ""
+    target_username = target_account.username if target_account else original_username
+    # Determine display name and account type for target if provided
+    target_display = target_account.display_name if target_account else original_username
+    target_acc_type = target_account.account_type.value if target_account else ""
+    # Single combined string for target persona
+    target_persona_str = (
+        f"The original tweet is from @{target_username} (Display Name: {target_display}, Account Type: {target_acc_type})"
+    )
 
     instruction_set = get_instruction_set(responding_as_account.account_type, target_account.account_type if target_account else original_tweet.account_type)
 
@@ -137,11 +146,11 @@ def generate_interaction_prompt(
         f"Your Persona: {persona}",
         "YieldFi Core Message to subtly weave in if relevant: " + YIELDFI_CORE_MESSAGE,
         "--- Original Tweet Context ---",
-        f"Original Tweet Author: @{original_tweet.author_username}",
-        f'Original Tweet Content: "{original_content_formatted}"', # Simpler quoting
+        f"Original Tweet Author: @{original_username}",
+        f'Original Tweet Content: "{original_content_formatted}"',
         target_persona_str,
         "--- End Original Tweet Context ---",
-        "--- Instructions for Your Reply ---",        
+        "--- Instructions for Your Reply ---",
         instruction_set,
     ]
 
@@ -220,47 +229,4 @@ def generate_new_tweet_prompt(
 
 # The old `create_prompt` and its helpers (`_get_system_context`, `_get_examples`, `_get_response_instructions`)
 # would likely be refactored or absorbed into the logic that calls `generate_interaction_prompt`.
-# The `generate_reply_prompt` (old one) is also superseded by `generate_interaction_prompt`.
-# Keeping them for reference during refactoring for Step 7 is fine, but the goal is one powerful, context-aware prompter.
-
-if __name__ == '__main__':
-    # Example for generate_interaction_prompt (existing)
-    print("\n--- Example for generate_interaction_prompt ---")
-    sample_tweet = Tweet(content="What are the main benefits of using YieldFi over other platforms? It includes '''triple quotes''' and \"double quotes\".")
-    sample_account_official = Account(account_id="yieldfi_official", username="YieldFiOfficial", display_name="YieldFi Official", account_type=AccountType.OFFICIAL)
-    sample_account_user = Account(account_id="user123", username="DeFiUser", display_name="DeFi User", account_type=AccountType.COMMUNITY_MEMBER)
-    interaction_prompt = generate_interaction_prompt(sample_tweet, sample_account_official, sample_account_user, yieldfi_knowledge_snippet="YieldFi offers APYs up to 15% on stables.")
-    print(interaction_prompt)
-
-    # Example for generate_new_tweet_prompt (NEW)
-    print("\n\n--- Example for generate_new_tweet_prompt ---")
-    sample_category = TweetCategory(
-        name="Product Update",
-        description="Announce new features, improvements, or releases related to YieldFi products.",
-        prompt_keywords=["new feature", "v2 launch", "staking rewards"],
-        style_guidelines={
-            "tone": "Exciting and informative", 
-            "length": "Under 280 characters",
-            "hashtags": "#YieldFi #NewFeature #DeFi"
-            }
-    )
-    new_tweet_prompt = generate_new_tweet_prompt(
-        category=sample_category, 
-        active_account=sample_account_official,
-        topic="Announcing YieldFi SuperStaker v2 with enhanced rewards!",
-        yieldfi_knowledge_snippet="SuperStaker v2 allows flexible unstaking and auto-compounding."
-    )
-    print(new_tweet_prompt)
-
-    sample_category_community = TweetCategory(
-        name="Community Engagement",
-        description="Ask an engaging question to the community.",
-        prompt_keywords=["AMA", "feedback", "discussion"],
-        style_guidelines={"tone": "Friendly and open"}
-    )
-    community_tweet_prompt = generate_new_tweet_prompt(
-        category=sample_category_community,
-        active_account=sample_account_official,
-        topic="What's your favorite DeFi feature you'd love to see on YieldFi?"
-    )
-    print("\n" + "-"*20 + "\n" + community_tweet_prompt)
+# The `

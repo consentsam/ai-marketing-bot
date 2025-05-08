@@ -36,6 +36,31 @@ streamlit run app.py
 - Input a tweet URL or manual content to generate replies.
 - Select a category and topic to generate new tweets.
 
+## Using the YieldFi AI Agent
+
+### Twitter Reply Generation
+
+1. Select "Generate Tweet Reply" from the main interface.
+2. Choose your responding persona (Official or Intern) in the sidebar.
+3. Either:
+   - Enter a tweet URL to fetch and reply to (when integrated with Twitter API)
+   - Manually enter tweet content, author information, and account type
+4. Click "Generate Reply" to create an AI-powered response.
+5. View the generated reply along with its tone analysis.
+6. Use the "Copy to Clipboard" button to copy the reply text.
+
+### Category-Based Tweet Generation
+
+1. Select "Create New Tweet by Category" from the main interface.
+2. Choose your publishing persona (Official or Intern) in the sidebar.
+3. Select a tweet category from the dropdown menu (e.g., Announcement, Product Update).
+4. Review the category description, keywords, and style guidelines in the expandable section.
+5. Enter your topic or key points in the text area.
+6. Click "Generate New Tweet" to create category-specific content.
+7. View the generated tweet and use the "Copy Tweet Text" button as needed.
+
+Each category has specific style guidelines and keyword references that help the AI generate appropriate content. The system also incorporates YieldFi knowledge relevant to your selected topic.
+
 ## Running Tests
 
 ```bash

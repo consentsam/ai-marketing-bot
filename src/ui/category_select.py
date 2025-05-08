@@ -105,6 +105,7 @@ def display_tone_badge(tone: Optional[str], prefix: str = "Tone: "):
 
 def display_category_tweet_ui(active_account_type: AccountType):
     """Displays UI for creating a new tweet by category."""
+    logger.info(f"Displaying category tweet UI for persona: {active_account_type.value}")
     st.subheader("Create New Tweet by Category")
 
     if not AVAILABLE_CATEGORIES:
@@ -118,6 +119,7 @@ def display_category_tweet_ui(active_account_type: AccountType):
         options=category_names,
         key="new_tweet_category_select"
     )
+    logger.debug(f"Selected category name from dropdown: {selected_category_name}")
 
     selected_category: Optional[TweetCategory] = None
     for cat in AVAILABLE_CATEGORIES:
@@ -145,23 +147,32 @@ def display_category_tweet_ui(active_account_type: AccountType):
     )
 
     if st.button("Generate New Tweet", key="generate_new_tweet_button"):
+        logger.info("'Generate New Tweet' button clicked.")
         if not selected_category:
+            logger.warning("No category selected by user.")
             st.error("Please select a valid category.")
             return
+        
+        logger.info(f"Selected category for generation: {selected_category.name}")
+        logger.info(f"Topic/Key Points provided by user: '{topic_brief.strip()}'")
+
         if not topic_brief.strip():
-            st.warning("Consider providing a topic or key points for a more specific tweet. Generating a generic tweet for the category.")
+            logger.warning("No topic/key points provided. Generating a generic tweet for the category.")
             # Proceed with None topic if user doesn't provide one, 
             # or enforce it by returning here if a topic is mandatory.
             # topic_brief = None # If you want to explicitly pass None
 
         with st.spinner(f"Generating new '{selected_category.name}' tweet..."):
             try:
+                logger.info(f"Calling generate_new_tweet with category='{selected_category.name}', persona='{active_account_type.value}', topic='{topic_brief.strip() if topic_brief.strip() else None}'")
                 response = generate_new_tweet(
                     category=selected_category,
                     responding_as_type=active_account_type,
                     topic=topic_brief.strip() if topic_brief.strip() else None # Pass None if empty
                     # additional_instructions can be added here if needed
                 )
+                logger.info(f"Received response from generate_new_tweet. Model used: {response.model_used}")
+                logger.debug(f"Raw response content from generate_new_tweet: '{response.content}'")
                 
                 # Store in session state for display
                 st.session_state.generated_new_tweet_content = response.content
@@ -169,6 +180,11 @@ def display_category_tweet_ui(active_account_type: AccountType):
                 # Potentially add other response attributes like tone_analysis if relevant for new tweets
                 # and if AIResponse model is updated to include it for new tweets.
 
+            except APIError as ae: # Catch APIError specifically
+                logger.error(f"APIError generating new tweet in UI: {str(ae)}", exc_info=True)
+                st.session_state.generated_new_tweet_content = None
+                st.session_state.generated_new_tweet_error = f"API Error: {str(ae)}" # More specific error message
+                st.error(st.session_state.generated_new_tweet_error)
             except Exception as e:
                 logger.error(f"Error generating new tweet in UI: {str(e)}", exc_info=True)
                 st.session_state.generated_new_tweet_content = None
@@ -178,8 +194,17 @@ def display_category_tweet_ui(active_account_type: AccountType):
     # Display generated tweet or error
     if "generated_new_tweet_content" in st.session_state and st.session_state.generated_new_tweet_content:
         st.markdown("**AI-Generated New Tweet:**")
-        st.success(st.session_state.generated_new_tweet_content)
-        copy_button(st.session_state.generated_new_tweet_content, button_text="Copy Tweet Text")
+        # The warning you are seeing might be coming from here if the content is not as expected.
+        # Let's log what's being displayed.
+        tweet_to_display = st.session_state.generated_new_tweet_content
+        logger.info(f"Displaying generated tweet: '{tweet_to_display}'")
+        if "[Warning:" in tweet_to_display or not tweet_to_display.strip(): # Basic check for problematic content
+            logger.warning(f"Potential issue with generated tweet content: '{tweet_to_display}'")
+            st.warning(f"AI response might have an issue: {tweet_to_display}") # Display a warning if it looks problematic
+        else:
+            st.success(tweet_to_display)
+        
+        copy_button(tweet_to_display, button_text="Copy Tweet Text")
         if st.session_state.get("generated_new_tweet_model"):
             st.caption(f"Generated using: {st.session_state.generated_new_tweet_model}")
     

@@ -117,7 +117,7 @@ class AIResponse:
 
 ### src/models/category.py
 ```python
-dataclass
+@dataclass
 class TweetCategory:
     name: str
     description: str
@@ -127,6 +127,10 @@ class TweetCategory:
     @classmethod
     def from_dict(cls, data: dict) -> TweetCategory
     def to_dict(self) -> dict
+    
+    @staticmethod
+    def load_categories(file_path: Optional[str] = None) -> List[TweetCategory]
+        """Load categories from a JSON file. Uses data_paths.input from config if file_path is None."""
 ```
 
 ---
@@ -292,4 +296,16 @@ tweet = Tweet(content="Hello World!", metadata=metadata)
 prompt = generate_interaction_prompt(tweet, responding_as_account=Account(...))
 # Get completion
 response = client.get_completion(prompt)
+```
+
+### src/ui/category_select.py
+```python
+def load_tweet_categories(file_path: str = DATA_CATEGORIES_PATH) -> List[TweetCategory]
+    """Loads tweet categories from a JSON file, with caching for performance."""
+
+def display_tone_badge(tone: Optional[str], prefix: str = "Tone: ")
+    """Display a colored badge for the tone of a tweet or response."""
+
+def display_category_tweet_ui(active_account_type: AccountType)
+    """Display UI for selecting a category and generating a new tweet."""
 ``` 

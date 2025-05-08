@@ -116,14 +116,35 @@ def generate_tweet_reply(
         # Assuming a common structure like response.get('choices')[0].get('text') or similar
         if ai_response_data.get('choices') and isinstance(ai_response_data['choices'], list) and len(ai_response_data['choices']) > 0:
             choice = ai_response_data['choices'][0]
-            if choice.get('text'):
+            logger.debug(f"Processing AI response choice: {choice}")
+
+            finish_reason = choice.get('finish_reason')
+            if finish_reason == 'length':
+                logger.warning(f"AI response 'finish_reason' is 'length'. The response may be truncated. Full choice: {choice}")
+
+            if choice.get('text'): # Primarily for non-chat models or older formats
                 ai_generated_content = choice['text'].strip()
-            elif choice.get('message') and choice['message'].get('content'): # For chat-like models
-                 ai_generated_content = choice['message']['content'].strip()
+                logger.info(f"Extracted 'text' from choice: '{ai_generated_content[:100]}...'")
+            elif choice.get('message'):
+                message_data = choice['message']
+                if message_data.get('content') and message_data['content'].strip():
+                    ai_generated_content = message_data['content'].strip()
+                    logger.info(f"Extracted 'content' from message: '{ai_generated_content[:100]}...'")
+                elif message_data.get('reasoning_content') and message_data['reasoning_content'].strip():
+                    ai_generated_content = message_data['reasoning_content'].strip()
+                    logger.info(f"Extracted 'reasoning_content' from message as fallback: '{ai_generated_content[:100]}...'")
+                    if finish_reason == 'length':
+                         ai_generated_content = "[Warning: Response possibly truncated and extracted from reasoning] " + ai_generated_content
+                    else:
+                         ai_generated_content = "[Info: Extracted from reasoning_content] " + ai_generated_content
+                else:
+                    ai_generated_content = "[Warning: AI response format unclear - message content and reasoning_content are empty]"
+                    response_error = "AI response format unclear: message content and reasoning_content empty."
+                    logger.warning(f"Could not extract text from AI response choice's message: {message_data}. Setting error: {response_error}")
             else:
-                logger.warning(f"Could not extract text from AI response choice: {choice}")
-                ai_generated_content = "[Warning: AI response format unclear]"
-                response_error = "AI response format unclear from choice."
+                ai_generated_content = "[Warning: AI response format unclear - no 'text' or 'message' in choice]"
+                response_error = "AI response format unclear from choice (no text/message)."
+                logger.warning(f"Could not extract text/message from AI response choice: {choice}. Setting error: {response_error}")
         elif ai_response_data.get('candidates') and isinstance(ai_response_data['candidates'], list) and len(ai_response_data['candidates']) > 0:
              # Fallback for Google PaLM style response (text-bison-001 example)
             candidate = ai_response_data['candidates'][0]
@@ -184,7 +205,11 @@ def generate_new_tweet(
         platform="Twitter" # Default or derive as needed
     )
 
-    logger.info(f"Generating new '{category.name}' tweet on topic '{topic}' as {responding_as_account.username} (Type: {responding_as_type.value})")
+    logger.info(f"START generate_new_tweet: Category='{category.name}', Persona='{responding_as_type.value}', Topic='{topic}'")
+    logger.debug(f"Full category details: Name='{category.name}', Description='{category.description}', Keywords='{category.prompt_keywords}', Style='{category.style_guidelines}'")
+    logger.debug(f"Responding as account details: ID='{responding_as_account.account_id}', Username='{responding_as_account.username}', Type='{responding_as_account.account_type.value}'")
+    logger.debug(f"Platform='{platform}', Additional Instructions='{additional_instructions}'")
+
     prompt_str = ""
     ai_generated_content = "[Error: Could not generate AI response]"
     model_used = "Unknown"
@@ -198,9 +223,12 @@ def generate_new_tweet(
         knowledge_query = topic if topic else category.name # Use category name for knowledge query if no topic
         knowledge_snippet = current_retriever.search_knowledge_for_topic(knowledge_query, category.name)
         if knowledge_snippet:
-            logger.info(f"Retrieved knowledge snippet for new tweet: {knowledge_snippet[:100]}...")
+            logger.info(f"Retrieved knowledge snippet for new tweet: '{knowledge_snippet}'")
+        else:
+            logger.info("No specific knowledge snippet retrieved for this topic/category.")
 
         # 2. Generate prompt using TweetCategory object
+        logger.info("Generating new tweet prompt...")
         prompt_str = generate_new_tweet_prompt(
             category=category, # Pass the TweetCategory object
             topic=topic,
@@ -209,38 +237,73 @@ def generate_new_tweet(
             platform=platform,
             additional_instructions=additional_instructions
         )
-        logger.debug(f"Generated new tweet prompt: {prompt_str[:300]}...")
+        logger.debug(f"Generated new tweet prompt (first 500 chars): '{prompt_str[:500]}'")
+        logger.info(f"Full prompt length: {len(prompt_str)} characters")
 
         # 3. Call AI client
+        logger.info(f"Initializing XAIClient to generate new tweet content.")
         xai_client = XAIClient()
         model_used = xai_client.xai_model  # Use configured model name
+        logger.info(f"Calling XAIClient.get_completion with model: '{model_used}'")
         ai_response_data = xai_client.get_completion(prompt=prompt_str)
+        logger.info(f"Received raw response data from XAIClient.")
+        logger.debug(f"Raw AI response data: {ai_response_data}")
 
         # Extract content (same logic as generate_tweet_reply)
+        logger.info("Attempting to extract content from AI response...")
         if ai_response_data.get('choices') and isinstance(ai_response_data['choices'], list) and len(ai_response_data['choices']) > 0:
             choice = ai_response_data['choices'][0]
-            if choice.get('text'):
+            logger.debug(f"Processing AI response choice: {choice}")
+
+            finish_reason = choice.get('finish_reason')
+            if finish_reason == 'length':
+                logger.warning(f"AI response 'finish_reason' is 'length'. The response may be truncated. Full choice: {choice}")
+
+            if choice.get('text'): # Primarily for non-chat models or older formats
                 ai_generated_content = choice['text'].strip()
-            elif choice.get('message') and choice['message'].get('content'):
-                 ai_generated_content = choice['message']['content'].strip()
+                logger.info(f"Extracted 'text' from choice: '{ai_generated_content[:100]}...'")
+            elif choice.get('message'):
+                message_data = choice['message']
+                if message_data.get('content') and message_data['content'].strip():
+                    ai_generated_content = message_data['content'].strip()
+                    logger.info(f"Extracted 'content' from message: '{ai_generated_content[:100]}...'")
+                elif message_data.get('reasoning_content') and message_data['reasoning_content'].strip():
+                    ai_generated_content = message_data['reasoning_content'].strip()
+                    logger.info(f"Extracted 'reasoning_content' from message as fallback: '{ai_generated_content[:100]}...'")
+                    if finish_reason == 'length':
+                         ai_generated_content = "[Warning: Response possibly truncated and extracted from reasoning] " + ai_generated_content
+                    else:
+                         ai_generated_content = "[Info: Extracted from reasoning_content] " + ai_generated_content
+                else:
+                    ai_generated_content = "[Warning: AI response format unclear - message content and reasoning_content are empty]"
+                    response_error = "AI response format unclear: message content and reasoning_content empty."
+                    logger.warning(f"Could not extract text from AI response choice's message: {message_data}. Setting error: {response_error}")
             else:
-                ai_generated_content = "[Warning: AI response format unclear]"
-                response_error = "AI response format unclear from choice."
+                ai_generated_content = "[Warning: AI response format unclear - no 'text' or 'message' in choice]"
+                response_error = "AI response format unclear from choice (no text/message)."
+                logger.warning(f"Could not extract text/message from AI response choice: {choice}. Setting error: {response_error}")
         elif ai_response_data.get('candidates') and isinstance(ai_response_data['candidates'], list) and len(ai_response_data['candidates']) > 0:
             candidate = ai_response_data['candidates'][0]
+            logger.debug(f"Processing AI response candidate (PaLM style): {candidate}")
             if candidate.get('output'):
                 ai_generated_content = candidate['output'].strip()
+                logger.info(f"Extracted output from candidate: '{ai_generated_content[:100]}...'")
             else:
                 ai_generated_content = "[Warning: AI response format unclear (PaLM candidate)]"
                 response_error = "AI response format unclear from candidate (PaLM)."
+                logger.warning(f"Could not extract output from AI response candidate: {candidate}. Setting error: {response_error}")
         else:
             ai_generated_content = "[Warning: AI response structure not recognized]"
             response_error = "AI response structure not recognized."
+            logger.warning(f"AI response structure not recognized for content extraction: {ai_response_data}. Setting error: {response_error}")
 
-        logger.info(f"Successfully generated new AI tweet: {ai_generated_content[:100]}...")
+        if not response_error:
+            logger.info(f"Successfully generated and extracted AI tweet content: '{ai_generated_content[:100]}...'")
+        else:
+            logger.warning(f"Finished content extraction with error: {response_error}. Content set to: '{ai_generated_content}'")
 
     except XAIAPIError as e:
-        logger.error(f"XAIClient APIError in generate_new_tweet: {e}", exc_info=True)
+        logger.error(f"XAIClient APIError in generate_new_tweet: {e.message} (Code: {e.status_code}, Details: {e.details})", exc_info=True)
         ai_generated_content = f"[Error: AI API call failed - {e.message}]"
         response_error = e.message
     except Exception as e:
@@ -248,14 +311,27 @@ def generate_new_tweet(
         ai_generated_content = f"[Error: Unexpected error during new tweet generation - {str(e)}]"
         response_error = str(e)
 
-    return AIResponse(
-        content=ai_generated_content,
-        response_type=ResponseType.NEW_TWEET,
-        model_used=model_used,
-        prompt_used=prompt_str,
-        responding_as=responding_as_account.account_type.value,
-        generation_time=datetime.now(timezone.utc)
-    )
+    response_kwargs = {
+        "content": ai_generated_content,
+        "response_type": ResponseType.NEW_TWEET,
+        "model_used": model_used,
+        "prompt_used": prompt_str, # Consider truncating if very long for storage/logging
+        "responding_as": responding_as_account.account_type.value,
+        "generation_time": datetime.now(timezone.utc),
+        "tags": [category.name],
+        "referenced_knowledge": [knowledge_snippet] if knowledge_snippet else [],
+        "extra_context": {
+            "category_description": category.description,
+            "category_keywords": category.prompt_keywords,
+            "category_style_guidelines": category.style_guidelines,
+            "topic_provided": topic,
+            "error_message": response_error # Add error message to AIResponse object
+        }
+    }
+    logger.debug(f"AIResponse object creation arguments: {response_kwargs}")
+    final_response = AIResponse(**response_kwargs)
+    logger.info(f"END generate_new_tweet. Final AIResponse content: '{final_response.content[:100]}...', Model: '{final_response.model_used}'")
+    return final_response
 
 if __name__ == '__main__':
     # Basic Test Setup (requires config for XAIClient, even if mocked by tests later)

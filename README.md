@@ -13,6 +13,9 @@ This project aims to streamline social media management, ensure brand consistenc
     * Adapts tone and style for different target accounts (Partner, Institution, KOL, Community).
     * Utilizes specific interaction guidelines (from `data/docs/InstructionsFor*.md`).
 * New Tweet Creation by Category (e.g., Announcements, Product Updates).
+    * Select from predefined categories with tailored prompts and style guidelines.
+    * Provide topic or key points for content generation.
+    * AI adapts to the selected YieldFi persona (Official, Intern).
 * Integration with YieldFi Knowledge Base (`data/docs/docs.yield.fi.md`, live data sources).
 * Tone Analysis of incoming tweets to inform response strategy.
 * Mock Data Source for development and testing without live API access.
@@ -63,6 +66,7 @@ This project aims to streamline social media management, ensure brand consistenc
     * Check `config.yaml` for default settings. These are generally overridden by `.env` or can be adjusted if needed.
     * Populate `data/input/sample_tweets.json` and `data/input/sample_accounts.json` if using the mock data source for initial testing.
     * Ensure `data/docs/yieldfi_knowledge.json` (planned in Step 10) is populated with YieldFi specific information.
+    * Customize `data/input/categories.json` with YieldFi-specific tweet categories if using the category-based tweet generation feature.
 
 ### Usage
 
@@ -70,25 +74,26 @@ This project aims to streamline social media management, ensure brand consistenc
     ```bash
     streamlit run app.py
     ```
-    (Note: `app.py` will be developed according to Step 14 of the implementation plan.)
 
 2.  Access the application in your web browser (usually `http://localhost:8501`).
 3.  Follow the on-screen instructions to:
     * Select the active YieldFi account persona (e.g., Official, Intern).
-    * Input a tweet URL or content to reply to.
-    * Provide context about the target account.
-    * Or, select a category and topic to generate a new tweet.
+    * Choose an interaction type:
+        * **Generate Tweet Reply**: Input a tweet URL or content to reply to and provide context about the target account.
+        * **Create New Tweet by Category**: Select a category (e.g., Announcement, Product Update), enter a topic, and generate a tailored new tweet.
+
+For detailed usage instructions, see [Usage Guide](docs/usage.md).
 
 ## Project Structure
 
 * `data/docs/`: Contains the core implementation plan, roadmap, YieldFi knowledge, and interaction guidelines.
-* `data/input/`: Sample data for mock data sources.
+* `data/input/`: Sample data for mock data sources, tweet categories, etc.
 * `src/`: Main source code.
     * `src/ai/`: AI integration (xAI client, prompt engineering, response generation, tone analysis).
     * `src/config/`: Configuration management.
     * `src/data_sources/`: Data source abstractions (mock, future Twitter API).
     * `src/knowledge/`: YieldFi knowledge base integration.
-    * `src/models/`: Data models (Tweet, Account, AIResponse).
+    * `src/models/`: Data models (Tweet, Account, AIResponse, TweetCategory).
     * `src/ui/`: Streamlit UI components.
     * `src/utils/`: Common utilities (logging, error handling).
 * `app.py`: Entry point for the Streamlit application.
@@ -97,7 +102,7 @@ This project aims to streamline social media management, ensure brand consistenc
 
 ## Development
 
-+**Prerequisite:** Make sure you are in the project root directory (where `venv/` resides):
+**Prerequisite:** Make sure you are in the project root directory (where `venv/` resides):
 
 ```bash
 cd /Users/sattu/Dropbox/ai/LLM-Driven-Marketing-Assistant
@@ -152,6 +157,13 @@ Adhere to the rules defined in `.cursor/rules/project-wide-cursor-rules.mdc`.
 *(This section will be updated as per Rule 6 of project-wide-cursor-rules.mdc as features are implemented)*
 
 ---
+### 2025-05-08
+- **Steps 17-19: Category-Based Tweet Generation**
+    - Implemented `TweetCategory` model and category definition system.
+    - Extended prompt engineering for category-specific tweet generation.
+    - Developed UI for category selection, topic input, and tweet generation.
+    - Added comprehensive documentation for the category-based features.
+---
 ### 2025-05-07
 - **Step 4: Implement mock tweet data source**
     - Validated `MockTweetDataSource` in `src/data_sources/mock.py` for loading from local JSON files.
@@ -178,6 +190,6 @@ Adhere to the rules defined in `.cursor/rules/project-wide-cursor-rules.mdc`.
 
 ## Documentation
 
-- **API Reference:** docs/api.md
-- **Usage Guide:** docs/usage.md
-- **Deployment Guide:** docs/deployment.md
+- **API Reference:** [docs/api.md](docs/api.md)
+- **Usage Guide:** [docs/usage.md](docs/usage.md)
+- **Deployment Guide:** [docs/deployment.md](docs/deployment.md)

@@ -46,10 +46,10 @@ class XAIClient:
         self.use_fallback = get_config("ai.use_fallback", False)
         
         self.xai_base_url = get_config("ai.xai_base_url", "https://api.x.ai/v1")
-        self.xai_model = get_config("ai.xai_model", "grok-3-latest")
+        self.xai_model = get_config("ai.xai_model", "grok-3-mini-beta")
         self.google_palm_base_url = get_config("ai.google_palm_base_url", "https://generativelanguage.googleapis.com/v1beta")
         
-        self.default_max_tokens = get_config("ai.default_max_tokens", 150)
+        self.default_max_tokens = get_config("ai.default_max_tokens", 1500)
         self.default_temperature = get_config("ai.default_temperature", 0.7)
 
     def get_completion(
@@ -79,13 +79,15 @@ class XAIClient:
         current_temperature = temperature if temperature is not None else self.default_temperature
 
         headers = {"Content-Type": "application/json"}
+        logger.info(f"XAIClient.get_completion called. Prompt (first 500 chars): '{prompt[:500]}...'")
+        logger.debug(f"Params: max_tokens={current_max_tokens}, temperature={current_temperature}, other_kwargs={kwargs}")
         
         use_xai_api = bool(self.xai_api_key) and not self.use_fallback
         use_google_api = bool(self.google_api_key) and (self.use_fallback or not bool(self.xai_api_key))
 
         try:
             if use_xai_api:
-                logger.info(f"Calling xAI API: {self.xai_base_url}/chat/completions")
+                logger.info(f"Attempting to call xAI API. Endpoint: {self.xai_base_url}/chat/completions, Model: {self.xai_model}")
                 # Construct the messages payload for chat completions
                 messages = [
                     {"role": "system", "content": "You are a helpful assistant."},
@@ -100,12 +102,18 @@ class XAIClient:
                     **kwargs
                 }
                 headers["Authorization"] = f"Bearer {self.xai_api_key}"
+                logger.debug(f"xAI API Request Payload (excluding Authorization header): {payload}")
+                
                 response = requests.post(f"{self.xai_base_url}/chat/completions", json=payload, headers=headers, timeout=30)
+                logger.info(f"xAI API raw response status: {response.status_code}")
+                logger.debug(f"xAI API raw response text: {response.text}")
                 response.raise_for_status() # Will raise HTTPError for bad responses (4xx or 5xx)
-                return response.json()
+                json_response = response.json()
+                logger.debug(f"xAI API parsed JSON response: {json_response}")
+                return json_response
             
             elif use_google_api:
-                logger.info(f"Calling Google PaLM API: {self.google_palm_base_url}")
+                logger.info(f"Attempting to call Google PaLM API. Fallback active or xAI key missing. Using model: text-bison-001 (example)")
                 # PaLM API structure can vary; this is a common pattern for older models
                 # For newer Gemini via Vertex or AI Studio, the endpoint and payload would differ.
                 # Assuming a text generation model like 'text-bison-001' for this example.
@@ -122,10 +130,16 @@ class XAIClient:
                 # The actual model name might need to be part of the URL or payload
                 # This is a generic example:
                 palm_api_url = f"{self.google_palm_base_url}/models/text-bison-001:generateText?key={self.google_api_key}"
+                logger.debug(f"Google PaLM API Request URL: {palm_api_url}")
+                logger.debug(f"Google PaLM API Request Payload: {palm_payload}")
                 
                 response = requests.post(palm_api_url, json=palm_payload, headers=headers, timeout=30)
+                logger.info(f"Google PaLM API raw response status: {response.status_code}")
+                logger.debug(f"Google PaLM API raw response text: {response.text}")
                 response.raise_for_status()
-                return response.json()
+                json_response = response.json()
+                logger.debug(f"Google PaLM API parsed JSON response: {json_response}")
+                return json_response
 
             else:
                 # This case should ideally be caught by upfront config checks,

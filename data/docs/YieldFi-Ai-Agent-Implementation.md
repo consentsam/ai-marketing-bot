@@ -613,7 +613,7 @@ The YieldFi AI Agent aims to enhance YieldFi's social media presence by automati
     -   **Step Dependencies**: Steps 1-21 (a complete, tested application).
     -   **User Instructions**: Follow the deployment instructions in the `README.md` (to be updated in Step 23) to test building and running the Docker container locally.
 
-- [ ] **Step 23: Document API and usage**
+- [x] **Step 23: Document API and usage**
     -   **Task**: Create comprehensive documentation: `docs/api.md` (if the agent exposes any programmatic APIs, not the case for a simple Streamlit app unless you add a backend API), `docs/usage.md` (how to use the Streamlit app, interpret outputs), `docs/deployment.md` (how to deploy). Update `README.md` with final instructions.
         -   **EXPLANATION**: Good documentation is vital for usability and maintainability.
     -   **Key Considerations/Sub-Tasks**:
@@ -627,6 +627,20 @@ The YieldFi AI Agent aims to enhance YieldFi's social media presence by automati
         * `docs/usage.md`
         * `docs/deployment.md`
         * Update `README.md`
+
+---
+**Step Completion Summary (2025-05-08 HH:MM):**
+* **Status:** Completed & Approved by User
+* **Files Modified/Created:**
+    * `docs/usage.md` (Updated)
+    * `docs/api.md` (Updated)
+    * `README.md` (Updated)
+* **Summary of Changes:**
+    * `docs/usage.md`: Enhanced with detailed instructions for the category-based tweet generation feature, including a step-by-step guide for using the feature through the UI.
+    * `docs/api.md`: Updated with information about the `TweetCategory` class, its methods (including `load_categories`), and the UI components in `category_select.py`.
+    * `README.md`: Expanded the features section with detailed information about the category-based tweet generation, updated the setup instructions to mention `categories.json`, and added an entry in the changelog documenting the implementation of Steps 17-19.
+    * All documentation now fully reflects the implementation status including the recently completed category-based tweet generation feature.
+---
 
 ## Implementation Approach Summary
 This summary provides an excellent high-level view of the development philosophy.

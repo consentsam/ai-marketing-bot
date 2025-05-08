@@ -1,15 +1,19 @@
 {
-    "version": 2,
     "builds": [
         {
-            "src": "Dockerfile",
-            "use": "@vercel/docker"
+            "src": "scripts/start.sh",
+            "use": "@vercel/python"
         }
     ],
     "routes": [
         {
             "src": "/(.*)",
-            "dest": "app.py"
+            "dest": "scripts/start.sh"
         }
-    ]
+    ],
+    "functions": {
+        "api/*.py": {
+            "includeFiles": "scripts/**"
+        }
+    }
 }

@@ -1,70 +1,86 @@
-# Deployment Guide
 
-This guide covers how to deploy the YieldFi AI Agent application.
+Ethena AI Agent Deployment Guide
 
-## Docker Deployment (Local)
+This document explains how to deploy the Ethena AI Agent (YieldFi AI Assistant) to Vercel, which replaces the original Docker-based approach. Vercel is a serverless platform that can run Python applications using the @vercel/python builder.
 
-1. Ensure Docker is installed and running on your machine.
-2. Build the Docker image:
-   ```bash
-   docker build -t yieldfi-ai-agent .
-   ```
-3. Run the Docker container:
-   ```bash
-   docker run -d --name yieldfi-ai-agent -p 8501:8501 --env-file .env yieldfi-ai-agent:latest
-   ```
-4. Open your browser at `http://localhost:8501` to verify the application.
+⸻
 
-## Docker Compose
+Prerequisites
+   1. Vercel Account: Sign up at vercel.com if you don’t have one.
+   2. Project Setup:
+   •  The repository should contain:
+   •  A requirements.txt listing Python dependencies.
+   •  A vercel.json describing Vercel build rules.
+   •  A scripts/start.sh for launching the Streamlit app.
+   •  Your main Streamlit file is src/app.py in this project’s structure.
+   3. Environment Variables:
+   •  If you need secrets (e.g., XAI_API_KEY, TWITTER_BEARER_TOKEN), set them in the Vercel project’s dashboard under “Settings → Environment Variables.”
 
-You can also use Docker Compose for local orchestration:
+⸻
 
-```bash
-docker-compose up --build
-```
+Steps to Deploy
+   1. Install Vercel CLI (optional, if you want local dev):
 
-This will:
-- Build the Docker image.
-- Start the `ai-agent` service defined in `docker-compose.yml` on port 8501.
+npm install -g vercel
 
-## Vercel Deployment
 
-Detailed steps are provided in `docs/usage.md` under **Vercel Deployment**, including the required `vercel.json` configuration and Vercel dashboard setup.
+   2. Create vercel.json in the project root (if not already present):
 
-## Continuous Deployment (CI/CD)
+{
+  "builds": [
+    {
+      "src": "scripts/start.sh",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "scripts/start.sh"
+    }
+  ]
+}
 
-For automated builds and deployments, you can integrate with GitHub Actions:
+   •  This tells Vercel to treat scripts/start.sh as our main entry point.
 
-- **On Push to `main`**:
-  1. Build the Docker image.
-  2. Push the image to your container registry (e.g., Docker Hub, GitHub Container Registry).
-  3. Deploy to your production environment (e.g., using a deployment action or script).
+   3. Create/Update scripts/start.sh:
 
-Example snippet for `.github/workflows/deploy.yml`:
+#!/usr/bin/env bash
+...
+# (See the final version with minimal logs)
 
-```yaml
-name: CI/CD
-on:
-  push:
-    branches: [ main ]
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/yieldfi-ai-agent:latest
-```
+   •  This script runs pip install -r requirements.txt quietly and starts Streamlit on $PORT.
 
-Ensure you store your Docker credentials as repository secrets in GitHub. 
+   4. Push code to Git:
+
+git add .
+git commit -m "Add Vercel deployment configs"
+git push origin main
+
+
+   5. Import repository into Vercel:
+   •  Go to vercel.com/import.
+   •  Select your Git provider and repository.
+   6. Set environment variables in Vercel dashboard, if needed.
+   7. Trigger a deploy:
+   •  Vercel will detect @vercel/python usage from vercel.json.
+   •  Install your dependencies from requirements.txt.
+   •  Run scripts/start.sh.
+   8. Confirm Deployment:
+   •  Your app will be accessible at [projectname].vercel.app.
+   •  Check “Logs” in Vercel to see any console messages or errors.
+
+⸻
+
+Logs & Debugging
+   •  By default, the updated start.sh runs almost silently. If you encounter errors or test failures:
+   •  Check your Vercel “Function Logs” or “Build Logs” for Python tracebacks.
+   •  Temporarily add set -x or echo statements to start.sh if you need more verbose output.
+
+⸻
+
+Next Steps
+   •  If you want more advanced routing or custom domains, configure them in Vercel’s project settings.
+   •  For scaling or concurrency, consider the usage patterns of your AI calls. If the LLM calls are not stateful, it should scale fine on Vercel.
+
+That’s it! You are now fully deployed on Vercel.

@@ -5,33 +5,43 @@ alwaysApply: true
 ---
 # Frontend Rules for YieldFi AI Agent (Streamlit App)
 
-> Summary:
-> - Purpose: Establish UI component patterns & conventions for the Streamlit app (`src/app.py`, `src/ui/`).
-> - Rationale: Ensure consistency in UI structure, styling (if applicable), and best practices for the agent's interface.
-> - Usage: Apply these rules when developing the Streamlit UI for interacting with the AI agent.
-> - TODOs: Add guidelines if switching to a different frontend framework later.
+> **Summary**  
+> - Purpose: Provide UI structure & best practices for Streamlit.  
+> - Rationale: Consistent user experience, clarity in code.  
+> - Usage: For `app.py` & `src/ui/` components.  
+> - TODOs: Add more details if switching from Streamlit to another framework.
 
-## 1. Component Naming & File Structure (Streamlit Context)
-- Use clear, descriptive function names for UI sections within `app.py` or `src/ui/components.py` (e.g., `display_tweet_input()`, `render_suggested_replies()`).
-- Group related UI helper functions or custom components (if any complex ones are built) in `src/ui/`.
-- Keep `app.py` as the main entry point, orchestrating calls to UI functions/components.
+---
 
-## 2. Styling (Streamlit Defaults & Custom CSS)
-- Primarily leverage Streamlit's built-in components and layout options (`st.container`, `st.columns`, etc.).
-- For custom styling needs, use Streamlit's `st.markdown` with `unsafe_allow_html=True` for simple CSS or inject a separate CSS file via `st.markdown`.
-- Avoid complex custom CSS where Streamlit components suffice. Keep styling consistent with a clean, functional aesthetic.
+## 1. Component Naming & File Structure
+- Use clear function names in `app.py` or `src/ui/` (e.g. `display_tweet_input()`).  
+- Group related UI helpers in `src/ui/`.  
+- Keep `app.py` as the orchestrator for major layout & flow.
 
-## 3. Accessibility (Streamlit Considerations)
-- Use descriptive labels for input fields (`st.text_input`, `st.selectbox`) and buttons (`st.button`).
-- Ensure logical flow and readability of information presented on the page.
-- While Streamlit handles much of the underlying HTML semantics, be mindful of how components are used together.
+---
 
-## 4. State & Props Conventions (Streamlit State Management)
-- Use Streamlit's Session State (`st.session_state`) for managing state across reruns (e.g., storing input tweet data, generated replies, selected account types).
-- Initialize state variables at the beginning of the script run if they don't exist.
-- Pass data between UI functions/sections primarily through Session State or function arguments/return values. Avoid overly complex state dependencies.
+## 2. UI Testing Patterns
+- Test underlying backend logic thoroughly; UI is often tested manually in Streamlit.  
+- **User Acceptance Testing**: Keep a short test script for manual checks (e.g., “Load app, select Mode: Degen, verify slang in output.”).  
+- Optionally, mock `st.*` calls if writing unit tests for UI helper functions.
 
-## 5. UI Testing Patterns
-- Testing Streamlit apps directly can be tricky. Focus on testing the underlying backend logic called by the UI.
-- For UI-specific logic within helper functions in `src/ui/`, write unit tests using `pytest`, mocking Streamlit functions (`st.*`) if necessary.
-- Manual testing of the Streamlit interface is crucial for verifying layout, component interactions, and state handling.
+---
+
+## 3. State & Props Conventions (Streamlit)
+- Use `st.session_state` for cross-rerun persistence.  
+- Initialize needed session vars at script start.  
+- Pass data to UI components via function args or session state—avoid hidden global state.
+
+---
+
+## 4. Styling (Streamlit Defaults & Custom CSS)
+- Prefer built-in layout containers.  
+- If needed, inject minimal custom CSS via `st.markdown(unsafe_allow_html=True)`.  
+- Maintain a consistent, minimal design.
+
+---
+
+## 5. Accessibility
+- Provide descriptive labels for inputs (`st.text_input`, etc.).  
+- Make the flow logical; test the reading order.  
+- Keep color usage and layout mindful of accessibility best practices.

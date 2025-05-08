@@ -1,0 +1,65 @@
+[
+    {
+        "id": "sample_eval_1",
+        "description": "Positive sentiment, factual claims, relevant response",
+        "original_tweet_content": "I'm looking for a DeFi platform that offers good yields and is secure. Any recommendations for YieldFi?",
+        "knowledge_snippet_used": "YieldFi provides competitive APYs on various assets and employs multi-layered security protocols. It was launched in 2023.",
+        "ai_response_content": "YieldFi is an excellent choice! We offer great yields and top-notch security. Our platform was launched in 2023 and many users trust us.",
+        "ai_response_analyzed_tone": "positive",
+        "ground_truth_data": {
+            "expected_tone": "positive",
+            "ground_truth_facts": [
+                "great yields",
+                "top-notch security",
+                "launched in 2023"
+            ]
+        }
+    },
+    {
+        "id": "sample_eval_2",
+        "description": "Neutral question, AI response with slight tone mismatch, one fact missed",
+        "original_tweet_content": "What is the current TVL of YieldFi? And is it audited?",
+        "knowledge_snippet_used": "YieldFi's TVL is currently $150M. We have completed security audits with CertiK and Trail of Bits.",
+        "ai_response_content": "YieldFi's TVL is $150M. We are very secure and audited by CertiK.",
+        "ai_response_analyzed_tone": "slightly_positive",
+        "ground_truth_data": {
+            "expected_tone": "neutral",
+            "ground_truth_facts": [
+                "TVL is $150M",
+                "audited by CertiK",
+                "audited by Trail of Bits"
+            ]
+        }
+    },
+    {
+        "id": "sample_eval_3",
+        "description": "Irrelevant question, AI response tries to be helpful but off-topic for specific metrics",
+        "original_tweet_content": "What's the weather like in London?",
+        "knowledge_snippet_used": null,
+        "ai_response_content": "I am a DeFi assistant and cannot provide weather updates. However, YieldFi offers great financial tools!",
+        "ai_response_analyzed_tone": "neutral",
+        "ground_truth_data": {
+            "expected_tone": "neutral",
+            "ground_truth_facts": [
+                "great financial tools"
+            ]
+        }
+    },
+    {
+        "id": "sample_eval_4",
+        "description": "Response missing required tone and facts for a specific campaign prompt.",
+        "original_tweet_content": "Excited for the new YieldFi product launch! #YieldFiSummer",
+        "knowledge_snippet_used": "The new product, 'YieldMax', offers auto-compounding and will be released next week with a special 10% APY boost for early users.",
+        "ai_response_content": "Thanks for your excitement! Stay tuned for more updates on our new products.",
+        "ai_response_analyzed_tone": "positive",
+        "ground_truth_data": {
+            "expected_tone": "very_excited",
+            "ground_truth_facts": [
+                "YieldMax",
+                "auto-compounding",
+                "released next week",
+                "10% APY boost"
+            ]
+        }
+    }
+]

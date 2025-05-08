@@ -3,58 +3,56 @@ description:
 globs: 
 alwaysApply: true
 ---
+
 # Documentation & Structure Guidelines for YieldFi AI Agent Project
 
-> Summary:
-> - Purpose: Standardize README, code comments, and potentially generated documentation formats.
-> - Rationale: Ensure project documentation is clear, navigable, maintainable, and consistent.
-> - Usage: Apply these rules to `README.md`, docstrings/comments in source code (`.py`, `.tsx` files), and any generated reports or logs.
-> - TODOs: Automate changelog generation from commit messages if desired.
+> **Summary**  
+> - Purpose: Standardize project docs (README, code comments).  
+> - Rationale: Maintain clarity and navigability.  
+> - Usage: For `README.md`, docstrings, changes logs.  
+> - TODOs: Possibly automate a changelog from commits.
+
+---
 
 ## 1. README Layout & Content
-- Provide a concise project description: What the YieldFi AI Agent does (automates Twitter replies).
-- **Setup Instructions:** Clear steps to set up the project environment (`requirements.txt`, `.env` file setup, API key acquisition for xAI/Twitter).
-- **Usage Guide:** How to run the agent (e.g., `streamlit run src/app.py`), input required data (tweet content/URL, account types), and interpret the output (suggested replies).
-- **Configuration:** Explain key environment variables or settings in `config.yaml` / `.env`.
-- **Project Structure Overview:** Briefly describe the purpose of key directories (`src/ai`, `src/knowledge`, `src/data_sources`, `src/ui`).
-- Include badges if applicable (build status, coverage - less common for scripts, but possible).
-- Maintain a `## Changelog` section with dates and brief descriptions of significant changes or new features.
+- **Project Description**: Summarize the AI Agent’s purpose.  
+- **Setup Instructions**: Steps for installing requirements, setting up `.env`.  
+- **Usage Guide**: How to run (`streamlit run app.py`), input data, interpret output.  
+- **Configuration**: Key environment variables, `config.yaml` details.  
+- **Project Structure**: Summaries of `src/ai`, `src/knowledge`, etc.  
+- **Changelog**: Keep a section for major changes with dates.
+
+---
 
 ## 2. Code-Level Documentation (Docstrings & Comments)
-- Use docstrings (following PEP 257 for Python)asses, and public functions/methods. Explain purpose, argumend return values.
-- Add inline comments only for complex or non-obvious logic sections. Avoid commenting on simple code.
-- **File Headers (Optional but Recommended):** Consider adding a standard header comment block at the top of key files (`app.py`, `response_generator.py`, etc.) explaining:
-  - Purpose: What the file does.
-  - Key Components: Major functions/classes within the file.
-- Use TODO comments for pending work items, ideally linking to issue trackers if used.
+- Use docstrings in Python following **reST** (reStructuredText) style (e.g., Sphinx-compatible).  
+- Docstrings for all public classes & functions.  
+- Inline comments only for complex or non-obvious logic.
+
+---
 
 ## 3. Change-Log & Versioning Format (in README.md)
-- Use semantic versioning (`v0.1.0`, `v0.2.0`) if releasing distinct versions. Otherwise, use date-based entries.
-- Group entries under version/date headings.
-- List new features, bug fixes, and significant changes concisely.
+- Use date-based or semantic version headings.  
+- Summarize features & fixes under each version/date.  
+- Example:
   ```markdown
   ## Changelog
 
   ### v0.2.0 (2025-05-10)
-  - Added support for KOL account type interactions.
-  - Improved prompt structure for tone adaptation.
-  - Fixed bug in knowledge retrieval for edge cases.
+  - Added KOL account type interactions
+  - Improved tone adaptation
 
   ### v0.1.0 (2025-05-06)
-  - Initial release supporting Official/Intern accounts replying to Partners/Big Accounts.
-  - Basic Streamlit UI for input and output.
-  ```
+  - Initial release
 
-## 4. Conversation-Log Structure (If Applicable)
-- If logging agent interactions for debugging/analysis (e.g., to a file):
-  - Timestamp (UTC)
-  - Input Context (Tweet, Account Types, Knowledge Used)
-  - Generated Prompt
-  - AI Response (Suggested Reply)
-  - Any Errors Encountered
-- Separate distinct interactions clearly (e.g., with dividers or unique IDs).
 
-## 5. Linking Conventions (within Docs)
-- Use relative paths for links between documentation files (if more than README exists).
-- Use backticks for code references (e.g., `response_generator.py`).
-- Refer to sections using Markdown headers (e.g., `See [Setup Instructions](mdc:#setup-instructions)`).
+⸻
+
+4. Conversation-Log Structure
+	•	If logging interactions, record timestamps (UTC), input context, generated prompt, AI response, any errors.
+
+⸻
+
+5. Linking Conventions (within Docs)
+	•	Use relative paths (./docs/deployment.md), or reference with backticks for code names.
+	•	For cross-file references, consistent style with [Link Text](relative/path.md).

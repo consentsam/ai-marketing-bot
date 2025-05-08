@@ -582,71 +582,194 @@ The YieldFi AI Agent aims to enhance YieldFi's social media presence by automati
     -   **Step Dependencies**: Steps 1-19 (as it tests components built in these steps).
     -   **User Instructions**: Run tests with `pytest tests/`. Aim for all tests to pass. Review test coverage.
 
-- [ ] **Step 21: Create evaluation framework**
-    -   **Task**: Implement `src/evaluation/metrics.py` (e.g., defining metrics like content relevance, tone adherence, factual accuracy check placeholders) and `src/evaluation/evaluator.py` (logic to run evaluations, potentially comparing AI output against golden answers or using human feedback).
-        -   **EXPLANATION**: A structured way to evaluate response quality is essential for understanding AI performance and identifying areas for improvement.
+- [ ] **Step 21: Evaluation Framework**
+    -   **Overview**: Develop a framework to quantitatively evaluate the quality of AI-generated responses. This includes metrics for tone consistency, relevance to the input, and factual accuracy against a known knowledge base or ground truth.
+    -   **Task Details**:
+        1.  Create `src/evaluation/metrics.py`:
+            *   Implement `calculate_tone_match_score(generated_tone: str, expected_tone: str) -> float`: Compares the AI-detected tone of the response with an expected tone.
+            *   Implement `calculate_relevance_score(generated_text: str, input_context: str, knowledge_snippet: Optional[str]) -> float`: Assesses relevance using NLP techniques (e.g., semantic similarity or keyword overlap with NLTK).
+            *   Implement `calculate_factual_accuracy_score(generated_text: str, ground_truth_data: List[str]) -> float`: Checks generated text against a list of ground truth statements.
+        2.  Create `src/evaluation/evaluator.py`:
+            *   Implement `Evaluator` class:
+                *   `__init__(self, metrics_to_run: List[str])`: Initializes with metric functions to apply.
+                *   `evaluate_response(self, ai_response: AIResponse, original_tweet_content: Optional[str], knowledge_snippet_used: Optional[str], ground_truth_data: Optional[Dict[str, Any]]) -> Dict[str, Any]`: Runs configured metrics and returns a dictionary of scores.
+                *   `run_batch_evaluation(self, evaluation_data: List[Tuple[AIResponse, Optional[str], Optional[str], Optional[Dict[str, Any]]]]) -> List[Dict[str, Any]]`: Evaluates a list of responses.
+        3. Create `src/evaluation/__init__.py` to export `Evaluator` and metric functions.
     -   **Key Considerations/Sub-Tasks**:
-        * Define what "quality" means for your responses (e.g., relevance, tone, factual accuracy, engagement potential).
-        * `metrics.py`: Functions to calculate or assess these (some might be qualitative).
-        * `evaluator.py`: A class or functions to take an `AIResponse` (and perhaps a reference answer/context) and apply metrics.
-        * Consider a simple UI or script to facilitate batch evaluation or human review.
+        *   **Ground Truth Data**: Define format for `ground_truth_data` (e.g., in `data/input/evaluation_golden_set.json`). This should contain `expected_tone`, `ground_truth_facts`.
+        *   **AIResponse Model**: Ensure `AIResponse` object has `content` (str) and `tone` (Optional[str]) attributes for the `Evaluator` to use. The `tone` attribute should represent the analyzed tone of the AI's own generated content.
+        *   **Metric Robustness**: Metrics should handle `None` or missing inputs gracefully (e.g., `ai_response.tone` could be `None`).
+        *   **Extensibility**: Design `Evaluator` to easily accommodate new metrics.
+        *   **Configuration**: Metric selection in `Evaluator` is via `metrics_to_run` list.
+    -   **Implementation Strategy**:
+        *   `metrics.py` contains standalone metric functions using NLTK for relevance.
+        *   `Evaluator` class in `evaluator.py` dynamically calls selected metric functions based on `metrics_to_run`.
+        *   Input arguments for metric functions are passed explicitly by the `Evaluator.evaluate_response` method.
+        *   Error handling within `Evaluator` will capture issues from metric functions and report them in the results.
+    -   **Edge Cases**:
+        *   `AIResponse` missing `content` or `tone` attributes (handled by checks in `Evaluator`).
+        *   Ground truth data missing expected keys (handled with "N/A" results).
+        *   NLTK resources (`stopwords`, `punkt`) missing (attempted download in `metrics.py`, with fallback for relevance scoring).
     -   **Files**:
-        * `src/evaluation/metrics.py`
-        * `src/evaluation/evaluator.py`
-        * `src/evaluation/__init__.py`
-    -   **Step Dependencies**: Step 9 (needs generated responses to evaluate).
-    -   **User Instructions**: Define a small set of "golden" test cases (input tweet/scenario + ideal response) to test the evaluation framework.
-
-## Deployment
-
-- [ ] **Step 22: Prepare for production deployment**
-    -   **Task**: Create a `Dockerfile` for containerizing the Streamlit application, a `docker-compose.yml` for local orchestration (if needed), and a basic `scripts/deploy.sh` (placeholder for actual deployment commands to a chosen platform).
-        -   **EXPLANATION**: Containerization ensures consistent deployment across environments.
-    -   **Key Considerations/Sub-Tasks**:
-        * `Dockerfile`: Based on Python, copies code, installs `requirements.txt`, exposes Streamlit port, sets entrypoint.
-        * `docker-compose.yml`: Define service for the app, manage environment variables, port mappings.
-        * `deploy.sh`: Placeholder with comments for future deployment steps (e.g., build image, push to registry, deploy to cloud service).
-    -   **Files**:
-        * `Dockerfile`
-        * `docker-compose.yml`
-        * `scripts/deploy.sh`
-    -   **Step Dependencies**: Steps 1-21 (a complete, tested application).
-    -   **User Instructions**: Follow the deployment instructions in the `README.md` (to be updated in Step 23) to test building and running the Docker container locally.
-
-- [x] **Step 23: Document API and usage**
-    -   **Task**: Create comprehensive documentation: `docs/api.md` (if the agent exposes any programmatic APIs, not the case for a simple Streamlit app unless you add a backend API), `docs/usage.md` (how to use the Streamlit app, interpret outputs), `docs/deployment.md` (how to deploy). Update `README.md` with final instructions.
-        -   **EXPLANATION**: Good documentation is vital for usability and maintainability.
-    -   **Key Considerations/Sub-Tasks**:
-        * `README.md`: Final setup, usage, configuration.
-        * `docs/usage.md`: Detailed guide for end-users of the Streamlit app.
-        * `docs/deployment.md`: Steps for deploying the Docker container.
-        * Ensure all configurations and environment variables are documented.
-    -   **Files**:
-        * `docs/` (directory, if not existing)
-        * `docs/api.md` (if applicable)
-        * `docs/usage.md`
-        * `docs/deployment.md`
-        * Update `README.md`
+        *   `src/evaluation/metrics.py` (Modified)
+        *   `src/evaluation/evaluator.py` (Modified)
+        *   `src/evaluation/__init__.py` (Modified)
+        *   `data/input/evaluation_golden_set.json` (Created)
+        *   `tests/evaluation/test_metrics.py` (Modified/Reviewed)
+        *   `tests/evaluation/test_evaluator.py` (Modified/Reviewed)
+    -   **Step Dependencies**: Step 2 (relies on `AIResponse` model structure).
+    -   **User Instructions**:
+        1.  Ensure NLTK resources (`stopwords`, `punkt`) are available. If test output indicates download failures, run `python -m nltk.downloader stopwords punkt` in your environment.
+        2.  Run unit tests: `pytest tests/evaluation/` or `python -m unittest tests.evaluation.test_metrics tests.evaluation.test_evaluator`.
+        3.  Review test output, especially stderr for NLTK messages. All tests should pass if NLTK resources are correctly loaded.
+        4.  If tests pass, Step 21 is complete. Update `data/docs/YieldFi-Ai-Agent-Implementation.md`.
 
 ---
-**Step Completion Summary (2025-05-08 HH:MM):**
-* **Status:** Completed & Approved by User
+**Step Completion Summary (2025-05-17 HH:MM):**
+* **Status:** Completed & Verified
 * **Files Modified/Created:**
-    * `docs/usage.md` (Updated)
-    * `docs/api.md` (Updated)
-    * `README.md` (Updated)
+    * `src/evaluation/metrics.py` (Refined, NLTK check added)
+    * `src/evaluation/evaluator.py` (Refined/Created `Evaluator` class)
+    * `src/evaluation/__init__.py` (Updated exports)
+    * `data/input/evaluation_golden_set.json` (Created sample data)
+    * `tests/evaluation/test_metrics.py` (Corrected assertions, added NLTK skip logic)
+    * `tests/evaluation/test_evaluator.py` (Verified tests)
 * **Summary of Changes:**
-    * `docs/usage.md`: Enhanced with detailed instructions for the category-based tweet generation feature, including a step-by-step guide for using the feature through the UI.
-    * `docs/api.md`: Updated with information about the `TweetCategory` class, its methods (including `load_categories`), and the UI components in `category_select.py`.
-    * `README.md`: Expanded the features section with detailed information about the category-based tweet generation, updated the setup instructions to mention `categories.json`, and added an entry in the changelog documenting the implementation of Steps 17-19.
-    * All documentation now fully reflects the implementation status including the recently completed category-based tweet generation feature.
+    * Implemented core evaluation metrics: `calculate_tone_match_score`, `calculate_relevance_score` (using NLTK), and `calculate_factual_accuracy_score`.
+    * Created an `Evaluator` class to orchestrate the application of these metrics to `AIResponse` objects, using ground truth data.
+    * Added unit tests for metrics and the evaluator, including checks for handling missing NLTK resources.
+    * Provided a sample `evaluation_golden_set.json`.
+    * Updated the Step 21 description in this document to reflect the detailed implementation.
 ---
 
-## Implementation Approach Summary
-This summary provides an excellent high-level view of the development philosophy.
-- **Abstraction**: Clear interfaces (like `TweetDataSource`, `KnowledgeSource`) allow for future changes without impacting the entire system.
-- **Modularity**: Separating concerns into distinct components (`ai`, `data_sources`, `knowledge`, `models`, `ui`) makes development, testing, and maintenance much easier.
-- **Scalability**: The design allows for adding new data sources (Twitter, Discord, Telegram), new knowledge sources, and more complex AI logic or UI features over time.
-- **Usability**: The plan includes steps for a Streamlit UI, which aims to provide an intuitive way to interact with the agent.
+- [ ] **Step 22: Vercel Deployment Setup**  
+  | Item | Details |
+  |-----:|:-------|
+  | **Overview** | Deploy the Streamlit app to Vercel (no Docker). |
+  | **Task Details** | 1. `vercel.json` with Python build config.<br>2. `runtime.txt` for Python version.<br>3. Possibly a `scripts/start.sh` that runs `streamlit run app.py --server.port $PORT`.<br>4. Adjust docs to remove Docker instructions. |
+  | **Affected Files** | `vercel.json`, `runtime.txt`, `scripts/start.sh`, plus doc changes. |
+  | **Implementation Strategy** | - Use `$PORT` from Vercel env.<br>- `vercel dev` to test locally. |
+  | **Edge Cases** | Streamlit port mismatch, lambda size limits. |
+  | **Verification** | 1. `vercel dev` → local success.<br>2. `vercel deploy` works → live URL. |
+  | **Summary** | *(fill after completion)* |
 
-The iterative approach (core data, AI, UI, then enhancements) is sound. Key considerations like security, testing, and documentation are well-integrated.
+---
+
+- [ ] **Step 23: Documentation & Final Updates**  
+  | Item | Details |
+  |-----:|:-------|
+  | **Overview** | Refresh README/docs to reflect new features & Vercel deployment. |
+  | **Task Details** | 1. `README.md`: usage steps, env vars (`GROK_IMAGE_API_KEY`, etc.), mention `DEFAULT_PROTOCOL`.<br>2. `docs/usage.md`: screenshots for image checkbox, mode dropdown, category selection.<br>3. `docs/api.md`: new fields in `AIResponse` (`image_url`, etc.).<br>4. `docs/deployment.md`: instructions for Vercel. |
+  | **Affected Files** | `README.md`, `docs/usage.md`, `docs/api.md`, `docs/deployment.md`. |
+  | **Implementation Strategy** | - Insert relevant screenshots or code snippets for clarity.<br>- Ensure instructions are consistent with final code. |
+  | **Edge Cases** | Avoid revealing secrets in docs. |
+  | **Verification** | 1. Another dev follows docs from scratch successfully.<br>2. No broken links. |
+  | **Summary** | *(fill after completion)* |
+
+---
+
+## **New Feature Integration**
+
+- [ ] **Step 24: Image Generation**  
+  ### (a) **Backend**  
+  1. `src/ai/image_generation.py` → `get_poster_image(prompt: str) -> str`  
+  2. Extend `AIResponse` in `src/models/response.py` with `image_url: Optional[str]`  
+  3. `response_generator` → add `generate_image` flag, call `get_poster_image` if True
+
+  **Verification (Backend)**  
+  - Mock out the image API; check `AIResponse.image_url` is set
+
+  ### (b) **UI**  
+  1. `st.checkbox("Generate Poster Image")` in `tweet_input.py` / `category_select.py`  
+  2. If `AIResponse.image_url`, show `st.image()` + copy button  
+
+  **Verification (UI)**  
+  - Unchecked → no image URL  
+  - Checked → preview & URL  
+
+  **Summary** *(fill after completion)*  
+
+---
+
+- [ ] **Step 25: Interaction Modes & Improved Prompts**  
+  ### (a) **Mode Data**  
+  - `data/protocols/<protocol>/mode-instructions/InstructionsForDegen.md` (etc.)
+
+  ### (b) **Prompt Integration**  
+  - `prompt_engineering.py` loads mode instructions, merges with base persona
+
+  ### (c) **UI**  
+  - `st.selectbox("Interaction Mode", ["Default","Professional","Degen"])` in sidebar or input UI
+
+  **Verification**  
+  - Mode differences: "Degen" includes slang  
+  - Missing mode file → fallback or error
+
+  **Summary** *(fill after completion)*  
+
+---
+
+- [ ] **Step 26: Relevancy Fact Generation**  
+  ### (a) **Data & Provider**  
+  1. `data/input/relevancy_facts.json` with condition/fact pairs  
+  2. `src/ai/relevancy.py` for `get_facts(tweet: Tweet) -> List[str]`
+
+  ### (b) **Integration**  
+  1. `response_generator` appends these facts to the prompt or final output  
+  2. Possibly label them "**Relevancy Fact**:
+
+  **Verification**  
+  - Tweet w/ "bearish" → "crypto market down" fact added  
+  - No match → no facts
+
+  **Summary** *(fill after completion)*  
+
+---
+
+- [ ] **Step 27: Protocol Templatization**  
+  ### (a) **Directory Refactor**  
+  - Move "Ethena" data into `data/protocols/ethena/` (knowledge.json, categories.json, etc.)
+
+  ### (b) **Settings**  
+  - `DEFAULT_PROTOCOL=ethena` in `.env` or config  
+  - `get_protocol_path(*parts)` in `settings.py`
+
+  **Verification**  
+  - Changing `DEFAULT_PROTOCOL` → loads correct data or logs error  
+  - No path breaks
+
+  **Summary** *(fill after completion)*  
+
+---
+
+- [ ] **Step 28: Alternate Protocol Example**  
+  ### (a) **Exana**  
+  - `data/protocols/exana/categories.json, knowledge.json, docs.md, mode-instructions/`
+
+  ### (b) **Testing**  
+  1. `DEFAULT_PROTOCOL=exana` → run app  
+  2. Confirm it uses Exana data
+
+  **Verification**  
+  - Different categories from Ethena  
+  - No crashes or missing files
+
+  **Summary** *(fill after completion)*  
+
+---
+
+## **Conclusion & Completion Checklist**
+
+**After completing Steps 1–19 (already done)** and checking off **Steps 20–28**:
+
+1. **Tests** (Step 20) ensure broad coverage  
+2. **Evaluation** (Step 21) measures output quality  
+3. **Vercel Setup** (Step 22) yields a live deployment  
+4. **Docs** (Step 23) ensure clarity on new features  
+5. **Image Generation** (Step 24)  
+6. **Modes** (Step 25)  
+7. **Relevancy** (Step 26)  
+8. **Protocol Templatization** (Step 27)  
+9. **Alternate Protocol** (Step 28)
+
+At that point, you have a **modular, easily extended** marketing assistant with thorough testing, final deployment on Vercel, and robust documentation.

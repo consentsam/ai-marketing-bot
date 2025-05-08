@@ -1,5 +1,6 @@
-# src/app.py
-import streamlit as st
+import logging
 
-st.title("YieldFi AI Agent")
-st.write("Welcome to the YieldFi AI Agent application!")
+logging.basicConfig(level=logging.DEBUG)
+logging.debug("App started...")
+
+# rest of your Streamlit code

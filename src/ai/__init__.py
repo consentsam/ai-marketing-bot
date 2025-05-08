@@ -1,24 +1,23 @@
 # src/ai/__init__.py - Created 2025-05-07
 
 # Changelog:
-# 2025-05-07 HH:MM - Step 7 - Initial exports for prompt engineering.
+# 2025-05-07 HH:MM - Step 7 - Exported prompt engineering functions.
 # 2025-05-07 HH:MM - Step 8 - Exported tone analysis functions.
-# 2025-05-07 HH:MM - Step 9 - Exported response generation functions.
-# 2025-05-07 HH:MM - Step 18 - Exported generate_new_tweet_prompt.
+# 2025-05-07 HH:MM - Step 9 - Exported response generator functions.
 
 """
-AI package for the YieldFi AI Agent.
+AI module for the YieldFi AI Agent.
 
-This package includes modules for AI client interaction, prompt engineering,
-response generation, and tone analysis.
+This package contains modules related to AI functionalities,
+including API clients, prompt engineering, tone analysis, and response generation.
 """
 
 from .xai_client import XAIClient
 from .prompt_engineering import (
-    generate_interaction_prompt,
+    generate_interaction_prompt, 
     generate_new_tweet_prompt,
-    get_base_yieldfi_persona,
-    get_instruction_set
+    get_base_yieldfi_persona, # Added during step 7 testing, ensure it's exported
+    get_instruction_set # Added during step 7 testing, ensure it's exported
 )
 from .tone_analyzer import analyze_tone, analyze_tweet_tone
 from .response_generator import generate_tweet_reply, generate_new_tweet
@@ -26,14 +25,14 @@ from .response_generator import generate_tweet_reply, generate_new_tweet
 # from .response_generator import generate_tweet_reply
 
 __all__ = [
-    "XAIClient",
-    "generate_interaction_prompt",
-    "generate_new_tweet_prompt",
-    "get_base_yieldfi_persona",
-    "get_instruction_set",
-    "analyze_tone",
-    "analyze_tweet_tone",
-    "generate_tweet_reply",
-    "generate_new_tweet",
+    'XAIClient',
+    'generate_interaction_prompt',
+    'generate_new_tweet_prompt',
+    'get_base_yieldfi_persona',
+    'get_instruction_set',
+    'analyze_tone',
+    'analyze_tweet_tone',
+    'generate_tweet_reply',
+    'generate_new_tweet',
     # 'generate_tweet_reply',
 ]

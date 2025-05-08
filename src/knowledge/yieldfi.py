@@ -59,7 +59,7 @@ class StaticJSONKnowledgeSource(KnowledgeSource):
                 # Simple scoring: 1.0 for direct match, could be improved
                 score = 1.0 
                 # Check if it's an answer to an FAQ, if so, prioritize the question as context
-                if path.endswith('.answer'):
+                if path.endswith('.answer') and isinstance(self._data.get(path.rsplit('.',1)[0]), dict):
                     parent_dict = self._data
                     for p_key in path.rsplit('.',1)[0].split('.'):
                         if '[' in p_key: # list index

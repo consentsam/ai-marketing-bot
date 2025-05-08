@@ -102,9 +102,7 @@ class XAIClient:
                 headers["Authorization"] = f"Bearer {self.xai_api_key}"
                 response = requests.post(f"{self.xai_base_url}/chat/completions", json=payload, headers=headers, timeout=30)
                 response.raise_for_status() # Will raise HTTPError for bad responses (4xx or 5xx)
-                raw_json = response.json()
-                logger.debug(f"Raw xAI API Response JSON: {raw_json}")
-                return raw_json
+                return response.json()
             
             elif use_google_api:
                 logger.info(f"Calling Google PaLM API: {self.google_palm_base_url}")
@@ -127,9 +125,7 @@ class XAIClient:
                 
                 response = requests.post(palm_api_url, json=palm_payload, headers=headers, timeout=30)
                 response.raise_for_status()
-                raw_json = response.json()
-                logger.debug(f"Raw Google PaLM API Response JSON: {raw_json}")
-                return raw_json
+                return response.json()
 
             else:
                 # This case should ideally be caught by upfront config checks,

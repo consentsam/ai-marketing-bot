@@ -93,9 +93,8 @@ class TestXAIClient(unittest.TestCase):
         self.assertEqual(response, expected_response_json)
         mock_post.assert_called_once()
         args, kwargs = mock_post.call_args
-        self.assertEqual(args[0], "mock://xai.com/chat/completions")
-        self.assertIn('messages', kwargs['json'])
-        self.assertEqual(kwargs['json']['messages'][1]['content'], prompt_text)
+        self.assertEqual(args[0], "mock://xai.com/completions")
+        self.assertEqual(kwargs['json']['prompt'], prompt_text)
         self.assertEqual(kwargs['headers']['Authorization'], "Bearer test_xai_key")
 
     @patch('src.ai.xai_client.requests.post')

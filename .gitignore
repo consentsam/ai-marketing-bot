@@ -11,14 +11,15 @@ __pycache__/
 .idea/
 *.swp
 *.swo
+venv/
 
 # Dependencies
-venv/
-env/
-.venv/
-build/
-dist/
-*.egg-info/
+venv/*
+env/*
+.venv/*
+build/*
+dist/*
+*.egg-info/*
 
 # Data files (if large or sensitive, otherwise depends on project)
 # data/output/*

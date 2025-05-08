@@ -1,6 +1,5 @@
 # Changelog:
 # 2025-05-07 HH:MM - Step 7 - Initial implementation of prompt engineering for dynamic tweet interactions.
-# 2025-05-07 HH:MM - Step 18 - Added generate_new_tweet_prompt for category-based tweet creation.
 
 """
 Prompt engineering for the YieldFi AI Agent.
@@ -29,14 +28,15 @@ except ImportError:
 from src.models.tweet import Tweet # Or a more generic Post model
 from src.models.account import Account, AccountType
 from src.models.response import ResponseType # For typing, if creating different prompt structures per response type
-from src.models.category import TweetCategory # ADDED FOR STEP 18
 
 # Logger instance - ensure logging is set up if used
 # from src.utils.logging import get_logger
 # logger = get_logger(__name__) # Use module name for logger
 
 # Core YieldFi message or mission statement that defines the brand voice
-YIELDFI_CORE_MESSAGE = get_config("ai.yieldfi_core_message", "YieldFi empowers users with innovative and secure decentralized finance solutions, maximizing yields and providing transparent financial tools.")
+YIELDFI_CORE_MESSAGE = """
+YieldFi is a leading DeFi platform focused on providing innovative yield farming solutions, secure staking, and transparent financial tools. Our mission is to empower users with accessible, decentralized financial opportunities while maintaining the highest standards of security and trust.
+"""
 
 class InteractionType(Enum):
     REPLY = "reply"
@@ -45,30 +45,26 @@ class InteractionType(Enum):
     PRODUCT_UPDATE = "product_update"
     COMMUNITY_UPDATE = "community_update"
 
-def get_base_yieldfi_persona(account_type: AccountType) -> str:
+def get_base_yieldfi_persona(active_account_type: AccountType) -> str:
     """
     Defines the base persona for YieldFi's social media voice based on the account type.
     
     Args:
-        account_type: The type of account posting (e.g., OFFICIAL, INTERN).
+        active_account_type: The type of account posting (e.g., OFFICIAL, INTERN).
     
     Returns:
         A string describing the persona.
     """
-    persona_map = {
-        AccountType.OFFICIAL: "You are the official voice of YieldFi, a leading decentralized finance platform. Your tone should be professional, authoritative, informative, and trustworthy. Focus on clarity, accuracy, and security. Adhere strictly to YieldFi's brand guidelines and core messaging.",
-        AccountType.INTERN: "You are a YieldFi Intern, enthusiastic about DeFi and learning. Your tone should be friendly, helpful, and eager to engage. You can be more informal than the official account but always remain respectful and accurate. Double-check information before sharing.",
-        AccountType.PARTNER: "You are representing a YieldFi Partner. Your tone should be collaborative, supportive of YieldFi, and focused on mutual benefits. Highlight the strengths of the partnership.",
-        AccountType.KOL: "You are a Key Opinion Leader (KOL) in the DeFi space, associated with YieldFi. Your tone should be influential, insightful, and engaging. Share your expert opinions while aligning with YieldFi's values.",
-        AccountType.INSTITUTION: "You are communicating as YieldFi with an institutional entity. Your tone must be highly professional, data-driven, concise, and demonstrate deep understanding of financial markets and regulatory considerations.",
-        AccountType.COMMUNITY_MEMBER: "You are a knowledgeable and helpful YieldFi community member. Your tone is supportive, friendly, and aimed at helping other users or discussing YieldFi features positively.",
-        AccountType.PARTNER_INTERN: "You are an intern at a YieldFi Partner company. Tone is enthusiastic, learning-focused, and supportive of both your company and YieldFi.",
-        AccountType.COMPETITOR: "You are responding to a competitor. Maintain a professional, respectful, and confident tone. Focus on YieldFi's strengths and differentiators without being overtly aggressive.",
-        AccountType.UNKNOWN: "You are a general AI assistant providing information about YieldFi. Maintain a neutral, informative, and helpful tone."
-    }
-    return persona_map.get(account_type, persona_map[AccountType.UNKNOWN])
+    if active_account_type == AccountType.OFFICIAL:
+        return "You are the official voice of YieldFi, a professional, authoritative, and helpful representative of the company. Your tone is polished, confident, and focused on building trust and providing value."
+    elif active_account_type == AccountType.INTERN:
+        return "You are a YieldFi intern, enthusiastic, approachable, and relatable. Your tone is casual, friendly, and eager to learn or help, often adding a personal touch or humor when appropriate."
+    elif active_account_type == AccountType.PARTNER:
+        return "You are a YieldFi partner, collaborative and supportive. Your tone is professional yet warm, emphasizing mutual benefits and shared goals."
+    else:
+        return "You are a representative of YieldFi, maintaining a balanced and engaging tone that aligns with the brand's mission to empower users through decentralized finance."
 
-def get_instruction_set(active_account_type: AccountType, target_account_type: Optional[AccountType]) -> str:
+def get_instruction_set(active_account_type: AccountType, target_account_type: AccountType) -> str:
     """
     Selects the appropriate instruction set based on the interacting account types.
     This simulates fetching content from specific instruction documents.
@@ -80,26 +76,30 @@ def get_instruction_set(active_account_type: AccountType, target_account_type: O
     Returns:
         A string with tailored instructions for the interaction.
     """
-    if active_account_type == AccountType.OFFICIAL:
-        if target_account_type == AccountType.INSTITUTION:
-            return "Focus on institutional-grade security, compliance, and robust financial products. Provide data-driven insights."
-        elif target_account_type == AccountType.PARTNER:
-            return "Emphasize mutual benefits, collaborative opportunities, and shared goals. Reinforce the value of the partnership."
-        elif target_account_type == AccountType.COMMUNITY_MEMBER:
-            return "Be helpful, informative, and appreciative of community engagement. Address questions clearly."
-        else:
-            # This else corresponds to the OFFICIAL account type when target is not INSTITUTION, PARTNER, or COMMUNITY
-            return "Maintain the official YieldFi voice: professional, authoritative, and informative."
-    elif active_account_type == AccountType.INTERN:
-        return "Be friendly, helpful, and eager to learn. If unsure, state that you will find out. Double-check information."
-    # Add more rules for other personas...
-    # Default instruction if no specific rule matches above
-    return "Provide a helpful and relevant response."
+    if active_account_type == AccountType.OFFICIAL and target_account_type == AccountType.INSTITUTION:
+        return """
+        When responding to institutions, maintain a highly professional tone. Focus on potential collaborations, emphasizing YieldFi's robust security, high yields, and transparency. Highlight case studies or data if relevant. Avoid casual language and ensure responses are concise and value-driven.
+        Example tone: 'We're impressed by your institution's track record and believe a partnership with YieldFi could enhance your portfolio with our secure, high-yield DeFi solutions. Let's discuss further.'
+        """
+    elif active_account_type == AccountType.OFFICIAL and target_account_type == AccountType.PARTNER:
+        return """
+        When engaging with partners, adopt a collaborative and appreciative tone. Acknowledge shared goals or past successes, and suggest ways YieldFi can support their initiatives through our platform. Keep the tone warm but professional.
+        Example tone: 'Thank you for being a valued partner. We're excited to explore how YieldFi's latest staking options can benefit your community. Can we schedule a call to discuss?' 
+        """
+    elif active_account_type == AccountType.INTERN and target_account_type == AccountType.INTERN:
+        return """
+        When interacting with other interns, be friendly, supportive, and relatable. Share personal insights or excitement about YieldFi's features, ask questions, or offer help in a casual way. Use emojis sparingly if the context allows.
+        Example tone: 'Hey, I've been diving into YieldFi's yield farming pools lately, and they're amazing! Have you tried them yet? Let me know if you want some tips 😊'
+        """
+    else:
+        return """
+        Tailor your response to the context of the interaction. Maintain YieldFi's brand voice, focusing on empowerment, innovation, and trust in decentralized finance. Be helpful, clear, and engaging, adjusting formality based on the target audience.
+        """
 
 def generate_interaction_prompt(
-    original_tweet: Tweet,
-    responding_as_account: Account,
-    target_account: Optional[Account] = None,
+    original_post_content: Optional[str],
+    active_account_info: Account,
+    target_account_info: Optional[Account] = None,
     yieldfi_knowledge_snippet: Optional[str] = None,
     interaction_details: Optional[Dict[str, Any]] = None,
     platform: str = "Twitter"
@@ -108,9 +108,9 @@ def generate_interaction_prompt(
     Constructs a detailed prompt for AI interaction based on context.
     
     Args:
-        original_tweet: The original tweet being replied to.
-        responding_as_account: The account posting the reply.
-        target_account: The target account being replied to.
+        original_post_content: Content of the post/tweet being replied to, if any.
+        active_account_info: Information about the account posting (YieldFi persona).
+        target_account_info: Information about the target account (if replying).
         yieldfi_knowledge_snippet: Relevant YieldFi information to include.
         interaction_details: Dictionary with specific instructions (e.g., tone, goal).
         platform: The social media platform (e.g., Twitter, for character limits).
@@ -122,111 +122,103 @@ def generate_interaction_prompt(
     if interaction_details is None:
         interaction_details = {}
 
-    persona = get_base_yieldfi_persona(responding_as_account.account_type)
-    # Determine original author and target usernames
-    original_username = original_tweet.metadata.author_username or ""
-    target_username = target_account.username if target_account else original_username
-    # Determine display name and account type for target if provided
-    target_display = target_account.display_name if target_account else original_username
-    target_acc_type = target_account.account_type.value if target_account else ""
-    # Single combined string for target persona
-    target_persona_str = (
-        f"The original tweet is from @{target_username} (Display Name: {target_display}, Account Type: {target_acc_type})"
-    )
+    # Section 1: Persona Definition
+    persona = get_base_yieldfi_persona(active_account_info.account_type)
+    prompt_parts = [f"Persona: {persona}"]
 
-    instruction_set = get_instruction_set(responding_as_account.account_type, target_account.account_type if target_account else original_tweet.account_type)
+    # Section 2: Core YieldFi Message
+    prompt_parts.append(f"Core Message: {YIELDFI_CORE_MESSAGE.strip()}")
 
-    # Ensure original_tweet.content is escaped properly if it contains quotes or special characters
-    # A simple way is to replace triple quotes with something else if you want to embed it directly,
-    # or just use single/double quotes carefully. For this f-string, we'll ensure it's treated as a block.
-    original_content_formatted = original_tweet.content.replace('"''', "'''") # Escape triple quotes if any
+    # Section 3: Original Post Context (if replying)
+    if original_post_content:
+        prompt_parts.append(f"Original Post to Reply To: \"{original_post_content}\"")
 
-    prompt_parts = [
-        "You are an AI assistant tasked with generating a tweet reply.",
-        f"Your Persona: {persona}",
-        "YieldFi Core Message to subtly weave in if relevant: " + YIELDFI_CORE_MESSAGE,
-        "--- Original Tweet Context ---",
-        f"Original Tweet Author: @{original_username}",
-        f'Original Tweet Content: "{original_content_formatted}"',
-        target_persona_str,
-        "--- End Original Tweet Context ---",
-        "--- Instructions for Your Reply ---",
-        instruction_set,
-    ]
+    # Section 4: Target Account Context (if available)
+    if target_account_info:
+        target_desc = f"Target Account: @{target_account_info.username} (Type: {target_account_info.account_type.value})"
+        if target_account_info.bio:
+            target_desc += f", Bio: {target_account_info.bio}"
+        prompt_parts.append(target_desc)
+        # Add specific instructions based on account types
+        instructions = get_instruction_set(active_account_info.account_type, target_account_info.account_type)
+        prompt_parts.append(f"Interaction Instructions: {instructions.strip()}")
 
-    if interaction_details:
-        if "tone_suggestion" in interaction_details:
-            prompt_parts.append(f"Suggested Tone for reply: {interaction_details['tone_suggestion']}")
-        if "specific_goal" in interaction_details:
-            prompt_parts.append(f"Specific Goal for reply: {interaction_details['specific_goal']}")
-    
+    # Section 5: Relevant YieldFi Knowledge (if available)
     if yieldfi_knowledge_snippet:
-        prompt_parts.append("--- Relevant YieldFi Knowledge Snippet (for context, do not directly quote unless necessary) ---")
-        prompt_parts.append(yieldfi_knowledge_snippet)
-        prompt_parts.append("--- End Knowledge Snippet ---")
+        prompt_parts.append(f"Relevant YieldFi Knowledge: {yieldfi_knowledge_snippet}")
 
-    prompt_parts.append("Task: Generate a concise, engaging, and relevant reply to the original tweet based on all the above information.")
-    if platform == "Twitter":
-        prompt_parts.append("Ensure the reply is suitable for Twitter (e.g., within character limits, using appropriate hashtags if natural). Do NOT use more than 3 hashtags.")
-    
-    prompt_parts.append("Your reply should ONLY be the content of the tweet reply itself. Do not add any conversational fluff before or after the tweet content. Do not introduce yourself.")
-    return "\n\n".join(prompt_parts)
+    # Section 6: Task-Specific Instructions (from interaction_details or default)
+    tone = interaction_details.get('tone', 'default')
+    goal = interaction_details.get('goal', 'engage and inform')
+    style_examples = interaction_details.get('style_examples', '')
+    task_instructions = f"Task: Craft a response that aligns with the persona and core message."
+    if tone != 'default':
+        task_instructions += f" Use a {tone} tone."
+    task_instructions += f" Goal: {goal}."
+    if style_examples:
+        task_instructions += f" Style Examples: {style_examples}"
+    # Platform-specific constraints
+    if platform.lower() == "twitter":
+        task_instructions += " Keep the response under 280 characters as per Twitter's limit."
+    prompt_parts.append(task_instructions)
+
+    # Combine all parts into the final prompt
+    final_prompt = "\n\n".join(prompt_parts)
+    final_prompt += "\n\nResponse: "
+    return final_prompt
 
 def generate_new_tweet_prompt(
-    category: TweetCategory,
-    active_account: Account,
+    category: str,
     topic: Optional[str] = None,
     yieldfi_knowledge_snippet: Optional[str] = None,
+    active_account_info: Account = None,
     platform: str = "Twitter"
 ) -> str:
     """
-    Generates a prompt for creating a new tweet based on a category, topic, and YieldFi knowledge.
+    Constructs a prompt for creating a new tweet based on a category and topic.
     
     Args:
-        category: The TweetCategory object defining the tweet's purpose and style.
-        active_account: The Account object representing who is posting the tweet.
-        topic: Optional user-provided topic or key message for the tweet.
-        yieldfi_knowledge_snippet: Optional relevant knowledge about YieldFi.
-        platform: The platform for which the tweet is being generated (e.g., "Twitter").
+        category: The category of the tweet (e.g., Announcement, Community Update).
+        topic: Specific topic or content focus for the tweet.
+        yieldfi_knowledge_snippet: Relevant YieldFi information to include.
+        active_account_info: Information about the account posting.
+        platform: The social media platform (e.g., Twitter).
     
     Returns:
-        A string prompt for the AI model.
+        A formatted string prompt for the AI model.
     """
-    persona = get_base_yieldfi_persona(active_account.account_type)
-    
-    prompt_parts = [
-        f"You are an AI assistant tasked with drafting a new {platform} post for YieldFi.",
-        f"Your Persona: {persona}",
-        f"Core YieldFi Message to subtly weave in if relevant: {YIELDFI_CORE_MESSAGE}",
-        "--- Tweet Generation Task ---",
-        f"Category: {category.name} - {category.description}",
-    ]
+    # Section 1: Persona Definition
+    if active_account_info:
+        persona = get_base_yieldfi_persona(active_account_info.account_type)
+    else:
+        persona = get_base_yieldfi_persona(AccountType.OFFICIAL)
+    prompt_parts = [f"Persona: {persona}"]
 
+    # Section 2: Core YieldFi Message
+    prompt_parts.append(f"Core Message: {YIELDFI_CORE_MESSAGE.strip()}")
+
+    # Section 3: Category and Topic
+    category_desc = f"Tweet Category: {category}"
     if topic:
-        prompt_parts.append(f"Primary Topic/Key Message: {topic}")
-    
-    if category.prompt_keywords:
-        prompt_parts.append(f"Helpful Keywords for this category: {', '.join(category.prompt_keywords)}")
+        category_desc += f"\nSpecific Topic: {topic}"
+    prompt_parts.append(category_desc)
 
-    if category.style_guidelines:
-        prompt_parts.append("Style Guidelines to follow:")
-        for style_key, style_value in category.style_guidelines.items():
-            prompt_parts.append(f"  - {style_key.capitalize()}: {style_value}")
-    
+    # Section 4: Relevant YieldFi Knowledge (if available)
     if yieldfi_knowledge_snippet:
-        prompt_parts.append("--- Relevant YieldFi Knowledge (for context, incorporate naturally) ---")
-        prompt_parts.append(yieldfi_knowledge_snippet)
-        prompt_parts.append("--- End Knowledge Snippet ---")
+        prompt_parts.append(f"Relevant YieldFi Knowledge: {yieldfi_knowledge_snippet}")
 
-    prompt_parts.append(f"Task: Draft a compelling and informative {platform} post based on the category, topic (if provided), and all the above instructions.")
-    if platform == "Twitter":
-        prompt_parts.append("Ensure the post is concise, engaging, and suitable for Twitter (e.g., within character limits, using appropriate hashtags naturally). Do NOT use more than 3-4 relevant hashtags.")
-        prompt_parts.append("If style guidelines specify a length, try to adhere to it. Otherwise, aim for clarity and impact.")
+    # Section 5: Task Instructions
+    task_instructions = f"Task: Create a new tweet that aligns with the persona and core message for the specified category."
+    if platform.lower() == "twitter":
+        task_instructions += " Keep the tweet under 280 characters as per Twitter's limit."
+    prompt_parts.append(task_instructions)
 
-    prompt_parts.append("Your output should ONLY be the content of the tweet itself. Do not add any conversational fluff before or after the tweet content. Do not introduce yourself as an AI.")
-    
-    return "\n\n".join(prompt_parts)
+    # Combine all parts into the final prompt
+    final_prompt = "\n\n".join(prompt_parts)
+    final_prompt += "\n\nTweet: "
+    return final_prompt
 
 # The old `create_prompt` and its helpers (`_get_system_context`, `_get_examples`, `_get_response_instructions`)
 # would likely be refactored or absorbed into the logic that calls `generate_interaction_prompt`.
-# The `
+# The `generate_reply_prompt` (old one) is also superseded by `generate_interaction_prompt`.
+# Keeping them for reference during refactoring for Step 7 is fine, but the goal is one powerful, context-aware prompter.

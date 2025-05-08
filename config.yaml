@@ -29,21 +29,19 @@ ai:
   default_max_tokens: 150
   default_temperature: 0.7
 
-# tweet_categories list removed - categories now defined in data/input/categories.json
-# tweet_categories:
-#   - announcement
-#   - product-updates
-#   - community-updates
-#   - events
+tweet_categories:
+  - announcement
+  - product-updates
+  - community-updates
+  - events
 
 tone_analysis:
   enabled: true
   method: "textblob" # or "xai", "google_palm"
 
 logging:
-  level: DEBUG
-  console_level: INFO
-  show_raw_response_in_ui: true
+  level: INFO
+  file: yieldfi_ai_agent.log
 
 ui:
   theme: light  # Options: light, dark

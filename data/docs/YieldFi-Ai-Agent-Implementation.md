@@ -489,7 +489,7 @@ The YieldFi AI Agent aims to enhance YieldFi's social media presence by automati
 
 ## Category-Based Tweet Generation
 
-- [ ] **Step 17: Implement category definition system**
+- [x] **Step 17: Implement category definition system**
     -   **Task**: Create `src/models/category.py` defining a `TweetCategory` dataclass/enum. Populate `data/input/categories.json` with a list of categories (name, description, example prompts/keywords) relevant to YieldFi (e.g., Announcement, Product Update, Community Update, Event, Security, Transparency).
         -   **EXPLANATION**: A structured way to define categories makes it easier to manage them and for the AI to generate targeted content. JSON is a good choice for configurable category data.
     -   **Key Considerations/Sub-Tasks**:
@@ -503,7 +503,20 @@ The YieldFi AI Agent aims to enhance YieldFi's social media presence by automati
     -   **Step Dependencies**: Step 2 (for base model understanding).
     -   **User Instructions**: Customize `data/input/categories.json` with YieldFi-specific categories, providing clear descriptions and keywords/examples for each to guide AI generation.
 
-- [ ] **Step 18: Create category-based prompt engineering**
+---
+**Step Completion Summary (2025-05-08 HH:MM):**
+* **Status:** Completed & Approved by User
+* **Files Modified/Created:**
+    * `src/models/category.py` (Created)
+    * `data/input/categories.json` (Created/Updated)
+    * `src/models/__init__.py` (Updated)
+* **Summary of Changes:**
+    * `src/models/category.py`: Implemented `TweetCategory` dataclass with required attributes (`name`, `description`, `prompt_keywords`, `style_guidelines`) and helper methods including `from_dict` and loading from JSON.
+    * `data/input/categories.json`: Populated with YieldFi-specific tweet categories, including descriptions, prompt keywords, and style guidelines for each.
+    * `src/models/__init__.py`: Updated to export the `TweetCategory` class.
+---
+
+- [x] **Step 18: Create category-based prompt engineering**
     -   **Task**: Extend `src/ai/prompt_engineering.py` (or create `src/ai/category_prompts.py`) with functions to generate prompts tailored for creating new tweets based on a selected category, topic, and YieldFi knowledge.
         -   **EXPLANATION**: Prompts for generating new tweets will differ significantly from reply prompts and vary by category.
     -   **Key Considerations/Sub-Tasks**:
@@ -515,9 +528,19 @@ The YieldFi AI Agent aims to enhance YieldFi's social media presence by automati
     -   **Step Dependencies**: Step 7, Step 17.
     -   **User Instructions**: Review generated prompts for different categories to ensure they accurately reflect the category's intent and provide good guidance to the LLM.
 
-- [ ] **Step 19: Develop category selection UI**
+---
+**Step Completion Summary (2025-05-08 HH:MM):**
+* **Status:** Completed & Approved by User
+* **Files Modified/Created:**
+    * `src/ai/prompt_engineering.py` (Updated)
+* **Summary of Changes:**
+    * `src/ai/prompt_engineering.py`: Updated to include a `generate_new_tweet_prompt` function that accepts a `TweetCategory` object and uses its attributes (name, description, prompt_keywords, style_guidelines) to create tailored prompts for new tweet generation.
+    * The function also handles additional parameters like topic, account type, and YieldFi knowledge to provide comprehensive context to the AI model.
+    * Added proper type hinting and docstrings for clarity and robustness.
+---
+
+- [x] **Step 19: Develop category selection UI**
     -   **Task**: In `src/ui/category_select.py` (or `app.py`), create UI components for selecting a tweet category (from Step 17), inputting a topic/brief, and triggering the generation of a new tweet.
-        -   **EXPLANATION**: Provides the user interface to leverage the category-based tweet generation functionality.
     -   **Key Considerations/Sub-Tasks**:
         * `st.selectbox` to choose from available categories.
         * `st.text_area` for the user to provide a topic or key points for the tweet.
@@ -528,6 +551,16 @@ The YieldFi AI Agent aims to enhance YieldFi's social media presence by automati
         * `src/ui/category_select.py` (or modify `app.py`)
     -   **Step Dependencies**: Step 16 (for response display), Step 17 (for category list).
     -   **User Instructions**: Test the category selection and topic input. Ensure the correct information is passed to the backend and the generated tweet is displayed.
+---
+**Step Completion Summary (2025-05-07 22:00):**
+* **Status:** Completed & Approved by User
+* **Files Modified/Created:**
+    * `src/ui/category_select.py`
+    * `app.py`
+* **Summary of Changes:**
+    * `src/ui/category_select.py`: Created UI components for selecting a category, entering a topic, and generating/displaying a new tweet. Integrated `generate_new_tweet` and session state for error/content handling.
+    * `app.py`: Updated to call `display_category_tweet_ui` instead of the placeholder `display_new_tweet_ui`, imported the new module, and removed legacy placeholder code.
+---
 
 ## Testing and Evaluation
 

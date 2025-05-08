@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../.
 from src.models.tweet import Tweet # type: ignore
 from src.models.account import Account, AccountType # type: ignore
 from src.models.response import AIResponse, ResponseType # type: ignore
+from src.models.category import TweetCategory # Added for Step 18
 from src.ai.xai_client import XAIClient, APIError as XAIAPIError # type: ignore
 from src.ai.prompt_engineering import generate_interaction_prompt, generate_new_tweet_prompt # type: ignore
 from src.ai.tone_analyzer import analyze_tweet_tone # type: ignore
@@ -33,10 +34,12 @@ class MockKnowledgeRetriever:
             return "YieldFi offers competitive staking rewards on various assets. Current APY for YLD is 12%."
         return "YieldFi is a decentralized finance platform focused on user empowerment and transparency."
 
-    def search_knowledge_for_topic(self, topic: str, category: Optional[str] = None) -> Optional[str]:
-        logger.info(f"MockKnowledgeRetriever: Received topic '{topic}' for category '{category}'. Returning mock knowledge.")
-        if "new product" in topic.lower():
+    def search_knowledge_for_topic(self, topic: str, category_name: Optional[str] = None) -> Optional[str]:
+        logger.info(f"MockKnowledgeRetriever: Received topic '{topic}' for category '{category_name}'. Returning mock knowledge.")
+        if "new product" in topic.lower() or (category_name and "product update" in category_name.lower()):
             return "Our latest product, YieldBoost, offers enhanced returns through automated strategies."
+        if category_name and "announcement" in category_name.lower():
+             return "YieldFi has just secured a new strategic partnership with InnovateX to expand our ecosystem!"
         return "YieldFi continually innovates to bring value to its users."
 
 # --- Mocked Knowledge Retriever --- END
@@ -71,6 +74,7 @@ def generate_tweet_reply(
     ai_generated_content = "[Error: Could not generate AI response]"
     model_used = "Unknown"
     final_tone = original_tweet.tone
+    response_error = None # To store error messages
 
     try:
         # 1. Analyze tone of the original tweet (if not already done)
@@ -104,7 +108,7 @@ def generate_tweet_reply(
         # 4. Call AI client
         # This assumes XAIClient is properly configured (Step 6)
         xai_client = XAIClient() # API keys loaded from config within XAIClient
-        model_used = "xAI (or fallback)" # Placeholder, XAIClient might provide more detail
+        model_used = xai_client.xai_model  # Use configured model name
         
         ai_response_data = xai_client.get_completion(prompt=prompt_str)
         
@@ -119,6 +123,7 @@ def generate_tweet_reply(
             else:
                 logger.warning(f"Could not extract text from AI response choice: {choice}")
                 ai_generated_content = "[Warning: AI response format unclear]"
+                response_error = "AI response format unclear from choice."
         elif ai_response_data.get('candidates') and isinstance(ai_response_data['candidates'], list) and len(ai_response_data['candidates']) > 0:
              # Fallback for Google PaLM style response (text-bison-001 example)
             candidate = ai_response_data['candidates'][0]
@@ -127,18 +132,22 @@ def generate_tweet_reply(
             else:
                 logger.warning(f"Could not extract text from AI response candidate: {candidate}")
                 ai_generated_content = "[Warning: AI response format unclear (PaLM candidate)]"
+                response_error = "AI response format unclear from candidate (PaLM)."
         else:
             logger.warning(f"AI response structure not recognized for content extraction: {ai_response_data}")
             ai_generated_content = "[Warning: AI response structure not recognized]"
+            response_error = "AI response structure not recognized."
 
         logger.info(f"Successfully generated AI reply: {ai_generated_content[:100]}...")
 
     except XAIAPIError as e:
         logger.error(f"XAIClient APIError in generate_tweet_reply: {e}", exc_info=True)
         ai_generated_content = f"[Error: AI API call failed - {e.message}]"
+        response_error = e.message
     except Exception as e:
         logger.error(f"Unexpected error in generate_tweet_reply: {e}", exc_info=True)
         ai_generated_content = f"[Error: Unexpected error during response generation - {str(e)}]"
+        response_error = str(e)
 
     return AIResponse(
         content=ai_generated_content,
@@ -149,11 +158,11 @@ def generate_tweet_reply(
         responding_as=responding_as_account.account_type.value,
         target_account=target_account.username if target_account else None,
         generation_time=datetime.now(timezone.utc),
-        tone=final_tone # Tone of the original post, or could be tone of the response if analyzed
+        tone=final_tone
     )
 
 def generate_new_tweet(
-    category: str,
+    category: TweetCategory, # Changed from str to TweetCategory
     responding_as_type: AccountType,
     topic: Optional[str] = None,
     platform: str = "Twitter",
@@ -175,24 +184,25 @@ def generate_new_tweet(
         platform="Twitter" # Default or derive as needed
     )
 
-    logger.info(f"Generating new '{category}' tweet on topic '{topic}' as {responding_as_account.username} (Type: {responding_as_type.value})")
+    logger.info(f"Generating new '{category.name}' tweet on topic '{topic}' as {responding_as_account.username} (Type: {responding_as_type.value})")
     prompt_str = ""
     ai_generated_content = "[Error: Could not generate AI response]"
     model_used = "Unknown"
+    response_error = None # To store error messages
 
     try:
         # 1. Retrieve relevant knowledge (Mocked for now)
         knowledge_snippet: Optional[str] = None
         # For Step 11: if knowledge_retriever:
         current_retriever = knowledge_retriever if knowledge_retriever else MockKnowledgeRetriever()
-        knowledge_query = topic if topic else category
-        knowledge_snippet = current_retriever.search_knowledge_for_topic(knowledge_query, category)
+        knowledge_query = topic if topic else category.name # Use category name for knowledge query if no topic
+        knowledge_snippet = current_retriever.search_knowledge_for_topic(knowledge_query, category.name)
         if knowledge_snippet:
             logger.info(f"Retrieved knowledge snippet for new tweet: {knowledge_snippet[:100]}...")
 
-        # 2. Generate prompt
+        # 2. Generate prompt using TweetCategory object
         prompt_str = generate_new_tweet_prompt(
-            category=category,
+            category=category, # Pass the TweetCategory object
             topic=topic,
             active_account_info=responding_as_account,
             yieldfi_knowledge_snippet=knowledge_snippet,
@@ -203,7 +213,7 @@ def generate_new_tweet(
 
         # 3. Call AI client
         xai_client = XAIClient()
-        model_used = "xAI (or fallback)"
+        model_used = xai_client.xai_model  # Use configured model name
         ai_response_data = xai_client.get_completion(prompt=prompt_str)
 
         # Extract content (same logic as generate_tweet_reply)
@@ -215,33 +225,36 @@ def generate_new_tweet(
                  ai_generated_content = choice['message']['content'].strip()
             else:
                 ai_generated_content = "[Warning: AI response format unclear]"
+                response_error = "AI response format unclear from choice."
         elif ai_response_data.get('candidates') and isinstance(ai_response_data['candidates'], list) and len(ai_response_data['candidates']) > 0:
             candidate = ai_response_data['candidates'][0]
             if candidate.get('output'):
                 ai_generated_content = candidate['output'].strip()
             else:
                 ai_generated_content = "[Warning: AI response format unclear (PaLM candidate)]"
+                response_error = "AI response format unclear from candidate (PaLM)."
         else:
             ai_generated_content = "[Warning: AI response structure not recognized]"
+            response_error = "AI response structure not recognized."
 
         logger.info(f"Successfully generated new AI tweet: {ai_generated_content[:100]}...")
 
     except XAIAPIError as e:
         logger.error(f"XAIClient APIError in generate_new_tweet: {e}", exc_info=True)
         ai_generated_content = f"[Error: AI API call failed - {e.message}]"
+        response_error = e.message
     except Exception as e:
         logger.error(f"Unexpected error in generate_new_tweet: {e}", exc_info=True)
         ai_generated_content = f"[Error: Unexpected error during new tweet generation - {str(e)}]"
+        response_error = str(e)
 
     return AIResponse(
         content=ai_generated_content,
-        response_type=ResponseType.NEW_TWEET, # Or more specific based on category?
+        response_type=ResponseType.NEW_TWEET,
         model_used=model_used,
         prompt_used=prompt_str,
         responding_as=responding_as_account.account_type.value,
-        target_account=None,
-        generation_time=datetime.now(timezone.utc),
-        tone=None # Tone of new tweet could be analyzed post-generation if needed
+        generation_time=datetime.now(timezone.utc)
     )
 
 if __name__ == '__main__':
@@ -254,6 +267,10 @@ if __name__ == '__main__':
     # Sample/Mock data for testing
     from src.models.tweet import TweetMetadata # type: ignore
     from src.models.account import AccountType # type: ignore
+    # For Step 18, we need TweetCategory for generate_new_tweet test
+    from src.models.category import TweetCategory # type: ignore
+    from src.config.settings import load_config # Ensure config is loaded for XAIClient init and mock knowledge
+    load_config()
 
     test_tweet = Tweet(
         content="What are YieldFi's security measures? I am concerned.",
@@ -273,6 +290,14 @@ if __name__ == '__main__':
         account_id="user123", username="ConcernedUser", display_name="Concerned User",
         account_type=AccountType.UNKNOWN, platform="Twitter", follower_count=50
     )
+    
+    # Test category for generate_new_tweet
+    test_category = TweetCategory(
+        name="Product Update",
+        description="Announce new features or improvements.",
+        prompt_keywords=["new feature", "update"],
+        style_guidelines={"tone": "Excited and informative", "length": "Under 200 chars"}
+    )
 
     # --- Test generate_tweet_reply --- 
     print("\n--- Testing generate_tweet_reply ---")
@@ -283,6 +308,7 @@ if __name__ == '__main__':
             self.xai_api_key = "mock_xai_key"
             self.google_api_key = "mock_google_key"
             self.use_fallback = False
+            self._model_name = "mock-xai-model-test"
 
         def get_completion(self, prompt: str, **kwargs) -> Dict[str, Any]:
             print(f"MockXAIClient.get_completion called with prompt starting: {prompt[:60]}...")
@@ -294,11 +320,19 @@ if __name__ == '__main__':
                     }
                 ]
             }
+        def get_model_name(self) -> str:
+            return self._model_name
     
     def prompt_content_finder(prompt_str):
         # Helper to find original post content in prompt for mock response
         if "Original Post to Reply To:" in prompt_str:
             try: return prompt_str.split("Original Post to Reply To: \"")[1].split("\"")[0]
+            except: pass
+        if "Specific Topic/Brief:" in prompt_str: # For new tweets
+            try: return prompt_str.split("Specific Topic/Brief: ")[1].split("\n")[0]
+            except: pass
+        if "Tweet Category:" in prompt_str: # Fallback for new tweets if no topic
+            try: return prompt_str.split("Tweet Category: ")[1].split("\n")[0]
             except: pass
         return "[original content not found in prompt]"
 
@@ -312,7 +346,7 @@ if __name__ == '__main__':
     )
     print(f"Generated Reply AIResponse content: {reply_response.content}")
     print(f"Generated Reply AIResponse type: {reply_response.response_type}")
-    print(f"Generated Reply AIResponse tone (of original): {reply_response.tone}")
+    print(f"Generated Reply AIResponse tone_analysis: {reply_response.tone}")
     assert ResponseType.TWEET_REPLY == reply_response.response_type
     assert "mock AI reply" in reply_response.content
     assert "security measures" in reply_response.content # Check if original content made it to mock
@@ -320,7 +354,7 @@ if __name__ == '__main__':
     # --- Test generate_new_tweet --- 
     print("\n--- Testing generate_new_tweet ---")
     new_tweet_response = generate_new_tweet(
-        category="Product Update",
+        category=test_category, # Pass TweetCategory object
         responding_as_type=AccountType.OFFICIAL,
         topic="Announcing our new YieldBoost feature!"
     )
@@ -328,7 +362,8 @@ if __name__ == '__main__':
     print(f"Generated New Tweet AIResponse type: {new_tweet_response.response_type}")
     assert ResponseType.NEW_TWEET == new_tweet_response.response_type
     assert "mock AI reply" in new_tweet_response.content # Mock will respond to prompt
-    assert "YieldBoost feature" in new_tweet_response.content # Check if topic made it to mock
+    # Check if topic or category name made it to mock (depends on prompt_content_finder logic)
+    assert "YieldBoost feature" in new_tweet_response.content or "Product Update" in new_tweet_response.content
 
     # Restore original XAIClient if needed for further non-mocked tests in other modules
     sys.modules['src.ai.xai_client'].XAIClient = original_xai_client

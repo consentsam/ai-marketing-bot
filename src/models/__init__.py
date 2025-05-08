@@ -6,7 +6,8 @@
 """
 Models for the YieldFi AI Agent.
 
-This package contains data models for representing tweets, accounts, and AI responses.
+This package contains data models for representing tweets, accounts, AI responses,
+and tweet categories.
 """
 
 from src.models.tweet import Tweet, TweetMetadata
@@ -24,4 +25,4 @@ __all__ = [
     'TweetCategory'
 ] 
 
-# src/models/__init__.py - Created 2025-05-07 
+# src/models/__init__.py - Updated 2025-05-07 

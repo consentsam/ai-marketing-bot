@@ -1,8 +1,23 @@
 # Changelog:
-# 2025-05-07 HH:MM - Step 17 - Initial creation of TweetCategory model.
+# 2025-05-07 HH:MM - Step 17 - Initial creation with TweetCategory dataclass and load_categories function.
 
+"""
+Models for tweet categories.
+
+Purpose: Defines the data structure for tweet categories and provides
+         functionality to load them from a JSON file.
+Rationale: A structured way to define and load categories is essential
+           for managing them and for the AI to generate targeted content.
+Usage: Import TweetCategory and use load_categories() to get a list of available
+       tweet categories.
+"""
+
+import json
+import os
 from dataclasses import dataclass, field
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+
+from src.config.settings import get_config # To get data_paths.input
 
 @dataclass
 class TweetCategory:
@@ -27,7 +42,95 @@ class TweetCategory:
     def __str__(self) -> str:
         return self.name
 
+def load_categories(categories_file_path: Optional[str] = None) -> List[TweetCategory]:
+    """
+    Loads tweet categories from a JSON file.
+
+    Args:
+        categories_file_path: Optional path to the categories JSON file.
+                              If None, it's constructed from config.
+
+    Returns:
+        A list of TweetCategory objects.
+        Returns an empty list if the file is not found or is invalid.
+    """
+    if categories_file_path is None:
+        input_dir = get_config("data_paths.input", "data/input")
+        # Ensure input_dir is a string
+        if not isinstance(input_dir, str):
+            input_dir = "data/input" # Fallback if config is malformed
+        categories_file_path = os.path.join(input_dir, "categories.json")
+
+    if not os.path.exists(categories_file_path):
+        print(f"Error: Categories file not found at {categories_file_path}")
+        return []
+    
+    try:
+        with open(categories_file_path, 'r') as f:
+            data = json.load(f)
+        
+        if not isinstance(data, list):
+            print(f"Error: Categories file {categories_file_path} does not contain a list.")
+            return []
+            
+        categories = [TweetCategory.from_dict(item) for item in data if isinstance(item, dict)]
+        return categories
+    except json.JSONDecodeError:
+        print(f"Error: Could not decode JSON from {categories_file_path}")
+        return []
+    except Exception as e:
+        print(f"An unexpected error occurred while loading categories: {e}")
+        return []
+
 if __name__ == '__main__':
+    # This is for basic testing of this module
+    # To run this, ensure your project root is in PYTHONPATH
+    # and you have a valid data/input/categories.json
+    # Example: python -m src.models.category
+    
+    # Assuming project root is added to PYTHONPATH
+    # and config.yaml is accessible for get_config to function correctly.
+    # For standalone test, might need to mock get_config or provide path directly.
+    
+    print("Testing category loading...")
+    # Test with default path resolution via get_config
+    # For this to work, load_config() in settings must be callable and config.yaml present
+    # If running from project root: python -m src.models.category
+    # Ensure .env and config.yaml are present for settings.py to load correctly.
+    
+    # Fallback path for direct script execution if get_config fails or not setup
+    # This assumes your CWD is the project root when running `python src/models/category.py`
+    # A more robust test would mock get_config or use a test-specific config file.
+    
+    # Attempt to load config for get_config to work
+    try:
+        from src.config.settings import load_config
+        load_config() # Initialize configuration
+    except Exception as e:
+        print(f"Could not load main config for testing: {e}")
+
+
+    categories = load_categories()
+    if categories:
+        print(f"Loaded {len(categories)} categories:")
+        for category in categories:
+            print(f"- Name: {category.name}")
+            print(f"  Description: {category.description[:60]}...")
+            print(f"  Keywords: {category.prompt_keywords}")
+            print(f"  Style Tone: {category.style_guidelines.get('tone')}")
+    else:
+        print("No categories loaded. Check file path and JSON format.")
+
+    # Test with explicit path (if you want to bypass config for a quick check)
+    # test_file_path = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'input', 'categories.json')
+    # print(f"\nTesting with explicit path: {test_file_path}")
+    # categories_explicit = load_categories(categories_file_path=test_file_path)
+    # if categories_explicit:
+    #     print(f"Loaded {len(categories_explicit)} categories explicitly.")
+    # else:
+    #     print("No categories loaded with explicit path.")
+
+
     # Example usage
     sample_data = {
         "name": "Product Update",

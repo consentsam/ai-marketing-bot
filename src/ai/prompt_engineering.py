@@ -1,42 +1,44 @@
 # Changelog:
-# 2025-05-07 HH:MM - Step 7 - Initial implementation of prompt engineering for dynamic tweet interactions.
+# 2025-05-07 HH:MM - Step 7 - Initial refactoring and creation of prompt generation functions.
+# 2025-05-07 HH:MM - Step 18 - Updated generate_new_tweet_prompt to use TweetCategory model.
 
 """
 Prompt engineering for the YieldFi AI Agent.
 
-Purpose: Constructs dynamic and contextually relevant prompts for the AI model (e.g., xAI)
-         to generate appropriate responses for various social media interactions.
-Rationale: Effective prompts are crucial for guiding the LLM to produce outputs that
-           align with YieldFi's branding, tone, and specific interaction goals. This module
-           encapsulates the logic for creating these prompts based on diverse input factors.
-Usage: Called by the `response_generator` module. It takes interaction context
-       (like original post, account types, knowledge snippets) and returns a formatted prompt string.
-TODOs:
-    - Fully implement prompt variations based on all scenarios in Instructions*.md files.
-    - Integrate dynamic example loading if hardcoded examples become too numerous.
-    - Add prompt generation logic for other platforms (Discord, Telegram) and tasks (news widget).
+This module provides functions to generate tailored prompts for various AI interactions,
+including tweet replies and new tweet generation based on categories.
 """
 
-from typing import Dict, Any, List, Optional, Tuple
 from enum import Enum
+from typing import Dict, Any, Optional, List # Added List
 
+# Attempt to import get_config for robust path finding, fallback if necessary
+# This is primarily for modules that might use this utility outside the main app flow
+# For instance, if a script directly calls a prompt generator for testing.
 try:
-    from src.config import get_config
-except ImportError:
     from src.config.settings import get_config
+except ImportError:
+    # Define a fallback get_config if the main one isn't available
+    # This is a simplified version and might not cover all edge cases of the real one
+    def get_config(key_path: str, default: Any = None) -> Any:
+        # print(f"Warning: Using fallback get_config for key: {key_path}")
+        if key_path == "core_message": # Example specific to this module
+            return YIELDFI_CORE_MESSAGE
+        return default
 
 from src.models.tweet import Tweet # Or a more generic Post model
 from src.models.account import Account, AccountType
 from src.models.response import ResponseType # For typing, if creating different prompt structures per response type
+from src.models.category import TweetCategory # Added for Step 18
 
 # Logger instance - ensure logging is set up if used
 # from src.utils.logging import get_logger
 # logger = get_logger(__name__) # Use module name for logger
 
 # Core YieldFi message or mission statement that defines the brand voice
-YIELDFI_CORE_MESSAGE = """
+YIELDFI_CORE_MESSAGE = get_config("yieldfi.core_message", """
 YieldFi is a leading DeFi platform focused on providing innovative yield farming solutions, secure staking, and transparent financial tools. Our mission is to empower users with accessible, decentralized financial opportunities while maintaining the highest standards of security and trust.
-"""
+""")
 
 class InteractionType(Enum):
     REPLY = "reply"
@@ -168,29 +170,36 @@ def generate_interaction_prompt(
     return final_prompt
 
 def generate_new_tweet_prompt(
-    category: str,
+    category: TweetCategory, # Changed from str to TweetCategory
     topic: Optional[str] = None,
     yieldfi_knowledge_snippet: Optional[str] = None,
-    active_account_info: Account = None,
-    platform: str = "Twitter"
+    active_account_info: Account = None, # Should ideally not be None
+    platform: str = "Twitter",
+    additional_instructions: Optional[Dict[str, Any]] = None # Added for more flexibility
 ) -> str:
     """
     Constructs a prompt for creating a new tweet based on a category and topic.
     
     Args:
-        category: The category of the tweet (e.g., Announcement, Community Update).
+        category: The TweetCategory object for the tweet.
         topic: Specific topic or content focus for the tweet.
         yieldfi_knowledge_snippet: Relevant YieldFi information to include.
         active_account_info: Information about the account posting.
         platform: The social media platform (e.g., Twitter).
-    
+        additional_instructions: Optional dictionary for any other specific instructions.
+
     Returns:
         A formatted string prompt for the AI model.
     """
+    if additional_instructions is None:
+        additional_instructions = {}
+
     # Section 1: Persona Definition
     if active_account_info:
         persona = get_base_yieldfi_persona(active_account_info.account_type)
     else:
+        # Fallback to official persona if active_account_info is not provided
+        # Though in practice, it should always be provided from the UI/controller.
         persona = get_base_yieldfi_persona(AccountType.OFFICIAL)
     prompt_parts = [f"Persona: {persona}"]
 
@@ -198,24 +207,54 @@ def generate_new_tweet_prompt(
     prompt_parts.append(f"Core Message: {YIELDFI_CORE_MESSAGE.strip()}")
 
     # Section 3: Category and Topic
-    category_desc = f"Tweet Category: {category}"
+    prompt_parts.append(f"Tweet Category: {category.name}")
+    prompt_parts.append(f"Category Description: {category.description}")
+    if category.prompt_keywords:
+        prompt_parts.append(f"Category Keywords: {', '.join(category.prompt_keywords)}")
+    
     if topic:
-        category_desc += f"\nSpecific Topic: {topic}"
-    prompt_parts.append(category_desc)
+        prompt_parts.append(f"Specific Topic/Brief: {topic}")
 
-    # Section 4: Relevant YieldFi Knowledge (if available)
+    # Section 4: Style Guidelines from Category
+    if category.style_guidelines:
+        style_parts = ["Style Guidelines:"]
+        for key, value in category.style_guidelines.items():
+            style_parts.append(f"  - {key.replace('_', ' ').capitalize()}: {value}")
+        prompt_parts.append("\n".join(style_parts))
+
+    # Section 5: Relevant YieldFi Knowledge (if available)
     if yieldfi_knowledge_snippet:
         prompt_parts.append(f"Relevant YieldFi Knowledge: {yieldfi_knowledge_snippet}")
 
-    # Section 5: Task Instructions
-    task_instructions = f"Task: Create a new tweet that aligns with the persona and core message for the specified category."
+    # Section 6: Task Instructions
+    task_instructions_list = [
+        f"Task: Create a new {platform} post that aligns with the persona, core message, and the specified category details."
+    ]
+
+    # Incorporate additional_instructions
+    custom_tone = additional_instructions.get('tone')
+    custom_goal = additional_instructions.get('goal')
+    if custom_tone:
+        task_instructions_list.append(f"Ensure the tone is specifically: {custom_tone}.")
+    if custom_goal:
+        task_instructions_list.append(f"The primary goal is: {custom_goal}.")
+
     if platform.lower() == "twitter":
-        task_instructions += " Keep the tweet under 280 characters as per Twitter's limit."
-    prompt_parts.append(task_instructions)
+        # Check if category style_guidelines already has length constraint
+        length_constraint = category.style_guidelines.get('length', "Keep the tweet under 280 characters as per Twitter's limit.")
+        if "characters" not in length_constraint.lower(): # Avoid duplicate length constraints
+            length_constraint = "Keep the tweet under 280 characters as per Twitter's limit. " + length_constraint
+        task_instructions_list.append(length_constraint)
+    
+    # Include any other specific instructions from the category or additional_instructions
+    # For example, if category.style_guidelines has 'hashtags' or 'call_to_action'
+    # These are now part of the Style Guidelines section, but could be reiterated here if needed.
+
+    prompt_parts.append("\n".join(task_instructions_list))
 
     # Combine all parts into the final prompt
     final_prompt = "\n\n".join(prompt_parts)
-    final_prompt += "\n\nTweet: "
+    final_prompt += "\n\nTweet Text: " # Changed from "Tweet: " for clarity
     return final_prompt
 
 # The old `create_prompt` and its helpers (`_get_system_context`, `_get_examples`, `_get_response_instructions`)

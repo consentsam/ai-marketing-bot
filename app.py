@@ -2,6 +2,7 @@
 # Changelog:
 # 2025-05-06 HH:MM - Step 14 (Initial) - Basic structure for YieldFi AI Agent Streamlit app.
 # 2025-05-07 21:00 - Step 14 (Complete) - Uncommented imports and UI structure for the main application.
+# 2025-05-07 HH:MM - Step 19 - Updated to use display_category_tweet_ui from category_select module.
 
 """
 YieldFi AI Agent Streamlit Application.
@@ -13,9 +14,6 @@ Rationale: A user-friendly interface is needed to make the AI agent's
            capabilities accessible.
 Usage: Run with `streamlit run app.py` (or `streamlit run src/app.py`).
 TODOs:
-    - Implement tweet input UI (Step 15)
-    - Implement response visualization (Step 16)
-    - Implement category selection UI (Step 19)
     - Connect UI elements to backend modules (response_generator, data_sources)
 """
 
@@ -23,12 +21,13 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from src.config.settings import load_config, get_config
-from src.ai.response_generator import generate_tweet_reply, generate_new_tweet
+from src.ai.response_generator import generate_tweet_reply # generate_new_tweet is used in category_select
 from src.data_sources.mock import MockTweetDataSource
 from src.models.tweet import Tweet
 from src.models.account import Account, AccountType
 from src.ui.components import status_badge, placeholder_component, copy_button
 from src.ui.tweet_input import display_tweet_reply_ui
+from src.ui.category_select import display_category_tweet_ui # Added for Step 19
 
 def main():
     """
@@ -78,22 +77,14 @@ def main():
     if interaction_type == "Generate Tweet Reply":
         display_tweet_reply_ui(active_account_type)
     elif interaction_type == "Create New Tweet by Category":
-        display_new_tweet_ui(active_account_type)
+        # Replaced placeholder with actual UI call for Step 19
+        display_category_tweet_ui(active_account_type)
 
     # Footer
     st.markdown("---")
     st.caption("YieldFi AI Agent - Powered by langchain and xAI")
 
-def display_new_tweet_ui(active_account_type):
-    """Placeholder for new tweet UI until Step 17 & 19 implementation."""
-    st.subheader("Create New Tweet by Category")
-    
-    # Placeholders for Step 17 & 19
-    st.info("This section will allow you to select categories and topics for new tweet generation.")
-    st.selectbox("Category (Coming in Step 17)", options=["Announcement", "Product Update", "Community Update"], key="category_placeholder", disabled=True)
-    
-    # Use the placeholder component
-    placeholder_component("New Tweet Generator", "This will be implemented in Step 17 & 19")
+# Removed the old display_new_tweet_ui placeholder as it's replaced by category_select.py functionality
 
 if __name__ == "__main__":
     main()

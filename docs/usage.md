@@ -32,10 +32,8 @@ This document explains how to use the Ethena (YieldFi) AI Agent Streamlit applic
 
 ### 1. Sidebar Configuration
 - **Account Persona**: Select the YieldFi account persona to respond as (Official or Intern).
-  ![Account Persona Selection](../data/docs/screenshots/account_persona_selection.png)
 
 - **Interaction Mode**: Select your preferred interaction style (Default, Professional, Degen).
-  ![Interaction Mode](../data/docs/screenshots/interaction_mode_selection.png)
 
 ### 2. Interaction Types
 
@@ -43,15 +41,12 @@ This document explains how to use the Ethena (YieldFi) AI Agent Streamlit applic
 1. Enter a Tweet URL or paste tweet content manually.
 2. If entering content manually, provide the original author's username and account type.
 3. Check "Generate Poster Image" to create a visual for your tweet.
-   ![Generate Poster Image](../data/docs/screenshots/generate_poster_image.png)
 4. Click "Generate Reply." The AI will produce a context-aware response and an image if requested.
 5. Review the generated reply and copy it using the "Copy" button.
 6. If an image was generated, it will be displayed below the reply text with its own copy button for the URL.
-   ![Generated Image](../data/docs/screenshots/generated_image_example.png)
 
 #### Create New Tweet by Category
 1. Select a category from the dropdown menu (Announcement, Product Update, etc.).
-   ![Category Selection](../data/docs/screenshots/category_selection.png)
 2. View category details by expanding the "Category Details & Guidelines" section.
 3. Enter a topic or key message in the text area.
 4. Check "Generate Poster Image" if you want a visual to accompany your tweet.

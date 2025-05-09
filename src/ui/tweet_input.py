@@ -132,23 +132,40 @@ def display_tweet_reply_ui(active_account_type: AccountType, interaction_mode: s
                     progress.progress(50)
                     time.sleep(0.5)
                     st.text("Step 3/4: Retrieving knowledge...")
-                    progress.progress(75)
-                    time.sleep(0.5)
-                    st.text("Step 4/4: Generating AI response...")
-                    progress.progress(100)
-
-                    response = generate_tweet_reply(
-                        original_tweet=tweet_obj,
-                        responding_as=active_account,
-                        target_account=target_account,
-                        generate_image=generate_image,
-                        interaction_mode=interaction_mode  # Pass the interaction mode
-                    )
-                    # Check if response has an error attribute, which was removed earlier
-                    # For now, assume content will indicate error if one occurred based on response_generator logic
-                    # if hasattr(response, 'error') and response.error:
-                    #    st.error(f"Error generating reply: {response.error}")
-                    #    st.session_state.generated_reply = ""
+                    try:
+                        # Show progress
+                        with st.spinner("Generating AI response..."):
+                            # Log detailed information about the request
+                            logger.info(f"Generating tweet reply request details:")
+                            logger.info(f"  - Active account type: {active_account_type.value}")
+                            logger.info(f"  - Interaction mode: {interaction_mode}")
+                            logger.info(f"  - Original tweet content: '{tweet_obj.content[:100]}...'")
+                            logger.info(f"  - Target account: {target_account.username if target_account else 'None'}")
+                            logger.info(f"  - Generate image: {generate_image}")
+                            
+                            # Call the generator function
+                            response = generate_tweet_reply(
+                                original_tweet=tweet_obj,
+                                responding_as=active_account,
+                                target_account=target_account,
+                                generate_image=generate_image,
+                                interaction_mode=interaction_mode
+                            )
+                            
+                            # Validate response isn't just echoing input
+                            if response.content.strip().lower() == tweet_obj.content.strip().lower():
+                                logger.error(f"CRITICAL BUG: Response is identical to input tweet despite validation!")  
+                                st.error("Error: The generated response was identical to the input. Please try again or modify your input.")
+                                st.session_state.generated_reply = "[Error: Generated response matched input tweet exactly]"  
+                            elif "[Error: AI returned input tweet without changes]" in response.content:
+                                logger.error(f"AI model returned input tweet - caught by response_generator validation")
+                                st.error("Error: The AI model returned the input tweet. This is an issue with the API response. Please try again or modify your input.")
+                                st.session_state.generated_reply = response.content
+                            else:
+                                logger.info(f"Successfully generated unique response, length: {len(response.content)} chars")
+                    except Exception as e:
+                        st.error(f"An unexpected error occurred: {str(e)}")
+                        logger.error(f"Unexpected error in UI while generating reply: {str(e)}", exc_info=True)
                     if "[Error:" in response.content or "[Warning:" in response.content:
                         st.error(f"Error generating reply: {response.content}")
                         st.session_state.generated_reply = ""
@@ -159,9 +176,19 @@ def display_tweet_reply_ui(active_account_type: AccountType, interaction_mode: s
                         
                         # Get character count for verification
                         char_count = len(response.content)
+                        
+                        # Log response details
+                        logger.info(f"Generated response details:")
+                        logger.info(f"  - Character count: {char_count}/280")
+                        logger.info(f"  - Response starts with: '{response.content[:50]}...'")
+                        logger.info(f"  - Model used: {response.model_used}")
+                        logger.info(f"  - Image generated: {response.image_url is not None}")
+                        
                         if char_count > 280:
+                            logger.warning(f"Generated tweet exceeds character limit: {char_count} > 280")
                             st.warning(f"⚠️ Tweet exceeds Twitter's 280 character limit! Current length: {char_count} characters")
                         else:
+                            logger.info(f"Generated tweet within character limit: {char_count} <= 280")
                             st.info(f"✓ Tweet length: {char_count}/280 characters")
                 
                 except Exception as e:
@@ -175,14 +202,25 @@ def display_tweet_reply_ui(active_account_type: AccountType, interaction_mode: s
         
         # Basic validation of tweet content
         generated_content = st.session_state.generated_reply
-        if generated_content.strip() == "" or "[Error:" in generated_content or "[Warning:" in generated_content:
+        
+        # Perform input-output comparison for extra validation
+        if tweet_obj and tweet_obj.content and generated_content.strip().lower() == tweet_obj.content.strip().lower():
+            logger.error(f"FINAL VALIDATION CATCH: Output is identical to input despite all checks!")
+            st.error("Critical Error: Generated content is identical to input tweet. This should not happen - the system will not display identical content as it could be confusing.")
+        elif generated_content.strip() == "" or "[Error:" in generated_content or "[Warning:" in generated_content:
+            logger.warning(f"Error/warning in generated reply: {generated_content}")
             st.error(f"Error in generated reply: {generated_content}")
         else:
+            # Success path - valid, unique response
+            logger.info(f"Displaying successful tweet reply: '{generated_content[:50]}...'")
+            
             # Use st.success for better visual highlighting of the tweet
             st.success(generated_content)
+            
             # Add character count validation
             char_count = len(generated_content)
             st.info(f"✓ Tweet length: {char_count}/280 characters")
+            
             # Add copy button for easy copying
             copy_button(generated_content, "Copy Tweet")
 

@@ -160,7 +160,7 @@ def generate_tweet_reply(
                 raw_content = choice['text'].strip()
                 logger.info(f"Extracted 'text' from choice: '{raw_content[:100]}...'")
                 logger.debug(f"Full raw AI output (reply, from 'text'): {raw_content}")
-                ai_generated_content = _clean_response(raw_content)
+                ai_generated_content = _clean_response(raw_content, original_input=original_tweet.content)
                 logger.info(f"Cleaned text output (reply, first 100 chars): '{ai_generated_content[:100]}...'")
             elif choice.get('message'):
                 message_data = choice['message']
@@ -169,7 +169,7 @@ def generate_tweet_reply(
                     logger.info(f"Extracted 'content' from message: '{raw_content[:100]}...'")
                     logger.debug(f"Full raw AI output (reply, from 'message.content'): {raw_content}")
                     # Clean the response
-                    ai_generated_content = _clean_response(raw_content)
+                    ai_generated_content = _clean_response(raw_content, original_input=original_tweet.content)
                     logger.info(f"Cleaned message content (reply, first 100 chars): '{ai_generated_content[:100]}...'")
                 elif message_data.get('reasoning_content') and message_data['reasoning_content'].strip():
                     ai_generated_content = message_data['reasoning_content'].strip()
@@ -357,7 +357,7 @@ def generate_new_tweet(
                 raw_content = choice['text'].strip()
                 logger.info(f"Extracted 'text' from choice (new tweet): '{raw_content[:100]}...'")
                 logger.debug(f"Full raw AI output (new tweet, from 'text'): {raw_content}")
-                ai_generated_content = _clean_response(raw_content)
+                ai_generated_content = _clean_response(raw_content, original_input=original_tweet.content)
                 logger.info(f"Cleaned text output (new tweet, first 100 chars): '{ai_generated_content[:100]}...'")
             elif choice.get('message'):
                 message_data = choice['message']
@@ -366,7 +366,7 @@ def generate_new_tweet(
                     logger.info(f"Extracted 'content' from message (new tweet): '{raw_content[:100]}...'")
                     logger.debug(f"Full raw AI output (new tweet, from 'message.content'): {raw_content}")
                     # Clean the response
-                    ai_generated_content = _clean_response(raw_content)
+                    ai_generated_content = _clean_response(raw_content, original_input=original_tweet.content)
                     logger.info(f"Cleaned message content (new tweet, first 100 chars): '{ai_generated_content[:100]}...'")
                 elif message_data.get('reasoning_content') and message_data['reasoning_content'].strip():
                     ai_generated_content = message_data['reasoning_content'].strip()
@@ -464,12 +464,26 @@ def generate_new_tweet(
         logger.error(f"Error while saving response: {e}", exc_info=True)
     return final_response
 
-def _clean_response(response_text: str) -> str:
-    """Extract only the final tweet text from model response, removing any reasoning or formatting."""
+def _clean_response(response_text: str, original_input: str = None) -> str:
+    """Extract only the final tweet text from model response, removing any reasoning or formatting.
+    
+    Args:
+        response_text: The raw response text from the AI model
+        original_input: Original tweet input content to prevent echo-back of input
+        
+    Returns:
+        Cleaned tweet text or empty string if extraction fails
+    """
     if not response_text:
+        logger.warning("_clean_response received empty response_text")
         return ""
     
     logger.debug(f"Cleaning raw response (length {len(response_text)}): '{response_text[:200]}...'")
+    
+    # Check if response looks suspiciously like the input tweet (echo-back detection)
+    if original_input and original_input.strip() and original_input.strip().lower() == response_text.strip().lower():
+        logger.error(f"CRITICAL BUG: AI response is identical to input tweet! Rejecting: '{original_input.strip()}'")
+        return "[Error: AI returned input tweet without changes]"
     
     # 1. Check for known Degen partials first
     stripped_lower_response = response_text.strip().lower()
@@ -527,6 +541,12 @@ def _clean_response(response_text: str) -> str:
             
     if best_marker_extraction: # This will be from the last valid label match if no quotes found
         logger.info(f"Label-based marker extracted: '{best_marker_extraction[:50]}...'")
+        
+        # Prevent echo-back: Check if extracted content matches original input
+        if original_input and original_input.strip() and best_marker_extraction.strip().lower() == original_input.strip().lower():
+            logger.error(f"ECHO DETECTION: Marker extraction returned original input. Rejecting: '{best_marker_extraction[:50]}...'")
+            return "[Error: AI response contains only the original tweet]"
+            
         return _ensure_tweet_length(best_marker_extraction)
 
     # 4. Paragraph-based extraction (if no markers worked)
@@ -553,6 +573,12 @@ def _clean_response(response_text: str) -> str:
     if potential_paragraphs:
         best_paragraph = potential_paragraphs[-1] # Prefer the last clean paragraph
         logger.info(f"Paragraph logic selected: '{best_paragraph[:50]}...'")
+        
+        # Prevent echo-back: Check if paragraph matches original input
+        if original_input and original_input.strip() and best_paragraph.strip().lower() == original_input.strip().lower():
+            logger.error(f"ECHO DETECTION: Paragraph extraction returned original input. Rejecting: '{best_paragraph[:50]}...'")
+            return "[Error: AI response contains only the original tweet]"
+            
         return _ensure_tweet_length(best_paragraph)
 
     # 5. Sentence-based extraction (VERY conservative fallback)

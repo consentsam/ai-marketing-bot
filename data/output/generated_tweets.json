@@ -1,0 +1,925 @@
+[
+  {
+    "saved_at": "2025-05-09T09:42:46.677998+00:00",
+    "metadata": {
+      "original_input": "JUST IN: Bitcoin officially surpasses Amazon to become the 5th largest asset in the world by market cap.",
+      "interaction_mode": "Default",
+      "responding_as": "YieldFiOfficial",
+      "responding_as_type": "Official",
+      "target_account": "WatcherGuru"
+    },
+    "response": {
+      "content": "s rise to the top highlights the power of decentralized finance. At YieldFi, we",
+      "response_type": "TWEET_REPLY",
+      "model_used": "grok-3-mini-fast-beta",
+      "prompt_used": "\nCRITICAL INSTRUCTIONS:\n1. Respond with ONLY the final tweet text\n2. Maximum 280 characters for Twitter\n3. NO explanations, reasoning, self-talk, or any other content\n4. NO prefixes like 'Tweet:' or 'Response:'\n5. Do NOT include character counts or drafts\n6. Your ENTIRE response should be JUST the tweet\n\n\nPersona: You are the official voice of YieldFi, a professional, authoritative, and helpful representative of the company. Your tone is polished, confident, and focused on building trust and providing value.\n\nCore Message: YieldFi is a leading DeFi platform focused on providing innovative yield farming solutions, secure staking, and transparent financial tools. Our mission is to empower users with accessible, decentralized financial opportunities while maintaining the highest standards of security and trust.\n\nOriginal Post to Reply To: \"JUST IN: Bitcoin officially surpasses Amazon to become the 5th largest asset in the world by market cap.\"\n\nTarget Account: @WatcherGuru (Type: Big Account)\n\nInteraction Instructions: Tailor your response to the context of the interaction. Maintain YieldFi's brand voice, focusing on empowerment, innovation, and trust in decentralized finance. Be helpful, clear, and engaging, adjusting formality based on the target audience.\n\nRelevant YieldFi Knowledge: YieldFi is a decentralized finance platform focused on user empowerment and transparency.\n\nTask: Craft a response that aligns with the persona and core message. Goal: engage and inform. Keep the response under 280 characters as per Twitter's limit.\n\nResponse:",
+      "generation_time": "2025-05-09T09:42:46.677998+00:00",
+      "source_tweet_id": null,
+      "responding_as": "Official",
+      "target_account": "WatcherGuru",
+      "tone": "neutral",
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "Default"
+      },
+      "image_url": "https://imgen.x.ai/xai-imgen/xai-tmp-imgen-cf255c8a-3e95-4610-a160-c74ab78dc9c9.jpeg"
+    }
+  },
+  {
+    "saved_at": "2025-05-09T09:50:50.269633+00:00",
+    "metadata": {
+      "original_input": "What is YieldFi?",
+      "interaction_mode": "Default",
+      "responding_as": "YieldFiOfficial",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "[Error: Unexpected error during response generation - Prompt Gen Error]",
+      "response_type": "TWEET_REPLY",
+      "model_used": "Unknown",
+      "prompt_used": "",
+      "generation_time": "2025-05-09T09:50:50.269633+00:00",
+      "source_tweet_id": "orig001",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "Default"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T09:53:00.800347+00:00",
+    "metadata": {
+      "original_input": "JUST IN: Bitcoin officially surpasses Amazon to become the 5th largest asset in the world by market cap.",
+      "interaction_mode": "Default",
+      "responding_as": "YieldFiOfficial",
+      "responding_as_type": "Official",
+      "target_account": "WatcherGuru"
+    },
+    "response": {
+      "content": "s milestone highlights the growing dominance of digital assets. At YieldFi, we",
+      "response_type": "TWEET_REPLY",
+      "model_used": "grok-3-mini-fast-beta",
+      "prompt_used": "\nCRITICAL INSTRUCTIONS:\n1. Respond with ONLY the final tweet text\n2. Maximum 280 characters for Twitter\n3. NO explanations, reasoning, self-talk, or any other content\n4. NO prefixes like 'Tweet:' or 'Response:'\n5. Do NOT include character counts or drafts\n6. Your ENTIRE response should be JUST the tweet\n\n\nPersona: You are the official voice of YieldFi, a professional, authoritative, and helpful representative of the company. Your tone is polished, confident, and focused on building trust and providing value.\n\nCore Message: YieldFi is a leading DeFi platform focused on providing innovative yield farming solutions, secure staking, and transparent financial tools. Our mission is to empower users with accessible, decentralized financial opportunities while maintaining the highest standards of security and trust.\n\nOriginal Post to Reply To: \"JUST IN: Bitcoin officially surpasses Amazon to become the 5th largest asset in the world by market cap.\"\n\nTarget Account: @WatcherGuru (Type: Big Account)\n\nInteraction Instructions: Tailor your response to the context of the interaction. Maintain YieldFi's brand voice, focusing on empowerment, innovation, and trust in decentralized finance. Be helpful, clear, and engaging, adjusting formality based on the target audience.\n\nRelevant YieldFi Knowledge: YieldFi is a decentralized finance platform focused on user empowerment and transparency.\n\nTask: Craft a response that aligns with the persona and core message. Goal: engage and inform. Keep the response under 280 characters as per Twitter's limit.\n\nResponse:",
+      "generation_time": "2025-05-09T09:53:00.800347+00:00",
+      "source_tweet_id": null,
+      "responding_as": "Official",
+      "target_account": "WatcherGuru",
+      "tone": "neutral",
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "Default"
+      },
+      "image_url": "https://imgen.x.ai/xai-imgen/xai-tmp-imgen-327e58b7-b59d-4870-84e6-c8102a20285c.jpeg"
+    }
+  },
+  {
+    "saved_at": "2025-05-09T09:55:46.047628+00:00",
+    "metadata": {
+      "original_input": "JUST IN: Bitcoin officially surpasses Amazon to become the 5th largest asset in the world by market cap.",
+      "interaction_mode": "Default",
+      "responding_as": "YieldFiOfficial",
+      "responding_as_type": "Official",
+      "target_account": "WatcherGuru"
+    },
+    "response": {
+      "content": "s milestone to YieldFi",
+      "response_type": "TWEET_REPLY",
+      "model_used": "grok-3-mini-fast-beta",
+      "prompt_used": "\nCRITICAL INSTRUCTIONS:\n1. Respond with ONLY the final tweet text\n2. Maximum 280 characters for Twitter\n3. NO explanations, reasoning, self-talk, or any other content\n4. NO prefixes like 'Tweet:' or 'Response:'\n5. Do NOT include character counts or drafts\n6. Your ENTIRE response should be JUST the tweet\n\n\nPersona: You are the official voice of YieldFi, a professional, authoritative, and helpful representative of the company. Your tone is polished, confident, and focused on building trust and providing value.\n\nCore Message: YieldFi is a leading DeFi platform focused on providing innovative yield farming solutions, secure staking, and transparent financial tools. Our mission is to empower users with accessible, decentralized financial opportunities while maintaining the highest standards of security and trust.\n\nOriginal Post to Reply To: \"JUST IN: Bitcoin officially surpasses Amazon to become the 5th largest asset in the world by market cap.\"\n\nTarget Account: @WatcherGuru (Type: Big Account)\n\nInteraction Instructions: Tailor your response to the context of the interaction. Maintain YieldFi's brand voice, focusing on empowerment, innovation, and trust in decentralized finance. Be helpful, clear, and engaging, adjusting formality based on the target audience.\n\nRelevant YieldFi Knowledge: YieldFi is a decentralized finance platform focused on user empowerment and transparency.\n\nTask: Craft a response that aligns with the persona and core message. Goal: engage and inform. Keep the response under 280 characters as per Twitter's limit.\n\nResponse:",
+      "generation_time": "2025-05-09T09:55:46.047628+00:00",
+      "source_tweet_id": null,
+      "responding_as": "Official",
+      "target_account": "WatcherGuru",
+      "tone": "neutral",
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "Default"
+      },
+      "image_url": "https://imgen.x.ai/xai-imgen/xai-tmp-imgen-3c329d57-e9e2-4248-a5f3-d244c59d5a20.jpeg"
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:23:26.830603+00:00",
+    "metadata": {
+      "original_input": "Test topic",
+      "category": "Announcement",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official"
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "NEW_TWEET",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:23:26.830603+00:00",
+      "source_tweet_id": null,
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [
+        "Announcement"
+      ],
+      "referenced_knowledge": [
+        "YieldFi has just secured a new strategic partnership with InnovateX to expand our ecosystem!"
+      ],
+      "extra_context": {
+        "category_description": "Important updates about YieldFi",
+        "category_keywords": [
+          "launch",
+          "update"
+        ],
+        "category_style_guidelines": {
+          "tone": "Informative"
+        },
+        "topic_provided": "Test topic",
+        "error_message": null,
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:23:26.856518+00:00",
+    "metadata": {
+      "original_input": "Test tweet",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "TWEET_REPLY",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:23:26.856518+00:00",
+      "source_tweet_id": "123",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": "neutral",
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:23:26.949735+00:00",
+    "metadata": {
+      "original_input": "What is YieldFi?",
+      "interaction_mode": "Default",
+      "responding_as": "YieldFiOfficial",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "[Error: Unexpected error during response generation - Prompt Gen Error]",
+      "response_type": "TWEET_REPLY",
+      "model_used": "Unknown",
+      "prompt_used": "",
+      "generation_time": "2025-05-09T10:23:26.949735+00:00",
+      "source_tweet_id": "orig001",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "Default"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:25:57.499524+00:00",
+    "metadata": {
+      "original_input": "Test topic",
+      "category": "Announcement",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official"
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "NEW_TWEET",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:25:57.499524+00:00",
+      "source_tweet_id": null,
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [
+        "Announcement"
+      ],
+      "referenced_knowledge": [
+        "YieldFi has just secured a new strategic partnership with InnovateX to expand our ecosystem!"
+      ],
+      "extra_context": {
+        "category_description": "Important updates about YieldFi",
+        "category_keywords": [
+          "launch",
+          "update"
+        ],
+        "category_style_guidelines": {
+          "tone": "Informative"
+        },
+        "topic_provided": "Test topic",
+        "error_message": null,
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:25:57.565181+00:00",
+    "metadata": {
+      "original_input": "Test tweet",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "TWEET_REPLY",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:25:57.565181+00:00",
+      "source_tweet_id": "123",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": "neutral",
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:25:57.838101+00:00",
+    "metadata": {
+      "original_input": "What is YieldFi?",
+      "interaction_mode": "Default",
+      "responding_as": "YieldFiOfficial",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "[Error: Unexpected error during response generation - Prompt Gen Error]",
+      "response_type": "TWEET_REPLY",
+      "model_used": "Unknown",
+      "prompt_used": "",
+      "generation_time": "2025-05-09T10:25:57.838101+00:00",
+      "source_tweet_id": "orig001",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "Default"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:32:45.811713+00:00",
+    "metadata": {
+      "original_input": "Test topic",
+      "category": "Announcement",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official"
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "NEW_TWEET",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:32:45.811713+00:00",
+      "source_tweet_id": null,
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [
+        "Announcement"
+      ],
+      "referenced_knowledge": [
+        "YieldFi has just secured a new strategic partnership with InnovateX to expand our ecosystem!"
+      ],
+      "extra_context": {
+        "category_description": "Important updates about YieldFi",
+        "category_keywords": [
+          "launch",
+          "update"
+        ],
+        "category_style_guidelines": {
+          "tone": "Informative"
+        },
+        "topic_provided": "Test topic",
+        "error_message": null,
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:32:46.200502+00:00",
+    "metadata": {
+      "original_input": "Test tweet",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "TWEET_REPLY",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:32:46.200502+00:00",
+      "source_tweet_id": "123",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": "neutral",
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:32:47.631035+00:00",
+    "metadata": {
+      "original_input": "What is YieldFi?",
+      "interaction_mode": "Default",
+      "responding_as": "YieldFiOfficial",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "[Error: Unexpected error during response generation - Prompt Gen Error]",
+      "response_type": "TWEET_REPLY",
+      "model_used": "Unknown",
+      "prompt_used": "",
+      "generation_time": "2025-05-09T10:32:47.631035+00:00",
+      "source_tweet_id": "orig001",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "Default"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:33:21.960885+00:00",
+    "metadata": {
+      "original_input": "Test topic",
+      "category": "Announcement",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official"
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "NEW_TWEET",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:33:21.960885+00:00",
+      "source_tweet_id": null,
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [
+        "Announcement"
+      ],
+      "referenced_knowledge": [
+        "YieldFi has just secured a new strategic partnership with InnovateX to expand our ecosystem!"
+      ],
+      "extra_context": {
+        "category_description": "Important updates about YieldFi",
+        "category_keywords": [
+          "launch",
+          "update"
+        ],
+        "category_style_guidelines": {
+          "tone": "Informative"
+        },
+        "topic_provided": "Test topic",
+        "error_message": null,
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:33:22.426268+00:00",
+    "metadata": {
+      "original_input": "Test tweet",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "TWEET_REPLY",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:33:22.426268+00:00",
+      "source_tweet_id": "123",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": "neutral",
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:33:25.749654+00:00",
+    "metadata": {
+      "original_input": "What is YieldFi?",
+      "interaction_mode": "Default",
+      "responding_as": "YieldFiOfficial",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "[Error: Unexpected error during response generation - Prompt Gen Error]",
+      "response_type": "TWEET_REPLY",
+      "model_used": "Unknown",
+      "prompt_used": "",
+      "generation_time": "2025-05-09T10:33:25.749654+00:00",
+      "source_tweet_id": "orig001",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "Default"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:34:10.356205+00:00",
+    "metadata": {
+      "original_input": "Test topic",
+      "category": "Announcement",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official"
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "NEW_TWEET",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:34:10.356205+00:00",
+      "source_tweet_id": null,
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [
+        "Announcement"
+      ],
+      "referenced_knowledge": [
+        "YieldFi has just secured a new strategic partnership with InnovateX to expand our ecosystem!"
+      ],
+      "extra_context": {
+        "category_description": "Important updates about YieldFi",
+        "category_keywords": [
+          "launch",
+          "update"
+        ],
+        "category_style_guidelines": {
+          "tone": "Informative"
+        },
+        "topic_provided": "Test topic",
+        "error_message": null,
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:34:10.408278+00:00",
+    "metadata": {
+      "original_input": "Test tweet",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "TWEET_REPLY",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:34:10.408278+00:00",
+      "source_tweet_id": "123",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": "neutral",
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:34:11.006522+00:00",
+    "metadata": {
+      "original_input": "What is YieldFi?",
+      "interaction_mode": "Default",
+      "responding_as": "YieldFiOfficial",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "[Error: Unexpected error during response generation - Prompt Gen Error]",
+      "response_type": "TWEET_REPLY",
+      "model_used": "Unknown",
+      "prompt_used": "",
+      "generation_time": "2025-05-09T10:34:11.006522+00:00",
+      "source_tweet_id": "orig001",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "Default"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:34:46.378448+00:00",
+    "metadata": {
+      "original_input": "Test topic",
+      "category": "Announcement",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official"
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "NEW_TWEET",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:34:46.378448+00:00",
+      "source_tweet_id": null,
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [
+        "Announcement"
+      ],
+      "referenced_knowledge": [
+        "YieldFi has just secured a new strategic partnership with InnovateX to expand our ecosystem!"
+      ],
+      "extra_context": {
+        "category_description": "Important updates about YieldFi",
+        "category_keywords": [
+          "launch",
+          "update"
+        ],
+        "category_style_guidelines": {
+          "tone": "Informative"
+        },
+        "topic_provided": "Test topic",
+        "error_message": null,
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:34:46.416494+00:00",
+    "metadata": {
+      "original_input": "Test tweet",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "TWEET_REPLY",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:34:46.416494+00:00",
+      "source_tweet_id": "123",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": "neutral",
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:34:46.465151+00:00",
+    "metadata": {
+      "original_input": "What is YieldFi?",
+      "interaction_mode": "Default",
+      "responding_as": "YieldFiOfficial",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "[Error: Unexpected error during response generation - Prompt Gen Error]",
+      "response_type": "TWEET_REPLY",
+      "model_used": "Unknown",
+      "prompt_used": "",
+      "generation_time": "2025-05-09T10:34:46.465151+00:00",
+      "source_tweet_id": "orig001",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "Default"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:35:23.863705+00:00",
+    "metadata": {
+      "original_input": "Test topic",
+      "category": "Announcement",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official"
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "NEW_TWEET",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:35:23.863705+00:00",
+      "source_tweet_id": null,
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [
+        "Announcement"
+      ],
+      "referenced_knowledge": [
+        "YieldFi has just secured a new strategic partnership with InnovateX to expand our ecosystem!"
+      ],
+      "extra_context": {
+        "category_description": "Important updates about YieldFi",
+        "category_keywords": [
+          "launch",
+          "update"
+        ],
+        "category_style_guidelines": {
+          "tone": "Informative"
+        },
+        "topic_provided": "Test topic",
+        "error_message": null,
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:35:23.914572+00:00",
+    "metadata": {
+      "original_input": "Test tweet",
+      "interaction_mode": "TestMode",
+      "responding_as": "test_user",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "Mock AI response",
+      "response_type": "TWEET_REPLY",
+      "model_used": "test-model",
+      "prompt_used": "Test prompt",
+      "generation_time": "2025-05-09T10:35:23.914572+00:00",
+      "source_tweet_id": "123",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": "neutral",
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "TestMode"
+      },
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:35:23.975772+00:00",
+    "metadata": {
+      "original_input": "What is YieldFi?",
+      "interaction_mode": "Default",
+      "responding_as": "YieldFiOfficial",
+      "responding_as_type": "Official",
+      "target_account": null
+    },
+    "response": {
+      "content": "[Error: Unexpected error during response generation - Prompt Gen Error]",
+      "response_type": "TWEET_REPLY",
+      "model_used": "Unknown",
+      "prompt_used": "",
+      "generation_time": "2025-05-09T10:35:23.975772+00:00",
+      "source_tweet_id": "orig001",
+      "responding_as": "Official",
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {
+        "interaction_mode": "Default"
+      },
+      "image_url": null
+    }
+  }
+]

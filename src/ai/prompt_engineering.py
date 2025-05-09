@@ -1,6 +1,7 @@
 # Changelog:
 # 2025-05-07 HH:MM - Step 7 - Initial refactoring and creation of prompt generation functions.
 # 2025-05-07 HH:MM - Step 18 - Updated generate_new_tweet_prompt to use TweetCategory model.
+# 2025-05-19 12:00 - Step 25 - Added interaction mode support with mode-specific instructions.
 
 """
 Prompt engineering for the YieldFi AI Agent.
@@ -11,6 +12,8 @@ including tweet replies and new tweet generation based on categories.
 
 from enum import Enum
 from typing import Dict, Any, Optional, List # Added List
+import os
+from pathlib import Path
 
 # Attempt to import get_config for robust path finding, fallback if necessary
 # This is primarily for modules that might use this utility outside the main app flow
@@ -47,24 +50,90 @@ class InteractionType(Enum):
     PRODUCT_UPDATE = "product_update"
     COMMUNITY_UPDATE = "community_update"
 
-def get_base_yieldfi_persona(active_account_type: AccountType) -> str:
+# Step 25: Define available interaction modes
+class InteractionMode(Enum):
+    DEFAULT = "Default"
+    PROFESSIONAL = "Professional"
+    DEGEN = "Degen"
+
+# Step 25: Function to load mode-specific instructions
+def load_mode_instructions(mode: str = "Default") -> str:
     """
-    Defines the base persona for YieldFi's social media voice based on the account type.
+    Loads the instruction file for a specific interaction mode.
+    
+    Args:
+        mode: The interaction mode (Default, Professional, Degen)
+        
+    Returns:
+        A string with the mode-specific instructions, or a fallback if not found
+    """
+    # Convert mode name to standard format for file lookup
+    mode_clean = mode.strip().capitalize().replace(" ", "")
+    
+    # Use protocol paths from Step 27
+    from src.config import get_protocol_path
+    mode_file_path = get_protocol_path("mode-instructions", f"InstructionsFor{mode_clean}.md")
+    
+    if not os.path.exists(mode_file_path):
+        logger.warning(f"Mode instruction file not found for '{mode}' at {mode_file_path}. Using fallback.")
+        return f"""
+        This is a fallback instruction set for '{mode}' mode.
+        Use a {mode.lower()} tone and style appropriate for the YieldFi brand.
+        """
+    
+    try:
+        with open(mode_file_path, 'r') as file:
+            content = file.read()
+            logger.info(f"Loaded mode instructions for '{mode}'")
+            return content
+    except Exception as e:
+        logger.error(f"Error loading mode instructions for '{mode}': {e}")
+        return f"""
+        Error loading mode file for '{mode}'. Using fallback.
+        Use a standard, professional tone appropriate for the YieldFi brand.
+        """
+
+def get_base_yieldfi_persona(active_account_type: AccountType, mode: str = "Default") -> str:
+    """
+    Defines the base persona for YieldFi's social media voice based on the account type and interaction mode.
     
     Args:
         active_account_type: The type of account posting (e.g., OFFICIAL, INTERN).
+        mode: The interaction mode (Default, Professional, Degen)
     
     Returns:
         A string describing the persona.
     """
+    # Get the base persona based on account type
+    base_persona = ""
     if active_account_type == AccountType.OFFICIAL:
-        return "You are the official voice of YieldFi, a professional, authoritative, and helpful representative of the company. Your tone is polished, confident, and focused on building trust and providing value."
+        base_persona = "You are the official voice of YieldFi, a professional, authoritative, and helpful representative of the company. Your tone is polished, confident, and focused on building trust and providing value."
     elif active_account_type == AccountType.INTERN:
-        return "You are a YieldFi intern, enthusiastic, approachable, and relatable. Your tone is casual, friendly, and eager to learn or help, often adding a personal touch or humor when appropriate."
+        base_persona = "You are a YieldFi intern, enthusiastic, approachable, and relatable. Your tone is casual, friendly, and eager to learn or help, often adding a personal touch or humor when appropriate."
     elif active_account_type == AccountType.PARTNER:
-        return "You are a YieldFi partner, collaborative and supportive. Your tone is professional yet warm, emphasizing mutual benefits and shared goals."
+        base_persona = "You are a YieldFi partner, collaborative and supportive. Your tone is professional yet warm, emphasizing mutual benefits and shared goals."
     else:
-        return "You are a representative of YieldFi, maintaining a balanced and engaging tone that aligns with the brand's mission to empower users through decentralized finance."
+        base_persona = "You are a representative of YieldFi, maintaining a balanced and engaging tone that aligns with the brand's mission to empower users through decentralized finance."
+    
+    # Load and incorporate mode-specific instructions if mode is not Default
+    if mode and mode.lower() != "default":
+        mode_instructions = load_mode_instructions(mode)
+        # Extract key parts from mode instructions for persona modification
+        # We mainly want tone guidelines and example style, not the whole file
+        sections = mode_instructions.split("##")
+        tone_guidelines = ""
+        for section in sections:
+            if "tone guidelines" in section.lower():
+                tone_guidelines = section.strip()
+                break
+        
+        if tone_guidelines:
+            base_persona += f"\n\nAdapt your voice according to these mode-specific guidelines:\n{tone_guidelines}"
+        else:
+            # If we couldn't extract tone guidelines specifically, add a general instruction
+            base_persona += f"\n\nAdapt your voice to the {mode} mode, which typically uses a {mode.lower()} tone."
+    
+    return base_persona
 
 def get_instruction_set(active_account_type: AccountType, target_account_type: AccountType) -> str:
     """
@@ -104,7 +173,8 @@ def generate_interaction_prompt(
     target_account_info: Optional[Account] = None,
     yieldfi_knowledge_snippet: Optional[str] = None,
     interaction_details: Optional[Dict[str, Any]] = None,
-    platform: str = "Twitter"
+    platform: str = "Twitter",
+    mode: str = "Default"  # Added mode parameter
 ) -> str:
     """
     Constructs a detailed prompt for AI interaction based on context.
@@ -116,6 +186,7 @@ def generate_interaction_prompt(
         yieldfi_knowledge_snippet: Relevant YieldFi information to include.
         interaction_details: Dictionary with specific instructions (e.g., tone, goal).
         platform: The social media platform (e.g., Twitter, for character limits).
+        mode: The interaction mode (Default, Professional, Degen)
     
     Returns:
         A formatted string prompt for the AI model.
@@ -124,8 +195,8 @@ def generate_interaction_prompt(
     if interaction_details is None:
         interaction_details = {}
 
-    # Section 1: Persona Definition
-    persona = get_base_yieldfi_persona(active_account_info.account_type)
+    # Section 1: Persona Definition with mode
+    persona = get_base_yieldfi_persona(active_account_info.account_type, mode)
     prompt_parts = [f"Persona: {persona}"]
 
     # Section 2: Core YieldFi Message
@@ -154,6 +225,20 @@ def generate_interaction_prompt(
     goal = interaction_details.get('goal', 'engage and inform')
     style_examples = interaction_details.get('style_examples', '')
     task_instructions = f"Task: Craft a response that aligns with the persona and core message."
+    
+    # If mode is not Default, incorporate mode-specific style guidelines
+    if mode.lower() != "default":
+        # Load full mode instructions to extract style examples specific to this mode
+        mode_instructions = load_mode_instructions(mode)
+        sections = mode_instructions.split("##")
+        examples_section = ""
+        for section in sections:
+            if "examples" in section.lower():
+                examples_section = section.strip()
+        
+        if examples_section:
+            prompt_parts.append(f"Mode-Specific Style Examples: {examples_section}")
+    
     if tone != 'default':
         task_instructions += f" Use a {tone} tone."
     task_instructions += f" Goal: {goal}."
@@ -164,17 +249,18 @@ def generate_interaction_prompt(
         task_instructions += " Keep the response under 280 characters as per Twitter's limit."
     prompt_parts.append(task_instructions)
 
-    # Combine all parts into the final prompt
-    final_prompt = "\n\n".join(prompt_parts)
-    final_prompt += """\n\n
+    # Assemble the final prompt, prepending critical instructions to ensure they are not truncated
+    instruction_block = """
 CRITICAL INSTRUCTIONS:
 1. Respond with ONLY the final tweet text
 2. Maximum 280 characters for Twitter
-3. NO explanations, reasoning, or self-talk before or after
+3. NO explanations, reasoning, self-talk, or any other content
 4. NO prefixes like 'Tweet:' or 'Response:'
 5. Do NOT include character counts or drafts
-
-Response:"""
+6. Your ENTIRE response should be JUST the tweet
+"""
+    final_prompt_body = "\n\n".join(prompt_parts)
+    final_prompt = instruction_block + "\n\n" + final_prompt_body + "\n\nResponse:"
     logger.debug(f"Generated INTERACTION prompt: {final_prompt}")
     return final_prompt
 
@@ -184,7 +270,8 @@ def generate_new_tweet_prompt(
     yieldfi_knowledge_snippet: Optional[str] = None,
     active_account_info: Account = None, # Should ideally not be None
     platform: str = "Twitter",
-    additional_instructions: Optional[Dict[str, Any]] = None # Added for more flexibility
+    additional_instructions: Optional[Dict[str, Any]] = None, # Added for more flexibility
+    mode: str = "Default"  # Added mode parameter
 ) -> str:
     """
     Constructs a prompt for creating a new tweet based on a category and topic.
@@ -196,6 +283,7 @@ def generate_new_tweet_prompt(
         active_account_info: Information about the account posting.
         platform: The social media platform (e.g., Twitter).
         additional_instructions: Optional dictionary for any other specific instructions.
+        mode: The interaction mode (Default, Professional, Degen)
 
     Returns:
         A formatted string prompt for the AI model.
@@ -207,13 +295,13 @@ def generate_new_tweet_prompt(
     if isinstance(category, str):
         category = TweetCategory(name=category, description="", prompt_keywords=[], style_guidelines={})
 
-    # Section 1: Persona Definition
+    # Section 1: Persona Definition with mode
     if active_account_info:
-        persona = get_base_yieldfi_persona(active_account_info.account_type)
+        persona = get_base_yieldfi_persona(active_account_info.account_type, mode)
     else:
         # Fallback to official persona if active_account_info is not provided
         # Though in practice, it should always be provided from the UI/controller.
-        persona = get_base_yieldfi_persona(AccountType.OFFICIAL)
+        persona = get_base_yieldfi_persona(AccountType.OFFICIAL, mode)
     prompt_parts = [f"Persona: {persona}"]
 
     # Section 2: Core YieldFi Message
@@ -234,6 +322,28 @@ def generate_new_tweet_prompt(
         for key, value in category.style_guidelines.items():
             style_parts.append(f"  - {key.replace('_', ' ').capitalize()}: {value}")
         prompt_parts.append("\n".join(style_parts))
+    
+    # Section 4.5: Mode-specific Style (if not Default)
+    if mode.lower() != "default":
+        # Load mode instructions to extract style examples specific to this mode
+        mode_instructions = load_mode_instructions(mode)
+        sections = mode_instructions.split("##")
+        examples_section = ""
+        style_points = ""
+        
+        for section in sections:
+            if "examples" in section.lower():
+                examples_section = section.strip()
+            elif "style points" in section.lower():
+                style_points = section.strip()
+        
+        if examples_section or style_points:
+            mode_style = f"Mode-Specific Style ({mode}):"
+            if examples_section:
+                mode_style += f"\n{examples_section}"
+            if style_points:
+                mode_style += f"\n{style_points}"
+            prompt_parts.append(mode_style)
 
     # Section 5: Relevant YieldFi Knowledge (if available)
     if yieldfi_knowledge_snippet:
@@ -248,6 +358,10 @@ def generate_new_tweet_prompt(
     task_instructions_list = [
         initial_instruction
     ]
+    
+    # Add mode-specific instruction
+    if mode.lower() != "default":
+        task_instructions_list.append(f"Use the {mode} interaction style as detailed above.")
 
     # Incorporate additional_instructions
     custom_tone = additional_instructions.get('tone')
@@ -270,17 +384,18 @@ def generate_new_tweet_prompt(
 
     prompt_parts.append("\n".join(task_instructions_list))
 
-    # Combine all parts into the final prompt
-    final_prompt = "\n\n".join(prompt_parts)
-    final_prompt += """\n\n
+    # Assemble the final prompt, prepending critical instructions to avoid truncation
+    instruction_block_new = """
 CRITICAL INSTRUCTIONS:
 1. Respond with ONLY the final tweet text
 2. Maximum 280 characters for Twitter
-3. NO explanations, reasoning, or self-talk before or after
+3. NO explanations, reasoning, self-talk, or any other content
 4. NO prefixes like 'Tweet:' or 'Response:'
 5. Do NOT include character counts or drafts
-
-Tweet:"""
+6. Your ENTIRE response should be JUST the tweet
+"""
+    final_prompt_body_new = "\n\n".join(prompt_parts)
+    final_prompt = instruction_block_new + "\n\n" + final_prompt_body_new + "\n\nTweet:"
     logger.debug(f"Generated NEW TWEET prompt: {final_prompt}")
     return final_prompt
 

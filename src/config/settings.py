@@ -29,13 +29,23 @@ _ENV_FILE_PATH = os.path.join(_PROJECT_ROOT, ".env")      # This will be overrid
 # The effective defaults for an application usually come from the config.yaml itself.
 DEFAULT_TEMPLATE: Dict[str, Any] = {}
 
-def _merge_dicts(base_dict: Dict[str, Any], override_dict: Dict[str, Any]) -> None:
-    """Recursively merges override_dict into base_dict."""
-    for key, value in override_dict.items():
-        if isinstance(value, dict) and key in base_dict and isinstance(base_dict[key], dict):
-            _merge_dicts(base_dict[key], value)
+def _merge_dicts(target: Dict[str, Any], source: Dict[str, Any]) -> Dict[str, Any]:
+    """Recursively merge two dictionaries, updating existing keys.
+    
+    Args:
+        target: Target dictionary to update
+        source: Source dictionary with values to merge
+        
+    Returns:
+        The updated target dictionary
+    """
+    for key, value in source.items():
+        if isinstance(value, dict) and key in target and isinstance(target[key], dict):
+            _merge_dicts(target[key], value)
         else:
-            base_dict[key] = value
+            target[key] = value
+    
+    return target
 
 def _update_dict_from_env(config_dict: Dict[str, Any]) -> None:
     """
@@ -211,20 +221,35 @@ def set_config_value(key: str, value: Any) -> None:
         d = d[part]
     d[keys[-1]] = value
 
-def _merge_dicts(target: Dict[str, Any], source: Dict[str, Any]) -> Dict[str, Any]:
-    """Recursively merge two dictionaries, updating existing keys.
+def get_protocol_path(*parts: str) -> str:
+    """
+    Constructs a file path for protocol-specific resources.
     
     Args:
-        target: Target dictionary to update
-        source: Source dictionary with values to merge
+        *parts: Path parts to append to the protocol base directory
         
     Returns:
-        The updated target dictionary
+        Full path to the protocol resource
+        
+    Example:
+        get_protocol_path("knowledge", "knowledge.json") will return
+        something like "/path/to/data/protocols/ethena/knowledge/knowledge.json"
     """
-    for key, value in source.items():
-        if isinstance(value, dict) and key in target and isinstance(target[key], dict):
-            _merge_dicts(target[key], value)
-        else:
-            target[key] = value
+    protocol = get_config("default_protocol", "ethena").lower()
     
-    return target 
+    # Determine base protocols directory
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+    protocol_dir = os.path.join(base_dir, "data", "protocols", protocol)
+    
+    # Check if protocol directory exists, if not log warning
+    if not os.path.exists(protocol_dir):
+        print(f"Warning: Protocol directory {protocol_dir} does not exist. Using default directory structure.")
+        # Optional: fall back to non-protocol paths
+    
+    # Construct path with provided parts
+    return os.path.join(protocol_dir, *parts)
+
+# Removed automatic load_config() on import
+
+# Export publicly
+__all__ = ['get_config', 'load_config', 'set_config_value', 'get_protocol_path'] 

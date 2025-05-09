@@ -1,5 +1,6 @@
 # Changelog:
 # 2025-05-07 HH:MM - Step 17 - Initial creation with TweetCategory dataclass and load_categories function.
+# 2025-05-19 15:00 - Step 27 - Updated to use protocol paths.
 
 """
 Models for tweet categories.
@@ -17,7 +18,7 @@ import os
 from dataclasses import dataclass, field
 from typing import List, Dict, Any, Optional
 
-from src.config.settings import get_config # To get data_paths.input
+from src.config import get_config, get_protocol_path  # Step 27 - Protocol paths
 
 @dataclass
 class TweetCategory:
@@ -48,21 +49,19 @@ def load_categories(categories_file_path: Optional[str] = None) -> List[TweetCat
 
     Args:
         categories_file_path: Optional path to the categories JSON file.
-                              If None, it's constructed from config.
+                              If None, the protocol-specific path is used.
 
     Returns:
         A list of TweetCategory objects.
         Returns an empty list if the file is not found or is invalid.
     """
     if categories_file_path is None:
-        input_dir = get_config("data_paths.input", "data/input")
-        # Ensure input_dir is a string
-        if not isinstance(input_dir, str):
-            input_dir = "data/input" # Fallback if config is malformed
-        categories_file_path = os.path.join(input_dir, "categories.json")
+        # Use protocol paths from Step 27
+        categories_file_path = get_protocol_path("categories.json")
 
     if not os.path.exists(categories_file_path):
-        print(f"Error: Categories file not found at {categories_file_path}")
+        protocol = get_config("default_protocol", "ethena")
+        print(f"Error: Categories file not found at {categories_file_path} for protocol '{protocol}'")
         return []
     
     try:

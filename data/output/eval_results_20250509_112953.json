@@ -1,0 +1,42 @@
+[
+  {
+    "id": "sample_eval_1",
+    "description": "Positive sentiment, factual claims, relevant response",
+    "timestamp": "2025-05-09T11:29:53.401579",
+    "scores": {
+      "tone_match": 1.0,
+      "relevance": 0.1875,
+      "factual_accuracy": 1.0
+    }
+  },
+  {
+    "id": "sample_eval_2",
+    "description": "Neutral question, AI response with slight tone mismatch, one fact missed",
+    "timestamp": "2025-05-09T11:29:53.401589",
+    "scores": {
+      "tone_match": 0.0,
+      "relevance": 0.38461538461538464,
+      "factual_accuracy": 0.6666666666666666
+    }
+  },
+  {
+    "id": "sample_eval_3",
+    "description": "Irrelevant question, AI response tries to be helpful but off-topic for specific metrics",
+    "timestamp": "2025-05-09T11:29:53.401593",
+    "scores": {
+      "tone_match": 1.0,
+      "relevance": 0.07142857142857142,
+      "factual_accuracy": 1.0
+    }
+  },
+  {
+    "id": "sample_eval_4",
+    "description": "Response missing required tone and facts for a specific campaign prompt.",
+    "timestamp": "2025-05-09T11:29:53.401596",
+    "scores": {
+      "tone_match": 0.0,
+      "relevance": 0.04,
+      "factual_accuracy": 0.0
+    }
+  }
+]

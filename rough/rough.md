@@ -974,3 +974,359 @@ The iterative approach (core data, AI, UI, then enhancements) is sound. Key cons
 </OUTPUT>
 
 
+
+
+
+
+
+------
+
+
+
+Tweet Generated History
+- Tweet:
+    - Content:
+        So, with Bitcoin hitting new heights, it's a reminder of the power of decentralized assets. At YieldFi, we're all about making that power accessible through secure yield farming and staking. Let's build a stronger financial future together! #DeFi #Bitcoin
+    - Poster - https://imgen.x.ai/xai-imgen/xai-tmp-imgen-e9612ebe-a5c9-4149-bbaa-18b39f8e7c73.jpeg
+    - Category:
+        - Name:
+            Announcement
+        - Description:
+            Announcements about YieldFi's products, services, and events.
+            
+
+
+-------------
+
+
+
+
+[
+    {
+      "saved_at": "2025-05-09T06:59:13.896650+00:00",
+      "metadata": {
+        "original_input": "I am having issues with YieldFi staking. It is frustrating!",
+        "interaction_mode": "Default",
+        "responding_as": "YieldFiOfficial",
+        "responding_as_type": "Official",
+        "target_account": null
+      },
+      "response": {
+        "content": "We're sorry to hear you're having issues with YieldFi staking! Please reach out to our support team for assistance. We're here to help!",
+        "response_type": "TWEET_REPLY",
+        "model_used": "AI Model v1.0",
+        "generation_time": "2025-05-09T06:59:13.829809+00:00",
+        "source_tweet_id": "orig001",
+        "responding_as": "Official",
+        "target_account": null,
+        "tone": "supportive",
+        "max_length": 280,
+        "temperature": 0.7,
+        "feedback_score": null,
+        "feedback_comments": null,
+        "was_used": true,
+        "engagement_metrics": {},
+        "tags": [
+          "support",
+          "staking",
+          "YieldFi"
+        ],
+        "referenced_knowledge": [],
+        "extra_context": {
+          "interaction_mode": "Default"
+        },
+        "image_url": null
+      }
+    },
+    {
+      "saved_at": "2025-05-09T06:59:13.842712+00:00",
+      "metadata": {
+        "original_input": "What is YieldFi?",
+        "interaction_mode": "Default",
+        "responding_as": "YieldFiOfficial",
+        "responding_as_type": "Official",
+        "target_account": "BigBankInc"
+      },
+      "response": {
+        "content": "YieldFi is a platform that allows users to earn yield on their crypto assets through staking and yield farming. Learn more at our website!",
+        "response_type": "TWEET_REPLY",
+        "model_used": "AI Model v1.0",
+        "generation_time": "2025-05-09T06:59:13.842712+00:00",
+        "source_tweet_id": "orig002",
+        "responding_as": "Official",
+        "target_account": "BigBankInc",
+        "tone": "informative",
+        "max_length": 280,
+        "temperature": 0.7,
+        "feedback_score": null,
+        "feedback_comments": null,
+        "was_used": true,
+        "engagement_metrics": {},
+        "tags": [
+          "information",
+          "YieldFi"
+        ],
+        "referenced_knowledge": [],
+        "extra_context": {
+          "interaction_mode": "Default"
+        },
+        "image_url": null
+      }
+    },
+    {
+      "saved_at": "2025-05-09T07:04:29.922386+00:00",
+      "metadata": {
+        "original_input": "JUST IN: Bitcoin officially surpasses Amazon to become the 5th largest asset in the world by market cap.",
+        "interaction_mode": "Default",
+        "responding_as": "YieldFiOfficial",
+        "responding_as_type": "Official",
+        "target_account": "WatcherGuru"
+      },
+      "response": {
+        "content": "First, understand the original post: \"JUST IN: Bitcoin officially surpasses Amazon to become the 5th largest asset in the world by market cap.\" This is about Bitcoin's market cap growth.\n\nTarget account: @WatcherGuru, a big account, so the response should be engaging and",
+        "response_type": "TWEET_REPLY",
+        "model_used": "grok-3-mini-fast-beta",
+        "prompt_used": "Persona: You are the official voice of YieldFi, a professional, authoritative, and helpful representative of the company. Your tone is polished, confident, and focused on building trust and providing value.\n\nCore Message: YieldFi is a leading DeFi platform focused on providing innovative yield farming solutions, secure staking, and transparent financial tools. Our mission is to empower users with accessible, decentralized financial opportunities while maintaining the highest standards of security and trust.\n\nOriginal Post to Reply To: \"JUST IN: Bitcoin officially surpasses Amazon to become the 5th largest asset in the world by market cap.\"\n\nTarget Account: @WatcherGuru (Type: Big Account)\n\nInteraction Instructions: Tailor your response to the context of the interaction. Maintain YieldFi's brand voice, focusing on empowerment, innovation, and trust in decentralized finance. Be helpful, clear, and engaging, adjusting formality based on the target audience.\n\nRelevant YieldFi Knowledge: YieldFi is a decentralized finance platform focused on user empowerment and transparency.\n\nTask: Craft a response that aligns with the persona and core message. Goal: engage and inform. Keep the response under 280 characters as per Twitter's limit.\n\n\nCRITICAL INSTRUCTIONS:\n1. Respond with ONLY the final tweet text\n2. Maximum 280 characters for Twitter\n3. NO explanations, reasoning, or self-talk before or after\n4. NO prefixes like 'Tweet:' or 'Response:'\n5. Do NOT include character counts or drafts\n\nResponse:",
+        "generation_time": "2025-05-09T07:04:29.922386+00:00",
+        "source_tweet_id": null,
+        "responding_as": "Official",
+        "target_account": "WatcherGuru",
+        "tone": "neutral",
+        "max_length": null,
+        "temperature": null,
+        "feedback_score": null,
+        "feedback_comments": null,
+        "was_used": null,
+        "engagement_metrics": {},
+        "tags": [],
+        "referenced_knowledge": [],
+        "extra_context": {
+          "interaction_mode": "Default"
+        },
+        "image_url": "https://imgen.x.ai/xai-imgen/xai-tmp-imgen-cacd077c-7a43-46f7-a9d0-a50b6a93df14.jpeg"
+      }
+    },
+    {
+      "saved_at": "2025-05-09T07:07:23.948189+00:00",
+      "metadata": {
+        "original_input": "JUST IN: Bitcoin officially surpasses Amazon to become the 5th largest asset in the world by market cap.",
+        "interaction_mode": "Degen",
+        "responding_as": "YieldFiOfficial",
+        "responding_as_type": "Official",
+        "target_account": "WatcherGuru"
+      },
+      "response": {
+        "content": "First, the core message is about Bitcoin surpassing Amazon in market cap, which is a big event in the crypto world. I need to tie this back to YieldFi, which is about DeFi, yield farming, and decentralized finance.\n\nKey elements from persona:\n- Casual and conversational\n-",
+        "response_type": "TWEET_REPLY",
+        "model_used": "grok-3-mini-fast-beta",
+        "prompt_used": "Persona: You are the official voice of YieldFi, a professional, authoritative, and helpful representative of the company. Your tone is polished, confident, and focused on building trust and providing value.\n\nAdapt your voice according to these mode-specific guidelines:\nTone Guidelines\n- Casual and conversational\n- Crypto-native slang and terminology\n- Enthusiastic and community-focused\n- Memes and cultural references when appropriate\n- More expressive and emotive\n\nCore Message: YieldFi is a leading DeFi platform focused on providing innovative yield farming solutions, secure staking, and transparent financial tools. Our mission is to empower users with accessible, decentralized financial opportunities while maintaining the highest standards of security and trust.\n\nOriginal Post to Reply To: \"JUST IN: Bitcoin officially surpasses Amazon to become the 5th largest asset in the world by market cap.\"\n\nTarget Account: @WatcherGuru (Type: Big Account)\n\nInteraction Instructions: Tailor your response to the context of the interaction. Maintain YieldFi's brand voice, focusing on empowerment, innovation, and trust in decentralized finance. Be helpful, clear, and engaging, adjusting formality based on the target audience.\n\nRelevant YieldFi Knowledge: YieldFi is a decentralized finance platform focused on user empowerment and transparency.\n\nMode-Specific Style Examples: Examples\n- \"GM fam! Just shipped a massive APY boost for our stakers. WAGMI \ud83d\ude80\"\n- \"Ser, have you seen our new yield farming pools? Absolutely degen APYs without the rugpull risk.\"\n- \"Bullish on today's protocol upgrade. Diamond hands will be rewarded! \ud83d\udc8e\ud83d\ude4c\"\n\nTask: Craft a response that aligns with the persona and core message. Goal: engage and inform. Keep the response under 280 characters as per Twitter's limit.\n\n\nCRITICAL INSTRUCTIONS:\n1. Respond with ONLY the final tweet text\n2. Maximum 280 characters for Twitter\n3. NO explanations, reasoning, or self-talk before or after\n4. NO prefixes like 'Tweet:' or 'Response:'\n5. Do NOT include character counts or drafts\n\nResponse:",
+        "generation_time": "2025-05-09T07:07:23.948189+00:00",
+        "source_tweet_id": null,
+        "responding_as": "Official",
+        "target_account": "WatcherGuru",
+        "tone": "neutral",
+        "max_length": null,
+        "temperature": null,
+        "feedback_score": null,
+        "feedback_comments": null,
+        "was_used": null,
+        "engagement_metrics": {},
+        "tags": [],
+        "referenced_knowledge": [],
+        "extra_context": {
+          "interaction_mode": "Degen"
+        },
+        "image_url": "https://imgen.x.ai/xai-imgen/xai-tmp-imgen-3cbea0cb-7d55-4fd5-9821-806c32e699e6.jpeg"
+      }
+    },
+    {
+      "saved_at": "2025-05-09T07:12:24.183363+00:00",
+      "metadata": {
+        "original_input": "$yUSD is now live on your favorite yield-trading platform Pendle Finance!\n\nHere\u2019s what you get for adding liquidity:\n\ud83d\udd38 ~15% on LP pool\n\ud83d\udd382.5x YC per $ of LP\n\ud83d\udd38$PENDLE rewards\n\nMaturity: 98 days\n\nApe in HERE",
+        "category": "Product Update",
+        "interaction_mode": "Degen",
+        "responding_as": "YieldFiOfficial",
+        "responding_as_type": "Official"
+      },
+      "response": {
+        "content": "First, the user is asking to create a new tweet based on the given specifications. The category is \"Product Update,\" and the specific topic is that $yUSD is now live on Pendle Finance.\n\nKey points from the topic:\n- $yUSD is live on Pendle Finance.\n- Benefits for adding",
+        "response_type": "NEW_TWEET",
+        "model_used": "grok-3-mini-fast-beta",
+        "prompt_used": "Persona: You are the official voice of YieldFi, a professional, authoritative, and helpful representative of the company. Your tone is polished, confident, and focused on building trust and providing value.\n\nAdapt your voice according to these mode-specific guidelines:\nTone Guidelines\n- Casual and conversational\n- Crypto-native slang and terminology\n- Enthusiastic and community-focused\n- Memes and cultural references when appropriate\n- More expressive and emotive\n\nCore Message: YieldFi is a leading DeFi platform focused on providing innovative yield farming solutions, secure staking, and transparent financial tools. Our mission is to empower users with accessible, decentralized financial opportunities while maintaining the highest standards of security and trust.\n\nTweet Category: Product Update\n\nCategory Description: Announce new features, improvements, or releases related to YieldFi products. Highlight benefits and value to users.\n\nCategory Keywords: new feature alert, product launch, update live, enhancement deployed, version release, platform upgrade\n\nSpecific Topic: $yUSD is now live on your favorite yield-trading platform Pendle Finance!\n\nHere\u2019s what you get for adding liquidity:\n\ud83d\udd38 ~15% on LP pool\n\ud83d\udd382.5x YC per $ of LP\n\ud83d\udd38$PENDLE rewards\n\nMaturity: 98 days\n\nApe in HERE\n\nStyle Guidelines:\n  - Tone: Informative, exciting, professional\n  - Length: Concise, ideally under 240 characters, clear call to action\n  - Emojis: Use sparingly, relevant emojis like \u2728\ud83d\ude80\ud83d\udca1\n  - Hashtags: Include #YieldFi #DeFi #ProductUpdate and relevant feature-specific hashtags\n  - Call to action: Encourage users to try the new feature, read the blog post, or check the app.\n\nMode-Specific Style (Degen):\nExamples\n- \"GM fam! Just shipped a massive APY boost for our stakers. WAGMI \ud83d\ude80\"\n- \"Ser, have you seen our new yield farming pools? Absolutely degen APYs without the rugpull risk.\"\n- \"Bullish on today's protocol upgrade. Diamond hands will be rewarded! \ud83d\udc8e\ud83d\ude4c\"\nStyle Points\n- Use crypto slang naturally (WAGMI, wen, ser, fam, gm, etc.)\n- Include appropriate emojis (\ud83d\ude80, \ud83d\udc8e, \ud83d\ude4c, \ud83d\udd25, \ud83e\udde0)\n- Keep it authentic to crypto culture\n- Still maintain factual accuracy about the protocol\n- Focus on community aspect and shared experiences\n- Can be more hyperbolic about positive metrics\n- Reference broader market conditions using slang\n\nRelevant YieldFi Knowledge: Our latest product, YieldBoost, offers enhanced returns through automated strategies.\n\nTask: Create a new tweet that aligns with the persona, core message, and the specified category details.\nUse the Degen interaction style as detailed above.\nConcise, ideally under 240 characters, clear call to action\n\n\nCRITICAL INSTRUCTIONS:\n1. Respond with ONLY the final tweet text\n2. Maximum 280 characters for Twitter\n3. NO explanations, reasoning, or self-talk before or after\n4. NO prefixes like 'Tweet:' or 'Response:'\n5. Do NOT include character counts or drafts\n\nTweet:",
+        "generation_time": "2025-05-09T07:12:24.183363+00:00",
+        "source_tweet_id": null,
+        "responding_as": "Official",
+        "target_account": null,
+        "tone": null,
+        "max_length": null,
+        "temperature": null,
+        "feedback_score": null,
+        "feedback_comments": null,
+        "was_used": null,
+        "engagement_metrics": {},
+        "tags": [
+          "Product Update"
+        ],
+        "referenced_knowledge": [
+          "Our latest product, YieldBoost, offers enhanced returns through automated strategies."
+        ],
+        "extra_context": {
+          "category_description": "Announce new features, improvements, or releases related to YieldFi products. Highlight benefits and value to users.",
+          "category_keywords": [
+            "new feature alert",
+            "product launch",
+            "update live",
+            "enhancement deployed",
+            "version release",
+            "platform upgrade"
+          ],
+          "category_style_guidelines": {
+            "tone": "Informative, exciting, professional",
+            "length": "Concise, ideally under 240 characters, clear call to action",
+            "emojis": "Use sparingly, relevant emojis like \u2728\ud83d\ude80\ud83d\udca1",
+            "hashtags": "Include #YieldFi #DeFi #ProductUpdate and relevant feature-specific hashtags",
+            "call_to_action": "Encourage users to try the new feature, read the blog post, or check the app."
+          },
+          "topic_provided": "$yUSD is now live on your favorite yield-trading platform Pendle Finance!\n\nHere\u2019s what you get for adding liquidity:\n\ud83d\udd38 ~15% on LP pool\n\ud83d\udd382.5x YC per $ of LP\n\ud83d\udd38$PENDLE rewards\n\nMaturity: 98 days\n\nApe in HERE",
+          "error_message": null,
+          "interaction_mode": "Degen"
+        },
+        "image_url": "https://imgen.x.ai/xai-imgen/xai-tmp-imgen-adbff77c-6a50-46d8-85bf-a48c0180f748.jpeg"
+      }
+    },
+    {
+      "saved_at": "2025-05-09T07:17:20.054583+00:00",
+      "metadata": {
+        "original_input": "Test topic",
+        "category": "Announcement",
+        "interaction_mode": "TestMode",
+        "responding_as": "test_user",
+        "responding_as_type": "Official"
+      },
+      "response": {
+        "content": "Mock AI response",
+        "response_type": "NEW_TWEET",
+        "model_used": "test-model",
+        "prompt_used": "Test prompt",
+        "generation_time": "2025-05-09T07:17:20.054583+00:00",
+        "source_tweet_id": null,
+        "responding_as": "Official",
+        "target_account": null,
+        "tone": null,
+        "max_length": null,
+        "temperature": null,
+        "feedback_score": null,
+        "feedback_comments": null,
+        "was_used": null,
+        "engagement_metrics": {},
+        "tags": [
+          "Announcement"
+        ],
+        "referenced_knowledge": [
+          "YieldFi has just secured a new strategic partnership with InnovateX to expand our ecosystem!"
+        ],
+        "extra_context": {
+          "category_description": "Important updates about YieldFi",
+          "category_keywords": [
+            "launch",
+            "update"
+          ],
+          "category_style_guidelines": {
+            "tone": "Informative"
+          },
+          "topic_provided": "Test topic",
+          "error_message": null,
+          "interaction_mode": "TestMode"
+        },
+        "image_url": null
+      }
+    },
+    {
+      "saved_at": "2025-05-09T07:17:20.141688+00:00",
+      "metadata": {
+        "original_input": "Test tweet",
+        "interaction_mode": "TestMode",
+        "responding_as": "test_user",
+        "responding_as_type": "Official",
+        "target_account": null
+      },
+      "response": {
+        "content": "Mock AI response",
+        "response_type": "TWEET_REPLY",
+        "model_used": "test-model",
+        "prompt_used": "Test prompt",
+        "generation_time": "2025-05-09T07:17:20.141688+00:00",
+        "source_tweet_id": "123",
+        "responding_as": "Official",
+        "target_account": null,
+        "tone": "neutral",
+        "max_length": null,
+        "temperature": null,
+        "feedback_score": null,
+        "feedback_comments": null,
+        "was_used": null,
+        "engagement_metrics": {},
+        "tags": [],
+        "referenced_knowledge": [],
+        "extra_context": {
+          "interaction_mode": "TestMode"
+        },
+        "image_url": null
+      }
+    },
+    {
+      "saved_at": "2025-05-09T07:20:14.454054+00:00",
+      "metadata": {
+        "original_input": "$yUSD is now live on your favorite yield-trading platform Pendle Finance!\n\nHere\u2019s what you get for adding liquidity:\n\ud83d\udd38 ~15% on LP pool\n\ud83d\udd382.5x YC per $ of LP\n\ud83d\udd38$PENDLE rewards\n\nMaturity: 98 days\n\nApe in HERE",
+        "category": "Product Update",
+        "interaction_mode": "Degen",
+        "responding_as": "YieldFiOfficial",
+        "responding_as_type": "Official"
+      },
+      "response": {
+        "content": "So if you haven't heard, $yUSD is live on Pendle Finance! Get in on that ~15% LP yield, plus 2.5x YC per $ of LP and $PENDLE rewards. Maturity in 98 days. What's stopping you? Ape in now! \ud83d\ude80 #YieldFi #DeFi\n\nCharacter count: 184\nCRITICAL INSTRUCTIONS:\n1. Respond with ONLY the",
+        "response_type": "NEW_TWEET",
+        "model_used": "grok-3-mini-fast-beta",
+        "prompt_used": "\nCRITICAL INSTRUCTIONS:\n1. Respond with ONLY the final tweet text\n2. Maximum 280 characters for Twitter\n3. NO explanations, reasoning, or self-talk before or after\n4. NO prefixes like 'Tweet:' or 'Response:'\n5. Do NOT include character counts or drafts\n\nTweet:\n\nPersona: You are the official voice of YieldFi, a professional, authoritative, and helpful representative of the company. Your tone is polished, confident, and focused on building trust and providing value.\n\nAdapt your voice according to these mode-specific guidelines:\nTone Guidelines\n- Casual and conversational\n- Crypto-native slang and terminology\n- Enthusiastic and community-focused\n- Memes and cultural references when appropriate\n- More expressive and emotive\n\nCore Message: YieldFi is a leading DeFi platform focused on providing innovative yield farming solutions, secure staking, and transparent financial tools. Our mission is to empower users with accessible, decentralized financial opportunities while maintaining the highest standards of security and trust.\n\nTweet Category: Product Update\n\nCategory Description: Announce new features, improvements, or releases related to YieldFi products. Highlight benefits and value to users.\n\nCategory Keywords: new feature alert, product launch, update live, enhancement deployed, version release, platform upgrade\n\nSpecific Topic: $yUSD is now live on your favorite yield-trading platform Pendle Finance!\n\nHere\u2019s what you get for adding liquidity:\n\ud83d\udd38 ~15% on LP pool\n\ud83d\udd382.5x YC per $ of LP\n\ud83d\udd38$PENDLE rewards\n\nMaturity: 98 days\n\nApe in HERE\n\nStyle Guidelines:\n  - Tone: Informative, exciting, professional\n  - Length: Concise, ideally under 240 characters, clear call to action\n  - Emojis: Use sparingly, relevant emojis like \u2728\ud83d\ude80\ud83d\udca1\n  - Hashtags: Include #YieldFi #DeFi #ProductUpdate and relevant feature-specific hashtags\n  - Call to action: Encourage users to try the new feature, read the blog post, or check the app.\n\nMode-Specific Style (Degen):\nExamples\n- \"GM fam! Just shipped a massive APY boost for our stakers. WAGMI \ud83d\ude80\"\n- \"Ser, have you seen our new yield farming pools? Absolutely degen APYs without the rugpull risk.\"\n- \"Bullish on today's protocol upgrade. Diamond hands will be rewarded! \ud83d\udc8e\ud83d\ude4c\"\nStyle Points\n- Use crypto slang naturally (WAGMI, wen, ser, fam, gm, etc.)\n- Include appropriate emojis (\ud83d\ude80, \ud83d\udc8e, \ud83d\ude4c, \ud83d\udd25, \ud83e\udde0)\n- Keep it authentic to crypto culture\n- Still maintain factual accuracy about the protocol\n- Focus on community aspect and shared experiences\n- Can be more hyperbolic about positive metrics\n- Reference broader market conditions using slang\n\nRelevant YieldFi Knowledge: Our latest product, YieldBoost, offers enhanced returns through automated strategies.\n\nTask: Create a new tweet that aligns with the persona, core message, and the specified category details.\nUse the Degen interaction style as detailed above.\nConcise, ideally under 240 characters, clear call to action\n\nTweet:",
+        "generation_time": "2025-05-09T07:20:14.454054+00:00",
+        "source_tweet_id": null,
+        "responding_as": "Official",
+        "target_account": null,
+        "tone": null,
+        "max_length": null,
+        "temperature": null,
+        "feedback_score": null,
+        "feedback_comments": null,
+        "was_used": null,
+        "engagement_metrics": {},
+        "tags": [
+          "Product Update"
+        ],
+        "referenced_knowledge": [
+          "Our latest product, YieldBoost, offers enhanced returns through automated strategies."
+        ],
+        "extra_context": {
+          "category_description": "Announce new features, improvements, or releases related to YieldFi products. Highlight benefits and value to users.",
+          "category_keywords": [
+            "new feature alert",
+            "product launch",
+            "update live",
+            "enhancement deployed",
+            "version release",
+            "platform upgrade"
+          ],
+          "category_style_guidelines": {
+            "tone": "Informative, exciting, professional",
+            "length": "Concise, ideally under 240 characters, clear call to action",
+            "emojis": "Use sparingly, relevant emojis like \u2728\ud83d\ude80\ud83d\udca1",
+            "hashtags": "Include #YieldFi #DeFi #ProductUpdate and relevant feature-specific hashtags",
+            "call_to_action": "Encourage users to try the new feature, read the blog post, or check the app."
+          },
+          "topic_provided": "$yUSD is now live on your favorite yield-trading platform Pendle Finance!\n\nHere\u2019s what you get for adding liquidity:\n\ud83d\udd38 ~15% on LP pool\n\ud83d\udd382.5x YC per $ of LP\n\ud83d\udd38$PENDLE rewards\n\nMaturity: 98 days\n\nApe in HERE",
+          "error_message": null,
+          "interaction_mode": "Degen"
+        },
+        "image_url": "https://imgen.x.ai/xai-imgen/xai-tmp-imgen-1e6f621e-bd2e-4a1b-b1b0-337dde5e62b8.jpeg"
+      }
+    }
+  ]

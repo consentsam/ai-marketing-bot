@@ -18,9 +18,11 @@ This project aims to streamline social media management, ensure brand consistenc
     * AI adapts to the selected YieldFi persona (Official, Intern).
 * Integration with YieldFi Knowledge Base (`data/docs/docs.yield.fi.md`, live data sources).
 * Tone Analysis of incoming tweets to inform response strategy.
+* Image Generation for tweets with visual content.
 * Mock Data Source for development and testing without live API access.
 * Modular architecture for future expansion (e.g., Twitter API integration, other social platforms).
 * Streamlit-based UI for interaction and content generation.
+* Protocol-specific knowledge and configuration (with support for multiple protocols).
 
 ## Getting Started
 
@@ -29,6 +31,7 @@ This project aims to streamline social media management, ensure brand consistenc
 * Python 3.9+
 * Git
 * Access to an XAI API key.
+* Grok image API key (for poster image generation).
 * (Eventually) Twitter API Developer Access & Credentials.
 
 ### Installation & Setup
@@ -51,9 +54,9 @@ This project aims to streamline social media management, ensure brand consistenc
     ```
 
 4.  **Set up environment variables:**
-    * Copy `.env.template` to a new file named `.env`:
+    * Copy `.env.example` to a new file named `.env`:
         ```bash
-        cp .env.template .env
+        cp .env.example .env
         ```
     * Edit the `.env` file and add your API keys:
         ```
@@ -67,7 +70,7 @@ This project aims to streamline social media management, ensure brand consistenc
 5.  **Review Configuration:**
     * Check `config.yaml` for default settings. These are generally overridden by `.env` or can be adjusted if needed.
     * Populate `data/input/sample_tweets.json` and `data/input/sample_accounts.json` if using the mock data source for initial testing.
-    * Ensure `data/docs/yieldfi_knowledge.json` (planned in Step 10) is populated with YieldFi specific information.
+    * Ensure `data/docs/yieldfi_knowledge.json` is populated with YieldFi specific information.
     * Customize `data/input/categories.json` with YieldFi-specific tweet categories if using the category-based tweet generation feature.
 
 ### Usage
@@ -81,8 +84,8 @@ This project aims to streamline social media management, ensure brand consistenc
 3.  Follow the on-screen instructions to:
     * Select the active YieldFi account persona (e.g., Official, Intern).
     * Choose an interaction type:
-        * **Generate Tweet Reply**: Input a tweet URL or content to reply to and provide context about the target account.
-        * **Create New Tweet by Category**: Select a category (e.g., Announcement, Product Update), enter a topic, and generate a tailored new tweet.
+        * **Generate Tweet Reply**: Input a tweet URL or content to reply to and provide context about the target account. Optionally check "Generate Poster Image" to create a visual for your reply.
+        * **Create New Tweet by Category**: Select a category (e.g., Announcement, Product Update), enter a topic, and generate a tailored new tweet. Optionally check "Generate Poster Image" to include a visual with your tweet.
 
 For detailed usage instructions, see [Usage Guide](docs/usage.md).
 
@@ -90,8 +93,9 @@ For detailed usage instructions, see [Usage Guide](docs/usage.md).
 
 * `data/docs/`: Contains the core implementation plan, roadmap, YieldFi knowledge, and interaction guidelines.
 * `data/input/`: Sample data for mock data sources, tweet categories, etc.
+* `data/protocols/`: Protocol-specific data, including knowledge, categories, and mode instructions.
 * `src/`: Main source code.
-    * `src/ai/`: AI integration (xAI client, prompt engineering, response generation, tone analysis).
+    * `src/ai/`: AI integration (xAI client, prompt engineering, response generation, tone analysis, image generation).
     * `src/config/`: Configuration management.
     * `src/data_sources/`: Data source abstractions (mock, future Twitter API).
     * `src/knowledge/`: YieldFi knowledge base integration.
@@ -101,6 +105,8 @@ For detailed usage instructions, see [Usage Guide](docs/usage.md).
 * `app.py`: Entry point for the Streamlit application.
 * `config.yaml`: Default application configuration.
 * `requirements.txt`: Python dependencies.
+* `vercel.json`: Vercel deployment configuration.
+* `runtime.txt`: Python runtime specification for Vercel.
 
 ## Development
 
@@ -155,8 +161,20 @@ pytest tests/
 Follow the steps outlined in `data/docs/YieldFi-Ai-Agent-Implementation.md`.
 Adhere to the rules defined in `.cursor/rules/project-wide-cursor-rules.mdc`.
 
+## Deployment
+
+The application can be deployed to Vercel. See [Deployment Guide](docs/deployment.md) for detailed instructions.
+
 ## Changelog
 *(This section will be updated as per Rule 6 of project-wide-cursor-rules.mdc as features are implemented)*
+
+---
+### 2025-05-18
+- **Step 23: Documentation & Final Updates**: Refreshed README and documentation to reflect new features (environment variables, usage updates); updated `docs/usage.md` and `docs/api.md`. Added detailed docs for image generation feature and Vercel deployment.
+
+---
+### 2025-05-09
+- **Step 24: Image Generation**: Implemented image generation using XAI/Grok API. Added `GROK_IMAGE_API_KEY` to environment variables. Integrated image generation into the response flow and UI, allowing users to optionally generate and view a poster image alongside tweets.
 
 ---
 ### 2025-05-08
@@ -188,13 +206,6 @@ Adhere to the rules defined in `.cursor/rules/project-wide-cursor-rules.mdc`.
     - Established `.gitignore` and `requirements.txt`.
     - Created `__init__.py` files for Python package structure.
     - Instructed user on manual creation of `.env.example`.
----
-### 2025-05-09
-- **Step 22: Vercel Deployment Setup**: Configured `vercel.json`, `runtime.txt`, and `scripts/start.sh` for Vercel deployment; updated `docs/deployment.md`.
-- **Step 23: Documentation & Final Updates**: Refreshed README and documentation to reflect new features (environment variables, usage updates); updated `docs/usage.md` and `docs/api.md`.
----
-### YYYY-MM-DD (Current Date)
-- **Step 24: Image Generation**: Implemented image generation using XAI/Grok API. Added `GROK_IMAGE_API_KEY` to environment variables. Integrated image generation into the response flow and UI, allowing users to optionally generate and view a poster image alongside tweets.
 
 ## Documentation
 

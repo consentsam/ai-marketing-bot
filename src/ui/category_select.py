@@ -5,6 +5,7 @@
 # 2025-05-07 23:50 - Step 19.1 - Implemented UI for selecting tweet category, inputting details, and generating tweets.
 # 2025-05-08 01:15 - User Request - Fix ImportError for TWEET_CATEGORIES, ensure use of load_tweet_categories.
 # 2025-05-08 HH:MM - Bugfix - Remove references to non-existent response.error attribute.
+# 2025-05-19 12:50 - Step 25 - Added support for interaction modes.
 
 """
 UI for generating new tweets based on categories.
@@ -103,10 +104,20 @@ def display_tone_badge(tone: Optional[str], prefix: str = "Tone: "):
     elif tone == "N/A":
         status_badge(f"{prefix}N/A", "info")
 
-def display_category_tweet_ui(active_account_type: AccountType):
-    """Displays UI for creating a new tweet by category."""
+def display_category_tweet_ui(active_account_type: AccountType, interaction_mode: str = "Default"):
+    """
+    Displays UI for creating a new tweet by category.
+    
+    Args:
+        active_account_type: The account type to respond as (Official, Intern, etc.)
+        interaction_mode: The interaction mode to use (Default, Professional, Degen)
+    """
     logger.info(f"Displaying category tweet UI for persona: {active_account_type.value}")
+    logger.info(f"Using interaction mode: {interaction_mode}")
     st.subheader("Create New Tweet by Category")
+    
+    # Display the selected interaction mode
+    st.info(f"Using interaction mode: {interaction_mode}")
 
     if not AVAILABLE_CATEGORIES:
         st.error("No tweet categories are available. Please check the category definitions.")
@@ -157,6 +168,7 @@ def display_category_tweet_ui(active_account_type: AccountType):
         
         logger.info(f"Selected category for generation: {selected_category.name}")
         logger.info(f"Topic/Key Points provided by user: '{topic_brief.strip()}'")
+        logger.info(f"Using interaction mode: {interaction_mode}")
 
         if not topic_brief.strip():
             logger.warning("No topic/key points provided. Generating a generic tweet for the category.")
@@ -164,9 +176,9 @@ def display_category_tweet_ui(active_account_type: AccountType):
             # or enforce it by returning here if a topic is mandatory.
             # topic_brief = None # If you want to explicitly pass None
 
-        with st.spinner(f"Generating new '{selected_category.name}' tweet..."):
+        with st.spinner(f"Generating new '{selected_category.name}' tweet with {interaction_mode} mode..."):
             try:
-                logger.info(f"Calling generate_new_tweet with category='{selected_category.name}', persona='{active_account_type.value}', topic='{topic_brief.strip() if topic_brief.strip() else None}'")
+                logger.info(f"Calling generate_new_tweet with category='{selected_category.name}', persona='{active_account_type.value}', topic='{topic_brief.strip() if topic_brief.strip() else None}', mode='{interaction_mode}'")
                 
                 # Show progress steps
                 progress = st.progress(0)
@@ -197,7 +209,8 @@ def display_category_tweet_ui(active_account_type: AccountType):
                     category=selected_category,
                     responding_as=active_account,
                     topic=topic_brief.strip() if topic_brief.strip() else None, # Pass None if empty
-                    generate_image=generate_image
+                    generate_image=generate_image,
+                    interaction_mode=interaction_mode  # Pass the interaction mode
                 )
                 progress.progress(100)
                 logger.info(f"Received response from generate_new_tweet. Model used: {response.model_used}")
@@ -231,19 +244,35 @@ def display_category_tweet_ui(active_account_type: AccountType):
     # Display generated tweet or error
     if "generated_new_tweet_content" in st.session_state and st.session_state.generated_new_tweet_content:
         st.markdown("**AI-Generated New Tweet:**")
-        # The warning you are seeing might be coming from here if the content is not as expected.
-        # Let's log what's being displayed.
+        
+        # Basic validation of tweet content
         tweet_to_display = st.session_state.generated_new_tweet_content
         logger.info(f"Displaying generated tweet: '{tweet_to_display}'")
-        if "[Warning:" in tweet_to_display or not tweet_to_display.strip(): # Basic check for problematic content
-            logger.warning(f"Potential issue with generated tweet content: '{tweet_to_display}'")
-            st.warning(f"AI response might have an issue: {tweet_to_display}") # Display a warning if it looks problematic
-        else:
-            st.success(tweet_to_display)
         
-        copy_button(tweet_to_display, button_text="Copy Tweet Text")
+        if not tweet_to_display.strip() or "[Error:" in tweet_to_display or "[Warning:" in tweet_to_display:
+            # Handle problematic content
+            logger.warning(f"Potential issue with generated tweet content: '{tweet_to_display}'")
+            st.error(f"AI response might have an issue: {tweet_to_display}")
+        else:
+            # Use st.success for better visual highlighting of the tweet
+            st.success(tweet_to_display)
+            # Add character count validation
+            char_count = len(tweet_to_display)
+            st.info(f"✓ Tweet length: {char_count}/280 characters")
+            # Add copy button for easy copying
+            copy_button(tweet_to_display, "Copy Tweet")
+        
         if st.session_state.get("generated_new_tweet_model"):
             st.caption(f"Generated using: {st.session_state.generated_new_tweet_model}")
+        
+        # Display generated poster image if available
+        if "full_new_tweet_response" in st.session_state and hasattr(st.session_state.full_new_tweet_response, 'image_url') and st.session_state.full_new_tweet_response.image_url:
+            st.markdown("**Generated Poster Image:**")
+            st.image(st.session_state.full_new_tweet_response.image_url, caption="Poster Image")
+            copy_button(st.session_state.full_new_tweet_response.image_url, "Copy Image URL")
+        elif generate_image:  # Check if image was requested but not generated
+            logger.warning("Image was requested, but no image_url found in full response.")
+            st.warning("Poster image was requested but could not be generated or found.")
         
         # Add debug information in an expandable section
         if "full_new_tweet_response" in st.session_state:
@@ -254,19 +283,14 @@ def display_category_tweet_ui(active_account_type: AccountType):
                 st.text(f"Character Count: {len(st.session_state.full_new_tweet_response.content)}")
                 st.text(f"Response Type: {st.session_state.full_new_tweet_response.response_type}")
                 st.text(f"Category: {selected_category_name}")
+                st.text(f"Interaction Mode: {interaction_mode}")  # Display the interaction mode
                 if hasattr(st.session_state.full_new_tweet_response, 'extra_context') and st.session_state.full_new_tweet_response.extra_context:
                     st.text("Extra Context:")
                     st.json(st.session_state.full_new_tweet_response.extra_context)
-                # Show prompt if in debug mode
+                # Show prompt if in debug mode (using text area instead of nested expander)
                 if st.session_state.full_new_tweet_response.prompt_used:
-                    with st.expander("Show Prompt Used", expanded=False):
-                        st.code(st.session_state.full_new_tweet_response.prompt_used, language="markdown")
-        
-        # Display generated poster image if available
-        if hasattr(st.session_state.full_new_tweet_response, 'image_url') and st.session_state.full_new_tweet_response.image_url:
-            st.markdown("**Generated Poster Image:**")
-            st.image(st.session_state.full_new_tweet_response.image_url, caption="Poster Image")
-            copy_button(st.session_state.full_new_tweet_response.image_url, button_text="Copy Image URL")
+                    st.markdown("**Prompt Used:**")
+                    st.text_area("Prompt Used", value=st.session_state.full_new_tweet_response.prompt_used, height=200, key="new_tweet_debug_prompt")
     
     elif "generated_new_tweet_error" in st.session_state and st.session_state.generated_new_tweet_error and not st.session_state.get("generated_new_tweet_content"):
         # This handles the case where an error occurred and spinner was exited, but no content was generated.
@@ -304,14 +328,17 @@ if __name__ == '__main__':
         index=[atype.value for atype in AccountType].index(AccountType.OFFICIAL.value) # Default to Official
     )
     selected_account_type = AccountType(test_persona)
+    
+    # Add interaction mode selection for direct testing
+    from src.ai.prompt_engineering import InteractionMode
+    test_mode = st.sidebar.selectbox(
+        "Interaction Mode (Test):", 
+        options=[mode.value for mode in InteractionMode],
+        index=0
+    )
 
-    display_category_tweet_ui(selected_account_type)
+    display_category_tweet_ui(selected_account_type, test_mode)
 
     st.markdown("---")
     st.write("Note: This is a direct run of category_select.py. Full app functionality might differ.")
-    st.write("Ensure `data/input/categories.json` exists and is populated for full category options.")
-
-    # Clean up dummy file if created
-    # This cleanup logic is tricky with Streamlit's execution model on direct run.
-    # Manual cleanup might be needed if you stop the script early.
-    # Consider not auto-creating for direct run to avoid complexity. 
+    st.write("Ensure `data/input/categories.json` exists and is populated for full category options.") 

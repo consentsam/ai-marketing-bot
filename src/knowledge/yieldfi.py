@@ -1,11 +1,13 @@
 # Changelog:
 # 2025-05-07 20:12 - Step 10.3 - Implemented StaticJSONKnowledgeSource and YieldFiDocsKnowledgeSource.
+# 2025-05-19 15:00 - Step 27 - Updated to use protocol paths.
 
 import json
 import logging
 import os
 from typing import List, Dict, Any, Optional
 
+from src.config import get_config, get_protocol_path
 from .base import KnowledgeSource, RelevantChunk
 
 logger = logging.getLogger(__name__)
@@ -13,10 +15,9 @@ logger = logging.getLogger(__name__)
 class StaticJSONKnowledgeSource(KnowledgeSource):
     """Knowledge source that loads data from a static JSON file."""
 
-    DEFAULT_FILE_PATH = "data/docs/yieldfi_knowledge.json"
-
     def __init__(self, file_path: Optional[str] = None):
-        self._file_path = file_path or self.DEFAULT_FILE_PATH
+        # Now uses protocol path by default
+        self._file_path = file_path or get_protocol_path("knowledge", "knowledge.json")
         self._data: Dict[str, Any] = {}
         self.load_data()
 
@@ -100,16 +101,16 @@ class StaticJSONKnowledgeSource(KnowledgeSource):
 class YieldFiDocsKnowledgeSource(KnowledgeSource):
     """Knowledge source that loads data from YieldFi's Markdown documentation."""
 
-    DEFAULT_FILE_PATH = "data/docs/docs.yield.fi.md" # Placeholder, user to provide actual file
-
     def __init__(self, file_path: Optional[str] = None):
-        self._file_path = file_path or self.DEFAULT_FILE_PATH
+        # Now uses protocol path by default
+        self._file_path = file_path or get_protocol_path("docs.md")
         self._paragraphs: List[str] = []
         self.load_data()
 
     @property
     def name(self) -> str:
-        return f"YieldFiDocsKnowledgeSource ({os.path.basename(self._file_path)})"
+        protocol = get_config("default_protocol", "ethena")
+        return f"{protocol.capitalize()}DocsKnowledgeSource ({os.path.basename(self._file_path)})"
 
     def load_data(self):
         """Loads and preprocesses the Markdown document."""
@@ -122,7 +123,8 @@ class YieldFiDocsKnowledgeSource(KnowledgeSource):
                  logger.warning(f"No paragraphs found in {self._file_path}. The file might be empty or structured differently.")
             logger.info(f"Successfully loaded and processed {len(self._paragraphs)} paragraphs from {self._file_path}")
         except FileNotFoundError:
-            logger.warning(f"Markdown documentation file not found: {self._file_path}. {self.name} will operate with empty data. Please ensure 'data/docs/docs.yield.fi.md' exists or provide the correct path.")
+            protocol = get_config("default_protocol", "ethena")
+            logger.warning(f"Protocol documentation file not found: {self._file_path}. {self.name} will operate with empty data. Please ensure the protocol '{protocol}' has a docs.md file.")
             self._paragraphs = []
         except Exception as e:
             logger.error(f"An unexpected error occurred while loading {self._file_path}: {e}. {self.name} will operate with empty data.")
@@ -166,10 +168,11 @@ if __name__ == '__main__':
     print("--- Testing StaticJSONKnowledgeSource ---")
     json_source = StaticJSONKnowledgeSource()
     if not json_source._data: # Manually create a dummy file if default doesn't exist for testing
-        print(f"Default JSON file {StaticJSONKnowledgeSource.DEFAULT_FILE_PATH} not found or empty. Creating a dummy one for testing.")
-        dummy_data_path = "data/docs/dummy_knowledge.json"
+        protocol = get_config("default_protocol", "ethena")
+        print(f"Protocol knowledge file for '{protocol}' not found or empty. Creating a dummy one for testing.")
+        dummy_data_path = get_protocol_path("knowledge", "dummy_knowledge.json")
         try:
-            os.makedirs("data/docs", exist_ok=True)
+            os.makedirs(os.path.dirname(dummy_data_path), exist_ok=True)
             with open(dummy_data_path, 'w') as df:
                 json.dump({"test_key": "This is a test value for searching query", "faq": [{"question": "Dummy Q?", "answer": "Dummy A for query"}]}, df)
             json_source = StaticJSONKnowledgeSource(dummy_data_path) # re-init with dummy
@@ -188,25 +191,28 @@ if __name__ == '__main__':
 
     # Basic test for YieldFiDocsKnowledgeSource
     print("\n--- Testing YieldFiDocsKnowledgeSource ---")
-    # Create a dummy markdown file for testing if docs.yield.fi.md doesn't exist
-    dummy_md_path = "data/docs/dummy_docs.yield.fi.md"
+    # Create a dummy markdown file for testing if docs.md doesn't exist
+    dummy_md_path = get_protocol_path("dummy_docs.md")
     md_source = YieldFiDocsKnowledgeSource(dummy_md_path) # Try with dummy path first
     
     if not md_source._paragraphs: # If dummy is empty or not found, try to create one.
+        protocol = get_config("default_protocol", "ethena")
         print(f"Dummy markdown file {dummy_md_path} not found or empty. Creating a dummy one for testing.")
         try:
-            os.makedirs("data/docs", exist_ok=True)
+            os.makedirs(os.path.dirname(dummy_md_path), exist_ok=True)
             with open(dummy_md_path, 'w', encoding='utf-8') as dmf:
-                dmf.write("## Section 1\n\nThis is the first paragraph about YieldFi features.\n\nAnother paragraph in section 1, discussing yield strategies.\n\n## Section 2\n\nThis paragraph talks about security and audits. The query for security should find this.")
+                dmf.write(f"## {protocol.capitalize()} Documentation\n\nThis is the first paragraph about {protocol.capitalize()} features.\n\nAnother paragraph in section 1, discussing yield strategies.\n\n## Section 2\n\nThis paragraph talks about security and audits. The query for security should find this.")
             md_source.load_data() # Reload data
         except Exception as e:
             print(f"Could not create dummy markdown: {e}")
 
-    if not md_source._paragraphs and os.path.exists(YieldFiDocsKnowledgeSource.DEFAULT_FILE_PATH):
-        print(f"Falling back to default markdown: {YieldFiDocsKnowledgeSource.DEFAULT_FILE_PATH}")
-        md_source = YieldFiDocsKnowledgeSource() # Use default if it exists and dummy failed
+    if not md_source._paragraphs:
+        default_docs_path = get_protocol_path("docs.md")
+        if os.path.exists(default_docs_path):
+            print(f"Falling back to protocol docs: {default_docs_path}")
+            md_source = YieldFiDocsKnowledgeSource() # Use default if it exists and dummy failed
     
-    doc_queries = ["YieldFi features", "security", "nonexistent topic"]
+    doc_queries = ["features", "security", "nonexistent topic"]
     for q in doc_queries:
         print(f"\nSearching in docs for: '{q}'")
         results = md_source.search(q, top_k=2)
@@ -217,7 +223,8 @@ if __name__ == '__main__':
             print("No results found.")
     
     # Cleanup dummy files if created
-    if os.path.exists("data/docs/dummy_knowledge.json"):
-        os.remove("data/docs/dummy_knowledge.json")
+    dummy_json_path = get_protocol_path("knowledge", "dummy_knowledge.json")
+    if os.path.exists(dummy_json_path):
+        os.remove(dummy_json_path)
     if os.path.exists(dummy_md_path):
         os.remove(dummy_md_path) 

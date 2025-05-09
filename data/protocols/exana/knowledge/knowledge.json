@@ -1,0 +1,134 @@
+{
+    "protocol": {
+        "name": "Exana",
+        "description": "Exana is a cross-chain DeFi protocol focused on optimized liquidity management and MEV protection",
+        "founding_date": "2024-01-15",
+        "website": "https://exana.finance",
+        "twitter": "@ExanaProtocol",
+        "governance_token": "EXANA"
+    },
+    "key_metrics": {
+        "tvl": "$142.5M",
+        "daily_volume": "$28.3M",
+        "governance_token_price": "$4.72",
+        "market_cap": "$235M",
+        "total_users": "47,800+",
+        "supported_chains": [
+            "Ethereum",
+            "Arbitrum",
+            "Optimism",
+            "Base"
+        ]
+    },
+    "products": {
+        "exana_swap": {
+            "name": "ExanaSwap",
+            "description": "MEV-protected decentralized exchange with optimized routing",
+            "features": [
+                "Cross-chain swaps with minimal slippage",
+                "MEV protection on all transactions",
+                "Best execution via multi-path routing",
+                "Single-sided liquidity provision options"
+            ],
+            "current_apy_range": "8-22%"
+        },
+        "exana_yield": {
+            "name": "ExanaYield",
+            "description": "Automated yield aggregator with dynamic strategy adjustment",
+            "features": [
+                "Auto-compounding of rewards",
+                "Risk-adjusted strategy switching",
+                "Gas-optimized harvesting",
+                "Impermanent loss protection for long-term LPs"
+            ],
+            "current_apy_range": "12-30%"
+        },
+        "exana_shield": {
+            "name": "ExanaShield",
+            "description": "DeFi insurance protection for Exana users",
+            "features": [
+                "Coverage for smart contract vulnerabilities",
+                "Protocol insolvency protection",
+                "Claim assessment by decentralized DAO",
+                "Staking rewards for coverage providers"
+            ],
+            "coverage_capacity": "$65M"
+        }
+    },
+    "security": {
+        "audits": [
+            {
+                "auditor": "CertiK",
+                "date": "2024-03-18",
+                "status": "Passed - No critical vulnerabilities"
+            },
+            {
+                "auditor": "Peckshield",
+                "date": "2024-02-05",
+                "status": "Passed - 2 medium issues resolved"
+            }
+        ],
+        "bug_bounty": {
+            "platform": "Immunefi",
+            "max_bounty": "$1M",
+            "vulnerabilities_found": 3,
+            "total_paid": "$175K"
+        },
+        "insurance_coverage": "$40M through Nexus Mutual"
+    },
+    "tokenomics": {
+        "token_symbol": "EXANA",
+        "total_supply": "50,000,000",
+        "circulating_supply": "12,500,000",
+        "token_allocation": {
+            "community_rewards": "40%",
+            "team_and_advisors": "20%",
+            "foundation_treasury": "15%",
+            "strategic_investors": "15%",
+            "liquidity_provision": "10%"
+        },
+        "vesting_schedule": {
+            "team_vesting": "4-year with 1-year cliff",
+            "investor_vesting": "2-year with 6-month cliff"
+        }
+    },
+    "faqs": [
+        {
+            "question": "What makes Exana different from other DeFi protocols?",
+            "answer": "Exana differentiates itself through MEV protection at the protocol level, cross-chain optimization, and dynamic strategy adjustment based on market conditions. Our focus is on maximizing returns while minimizing risks like impermanent loss and sandwich attacks."
+        },
+        {
+            "question": "Is Exana safe to use?",
+            "answer": "Exana prioritizes security through multiple independent audits, a $1M bug bounty program, and $40M in insurance coverage. All protocol upgrades undergo rigorous testing and community review via our governance process."
+        },
+        {
+            "question": "How does Exana governance work?",
+            "answer": "EXANA token holders can propose and vote on protocol changes through our on-chain governance system. Proposal submission requires holding at least 25,000 EXANA tokens or receiving delegation from holders with that amount. Voting power is proportional to token holdings."
+        },
+        {
+            "question": "What chains does Exana support?",
+            "answer": "Exana currently supports Ethereum, Arbitrum, Optimism, and Base, with plans to expand to Polygon and Avalanche in Q3 2024."
+        },
+        {
+            "question": "How can I earn yields on Exana?",
+            "answer": "Users can earn yields by providing liquidity to ExanaSwap pools, staking EXANA tokens, or depositing assets into ExanaYield strategies. Current APYs range from 8% to 30% depending on the asset and strategy chosen."
+        }
+    ],
+    "roadmap": {
+        "Q2_2024": [
+            "Launch ExanaShield insurance product",
+            "Integrate with Polygon and Avalanche chains",
+            "Release ExanaYield v2 with improved auto-compounding"
+        ],
+        "Q3_2024": [
+            "Introduce ExanaDAO formal governance structure",
+            "Deploy cross-chain messaging optimizations",
+            "Launch ExanaSwap v3 with concentrated liquidity"
+        ],
+        "Q4_2024": [
+            "Release ExanaSDK for third-party integrations",
+            "Implement Exana Points loyalty program",
+            "Expand to additional EVM-compatible chains"
+        ]
+    }
+}

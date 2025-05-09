@@ -15,6 +15,8 @@ TODOs:
 
 import streamlit as st
 from typing import Optional, Dict, Any
+import hashlib
+import time
 
 def placeholder_component(title: str, message: str, icon: str = "ℹ️"):
     """
@@ -86,12 +88,25 @@ def copy_button(text: str, button_text: str = "Copy"):
         text: Text to copy
         button_text: Text to display on the button
     """
+    # Properly escape the text for JavaScript to prevent issues
+    escaped_text = text.replace("'", "\\'").replace("\n", "\\n").replace("\r", "\\r")
+    
+    # Use a unique button ID to ensure multiple buttons on the same page work correctly
+    button_id = f"copy_btn_{hashlib.md5((escaped_text + str(time.time())).encode()).hexdigest()[:8]}"
+    
     st.markdown(
         f"""
         <div class="stButton">
-            <button onclick="navigator.clipboard.writeText('{text}'); this.innerHTML='Copied!'; setTimeout(() => this.innerHTML='{button_text}', 1500);" class="css-1ubiltw edgvbvh9">
+            <button id="{button_id}" class="css-1ubiltw edgvbvh9">
                 {button_text}
             </button>
+            <script>
+                document.getElementById("{button_id}").addEventListener("click", function() {{
+                    navigator.clipboard.writeText('{escaped_text}');
+                    this.innerHTML = 'Copied!';
+                    setTimeout(() => this.innerHTML = '{button_text}', 1500);
+                }});
+            </script>
         </div>
         """,
         unsafe_allow_html=True

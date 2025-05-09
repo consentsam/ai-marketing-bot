@@ -1,0 +1,124 @@
+[
+    {
+        "name": "Exana Updates",
+        "description": "News and updates about Exana protocol developments, releases, and roadmap",
+        "prompt_keywords": [
+            "update",
+            "release",
+            "new feature",
+            "improvement",
+            "roadmap",
+            "milestone"
+        ],
+        "style_guidelines": {
+            "tone": "informative",
+            "format": "Clear and concise, focus on benefits to users",
+            "examples": [
+                "Exana v2.5 just rolled out with improved swap efficiency and lower gas costs!",
+                "Our latest protocol update introduces optimized MEV protection - check out the docs to learn more"
+            ]
+        }
+    },
+    {
+        "name": "Liquidity Incentives",
+        "description": "Updates about Exana liquidity mining programs, rewards, and incentives",
+        "prompt_keywords": [
+            "liquidity",
+            "rewards",
+            "APY",
+            "incentives",
+            "mining",
+            "pool",
+            "rewards"
+        ],
+        "style_guidelines": {
+            "tone": "exciting",
+            "format": "Lead with key metrics (APY, rewards), include clear CTA",
+            "examples": [
+                "New incentive program live! Earn up to 24% APY by providing EXANA-ETH liquidity",
+                "Liquidity rewards boosted for EXANA-USDC! Now offering 2x points until Friday"
+            ]
+        }
+    },
+    {
+        "name": "Security Announcements",
+        "description": "Important security information, audit results, and safety recommendations",
+        "prompt_keywords": [
+            "security",
+            "audit",
+            "safety",
+            "vulnerability",
+            "protection",
+            "smart contract"
+        ],
+        "style_guidelines": {
+            "tone": "authoritative and reassuring",
+            "format": "Clear facts, straightforward language, actionable advice",
+            "examples": [
+                "Security update: Our contracts have passed a comprehensive audit by CertiK with zero critical findings",
+                "Important: All Exana users should update to v3.2 to benefit from the latest security enhancements"
+            ]
+        }
+    },
+    {
+        "name": "Community Spotlight",
+        "description": "Highlighting community contributions, governance participation, and user success stories",
+        "prompt_keywords": [
+            "community",
+            "contribution",
+            "governance",
+            "voting",
+            "proposal",
+            "success story"
+        ],
+        "style_guidelines": {
+            "tone": "appreciative and community-focused",
+            "format": "Recognize specific contributions, tag community members when appropriate",
+            "examples": [
+                "Shoutout to @ExanaWhiz for the amazing analytics dashboard that's helping our community track protocol metrics!",
+                "Community proposal EXP-42 has passed with 92% approval - decentralized governance at its finest"
+            ]
+        }
+    },
+    {
+        "name": "Market Analysis",
+        "description": "Insights about DeFi market trends relevant to Exana users",
+        "prompt_keywords": [
+            "market",
+            "trend",
+            "analysis",
+            "price",
+            "volume",
+            "opportunity",
+            "DeFi"
+        ],
+        "style_guidelines": {
+            "tone": "analytical and educational",
+            "format": "Present data points, offer context, avoid price predictions",
+            "examples": [
+                "Exana trading volume up 37% this week despite broader market volatility - a sign of growing protocol adoption",
+                "DeFi yield comparison: Exana consistently outperforming similar protocols in risk-adjusted returns this month"
+            ]
+        }
+    },
+    {
+        "name": "Educational Content",
+        "description": "Educational tweets explaining Exana features and DeFi concepts",
+        "prompt_keywords": [
+            "learn",
+            "guide",
+            "tutorial",
+            "how-to",
+            "explanation",
+            "concept"
+        ],
+        "style_guidelines": {
+            "tone": "helpful and educational",
+            "format": "Simple explanations, avoid jargon, include resources for more info",
+            "examples": [
+                "What is impermanent loss and how does Exana help mitigate it? Check out our 2-minute explainer video 👇",
+                "DeFi terms explained: What exactly is a 'flash loan' and how can it be used with Exana? Thread 🧵"
+            ]
+        }
+    }
+]

@@ -1,6 +1,7 @@
 # Changelog:
 # 2025-05-07 21:10 - Step 15.1 - Implemented tweet input interface UI.
 # 2025-05-07 21:20 - Step 15.2 - Added target account metadata inputs and integration into reply generation.
+# 2025-05-19 12:45 - Step 25 - Added support for interaction modes.
 
 from typing import Optional
 import streamlit as st
@@ -20,9 +21,19 @@ logger = get_logger(__name__)
 # Initialize the mock data source once
 mock_data_source = MockTweetDataSource()
 
-def display_tweet_reply_ui(active_account_type: AccountType):
-    """User interface for generating tweet replies."""
+def display_tweet_reply_ui(active_account_type: AccountType, interaction_mode: str = "Default"):
+    """
+    User interface for generating tweet replies.
+    
+    Args:
+        active_account_type: The account type to respond as (Official, Intern, etc.)
+        interaction_mode: The interaction mode to use (Default, Professional, Degen)
+    """
     st.subheader("Generate Tweet Reply")
+    logger.info(f"Displaying tweet reply UI with interaction mode: {interaction_mode}")
+
+    # Display the selected interaction mode
+    st.info(f"Using interaction mode: {interaction_mode}")
 
     # Input fields
     tweet_url = st.text_input("Tweet URL (e.g., https://twitter.com/user/status/1234567890)", key="reply_tweet_url")
@@ -130,7 +141,8 @@ def display_tweet_reply_ui(active_account_type: AccountType):
                         original_tweet=tweet_obj,
                         responding_as=active_account,
                         target_account=target_account,
-                        generate_image=generate_image
+                        generate_image=generate_image,
+                        interaction_mode=interaction_mode  # Pass the interaction mode
                     )
                     # Check if response has an error attribute, which was removed earlier
                     # For now, assume content will indicate error if one occurred based on response_generator logic
@@ -160,16 +172,26 @@ def display_tweet_reply_ui(active_account_type: AccountType):
     if "generated_reply" in st.session_state and st.session_state.generated_reply:
         # Display tone above the tweet box
         st.markdown(f"**Tone:** {st.session_state.generated_tone or 'N/A'}")
-        # Display only the tweet content in a text area
-        st.text_area(label="", value=st.session_state.generated_reply, key="generated_tweet_display", height=100)
-        copy_button(st.session_state.generated_reply) # Added copy button back for the text
+        
+        # Basic validation of tweet content
+        generated_content = st.session_state.generated_reply
+        if generated_content.strip() == "" or "[Error:" in generated_content or "[Warning:" in generated_content:
+            st.error(f"Error in generated reply: {generated_content}")
+        else:
+            # Use st.success for better visual highlighting of the tweet
+            st.success(generated_content)
+            # Add character count validation
+            char_count = len(generated_content)
+            st.info(f"✓ Tweet length: {char_count}/280 characters")
+            # Add copy button for easy copying
+            copy_button(generated_content, "Copy Tweet")
 
         # Display generated poster image if available
         if hasattr(st.session_state, 'full_ai_response') and st.session_state.full_ai_response and hasattr(st.session_state.full_ai_response, 'image_url') and st.session_state.full_ai_response.image_url:
             logger.info(f"Displaying poster image. URL: {st.session_state.full_ai_response.image_url}")
             st.markdown("**Generated Poster Image:**")
             st.image(st.session_state.full_ai_response.image_url, caption="Poster Image")
-            copy_button(st.session_state.full_ai_response.image_url) # Copy button for image URL
+            copy_button(st.session_state.full_ai_response.image_url, "Copy Image URL") # Updated button text
         elif generate_image: # Check if image was requested but not generated
              logger.warning("Image was requested, but no image_url found in session state.")
              st.warning("Poster image was requested but could not be generated or found.")
@@ -183,6 +205,7 @@ def display_tweet_reply_ui(active_account_type: AccountType):
                 st.text(f"Generated at: {response_obj.generation_time}")
                 st.text(f"Character Count: {len(response_obj.content)}")
                 st.text(f"Response Type: {response_obj.response_type}")
+                st.text(f"Interaction Mode: {interaction_mode}")  # Display the interaction mode
                 st.text(f"Image URL in AIResponse: {response_obj.image_url if hasattr(response_obj, 'image_url') else 'N/A'}")
                 if hasattr(response_obj, 'extra_context') and response_obj.extra_context:
                     st.text("Extra Context Provided to AI:")

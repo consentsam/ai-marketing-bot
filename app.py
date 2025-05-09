@@ -3,6 +3,7 @@
 # 2025-05-06 HH:MM - Step 14 (Initial) - Basic structure for YieldFi AI Agent Streamlit app.
 # 2025-05-07 21:00 - Step 14 (Complete) - Uncommented imports and UI structure for the main application.
 # 2025-05-07 HH:MM - Step 19 - Updated to use display_category_tweet_ui from category_select module.
+# 2025-05-19 12:30 - Step 25 - Added interaction mode selection to the sidebar.
 
 """
 YieldFi AI Agent Streamlit Application.
@@ -25,6 +26,7 @@ from src.ai.response_generator import generate_tweet_reply # generate_new_tweet 
 from src.data_sources.mock import MockTweetDataSource
 from src.models.tweet import Tweet
 from src.models.account import Account, AccountType
+from src.ai.prompt_engineering import InteractionMode # Added for Step 25
 from src.ui.components import status_badge, placeholder_component, copy_button
 from src.ui.tweet_input import display_tweet_reply_ui
 from src.ui.category_select import display_category_tweet_ui # Added for Step 19
@@ -50,6 +52,8 @@ def main():
 
     # --- Sidebar for Configuration/Mode Selection ---
     st.sidebar.header("Agent Configuration")
+    
+    # Account persona selection
     active_account_type_str = st.sidebar.selectbox(
         "Respond as:",
         options=[
@@ -60,12 +64,30 @@ def main():
     )
     active_account_type = AccountType(active_account_type_str)
     
+    # Step 25: Add interaction mode selection
+    interaction_mode = st.sidebar.selectbox(
+        "Interaction Mode:",
+        options=[mode.value for mode in InteractionMode],
+        index=0,  # Default is the first option
+        key="interaction_mode",
+        help="Choose how the AI should style its responses"
+    )
+    
     # Display basic account info
     st.sidebar.markdown(f"**Selected Persona:** {active_account_type_str}")
     if active_account_type == AccountType.OFFICIAL:
         st.sidebar.markdown("*The official YieldFi voice - professional, authoritative, and informative.*")
     elif active_account_type == AccountType.INTERN:
         st.sidebar.markdown("*A friendly, enthusiastic voice - approachable and conversational.*")
+    
+    # Display selected mode info
+    st.sidebar.markdown(f"**Selected Mode:** {interaction_mode}")
+    if interaction_mode == InteractionMode.DEFAULT.value:
+        st.sidebar.markdown("*Standard professional tone for YieldFi communications.*")
+    elif interaction_mode == InteractionMode.PROFESSIONAL.value:
+        st.sidebar.markdown("*Highly formal tone with technical precision and data-driven language.*")
+    elif interaction_mode == InteractionMode.DEGEN.value:
+        st.sidebar.markdown("*Crypto-native casual tone with appropriate community slang and emojis.*")
 
     # --- Main Interaction Area ---
     interaction_type = st.radio(
@@ -75,10 +97,10 @@ def main():
     )
 
     if interaction_type == "Generate Tweet Reply":
-        display_tweet_reply_ui(active_account_type)
+        display_tweet_reply_ui(active_account_type, interaction_mode)  # Pass the interaction mode
     elif interaction_type == "Create New Tweet by Category":
         # Replaced placeholder with actual UI call for Step 19
-        display_category_tweet_ui(active_account_type)
+        display_category_tweet_ui(active_account_type, interaction_mode)  # Pass the interaction mode
 
     # Footer
     st.markdown("---")

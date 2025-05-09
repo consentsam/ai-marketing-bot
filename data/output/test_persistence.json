@@ -1,0 +1,89 @@
+[
+  {
+    "saved_at": "2025-05-09T10:35:23.674143+00:00",
+    "metadata": {
+      "original_input": "Test input 1",
+      "responding_as": "TestAccount",
+      "responding_as_type": "Official"
+    },
+    "response": {
+      "content": "Test tweet content 1",
+      "response_type": "TWEET_REPLY",
+      "model_used": "test-model",
+      "prompt_used": "test prompt",
+      "generation_time": "2025-05-09T10:35:23.674143+00:00",
+      "source_tweet_id": null,
+      "responding_as": null,
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {},
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:35:23.675287+00:00",
+    "metadata": {
+      "original_input": "Test input 2",
+      "responding_as": "TestAccount",
+      "responding_as_type": "Official"
+    },
+    "response": {
+      "content": "Test tweet content 2",
+      "response_type": "TWEET_REPLY",
+      "model_used": "test-model",
+      "prompt_used": "test prompt",
+      "generation_time": "2025-05-09T10:35:23.675287+00:00",
+      "source_tweet_id": null,
+      "responding_as": null,
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {},
+      "image_url": null
+    }
+  },
+  {
+    "saved_at": "2025-05-09T10:35:23.676778+00:00",
+    "metadata": {
+      "original_input": "Test input 3",
+      "responding_as": "TestAccount",
+      "responding_as_type": "Official"
+    },
+    "response": {
+      "content": "Test tweet content 3",
+      "response_type": "TWEET_REPLY",
+      "model_used": "test-model",
+      "prompt_used": "test prompt",
+      "generation_time": "2025-05-09T10:35:23.676778+00:00",
+      "source_tweet_id": null,
+      "responding_as": null,
+      "target_account": null,
+      "tone": null,
+      "max_length": null,
+      "temperature": null,
+      "feedback_score": null,
+      "feedback_comments": null,
+      "was_used": null,
+      "engagement_metrics": {},
+      "tags": [],
+      "referenced_knowledge": [],
+      "extra_context": {},
+      "image_url": null
+    }
+  }
+]

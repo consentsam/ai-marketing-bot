@@ -21,7 +21,7 @@ This document describes the programmatic APIs provided by the YieldFi AI Agent p
 - Base URLs: `AI__XAI_BASE_URL`, `AI__GOOGLE_PALM_BASE_URL`
 - Defaults: `AI__DEFAULT_MAX_TOKENS`, `AI__DEFAULT_TEMPERATURE`
 - `DEFAULT_PROTOCOL`: Default protocol for categories and knowledge (e.g., "ethena").
-- `GROK_IMAGE_API_KEY`: API key for poster image generation feature (Step 24).
+- `GROK_IMAGE_API_KEY`: API key for poster image generation feature.
 
 ---
 ## 2. Models API
@@ -106,7 +106,7 @@ class AIResponse:
     target_account: Optional[str]
     generation_time: datetime
     tone: Optional[str]
-    image_url: Optional[str] = None
+    image_url: Optional[str] = None  # URL to a generated poster image
     max_length: Optional[int]
     temperature: Optional[float]
     feedback_score: Optional[float]
@@ -213,7 +213,8 @@ def generate_tweet_reply(
     target_account: Optional[Account] = None,
     platform: str = "Twitter",
     interaction_details: Optional[Dict[str, Any]] = None,
-    knowledge_retriever: Optional[KnowledgeRetriever] = None
+    knowledge_retriever: Optional[KnowledgeRetriever] = None,
+    generate_image: bool = False
 ) -> AIResponse
 
 def generate_new_tweet(
@@ -222,8 +223,25 @@ def generate_new_tweet(
     topic: Optional[str] = None,
     platform: str = "Twitter",
     additional_instructions: Optional[Dict[str, Any]] = None,
-    knowledge_retriever: Optional[KnowledgeRetriever] = None
+    knowledge_retriever: Optional[KnowledgeRetriever] = None,
+    generate_image: bool = False
 ) -> AIResponse
+```
+
+### src/ai/image_generation.py
+```python
+def get_poster_image(prompt: str) -> str
+    """
+    Generates or retrieves a poster image for the given prompt.
+    
+    Args:
+        prompt: The prompt or text to generate an image for.
+        
+    Returns:
+        A URL string pointing to the generated image.
+    """
+    # Uses GROK_IMAGE_API_KEY from config or environment
+    # Falls back to placeholder URL if no API key or on error
 ```
 
 ---
@@ -284,21 +302,16 @@ class Evaluator:
 ```
 
 ---
-### Usage Example (Python)
-```python
-from src.ai.xai_client import XAIClient
-from src.ai.prompt_engineering import generate_interaction_prompt
-from src.models.account import Account, AccountType
-from src.models.tweet import Tweet, TweetMetadata
+## 7. UI Components
 
-client = XAIClient()
-# Create dummy tweet
-metadata = TweetMetadata(tweet_id="t1", created_at=datetime.now(), author_id="u1", author_username="user1")
-tweet = Tweet(content="Hello World!", metadata=metadata)
-# Generate prompt
-prompt = generate_interaction_prompt(tweet, responding_as_account=Account(...))
-# Get completion
-response = client.get_completion(prompt)
+### src/ui/tweet_input.py
+```python
+def display_tweet_reply_ui(active_account_type: AccountType)
+    """Display UI for generating tweet replies."""
+    # Creates input fields for tweet URL or content
+    # Option to generate a poster image with "Generate Poster Image" checkbox
+    # Calls response_generator.generate_tweet_reply() with generate_image flag
+    # Displays generated content and image if requested
 ```
 
 ### src/ui/category_select.py
@@ -311,4 +324,28 @@ def display_tone_badge(tone: Optional[str], prefix: str = "Tone: ")
 
 def display_category_tweet_ui(active_account_type: AccountType)
     """Display UI for selecting a category and generating a new tweet."""
+    # Creates dropdown for selecting tweet category
+    # Shows expanded view of category details
+    # Option to generate a poster image 
+    # Calls response_generator.generate_new_tweet() with generate_image flag
+``` 
+
+---
+## Usage Example (Python)
+```python
+from src.ai.xai_client import XAIClient
+from src.ai.prompt_engineering import generate_interaction_prompt
+from src.ai.image_generation import get_poster_image
+from src.models.account import Account, AccountType
+from src.models.tweet import Tweet, TweetMetadata
+
+# Generate text reply
+client = XAIClient()
+metadata = TweetMetadata(tweet_id="t1", created_at=datetime.now(), author_id="u1", author_username="user1")
+tweet = Tweet(content="Hello World!", metadata=metadata)
+prompt = generate_interaction_prompt(tweet, responding_as_account=Account(...))
+response = client.get_completion(prompt)
+
+# Generate image for tweet
+image_url = get_poster_image("Create a visual for YieldFi's latest update on high APY rates")
 ``` 

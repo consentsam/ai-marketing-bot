@@ -1,5 +1,6 @@
 # Changelog:
 # 2025-05-07 HH:MM - Step 5 - Initial creation with default configurations.
+# 2025-05-09 10:30 - Step 24 - Increased default_max_tokens to 2048, fixed duplicate keys
 
 # Default application configuration
 # Settings here can be overridden by environment variables
@@ -13,47 +14,74 @@ app:
   debug: false
 
 data_source:
-  type: mock  # Options: mock, twitter
-  twitter:
-    # Twitter API credentials should be set in .env file, not here
+  type: "mock" # "mock" or "twitter"
+  mock:
+    tweets_file: "data/input/sample_tweets.json"
+    accounts_file: "data/input/sample_accounts.json"
 
 ai:
-  provider: "xai" # or "google_palm"
-  # API Keys are sourced from .env using AI__XAI_API_KEY and AI__GOOGLE_API_KEY respectively
-  xai_api_key: null
-  google_api_key: null
-  xai_model: "grok-3-mini-beta"
-  use_fallback: false
+  xai_api_key: null # Store in .env
+  grok_image_api_key: null # Store in .env
+  google_api_key: null # Store in .env
+  use_fallback: false # Set to true to use Google PaLM even if xAI key is present
   xai_base_url: "https://api.x.ai/v1"
-  google_palm_base_url: "https://generativelanguage.googleapis.com/v1beta" # Placeholder
-  default_max_tokens: 1500
+  xai_model: "grok-3-mini-fast-beta"
+  google_palm_base_url: "https://generativelanguage.googleapis.com/v1beta"
+  default_max_tokens: 2048 # Increased for Step 24
   default_temperature: 0.7
-
-tweet_categories:
-  - announcement
-  - product-updates
-  - community-updates
-  - events
-
-tone_analysis:
-  enabled: true
-  method: "textblob" # or "xai", "google_palm"
+  tone_analysis:
+    method: "textblob"
 
 logging:
-  level: INFO
-  file: yieldfi_ai_agent.log
+  level: "INFO" # DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  # file_path: "logs/app.log" # Uncomment to log to a file
 
+data_paths:
+  input: "data/input"
+  output: "data/output"
+  docs: "data/docs"
+
+# Default YieldFi branding and messaging
+yieldfi:
+  core_message: |
+    YieldFi is a leading DeFi platform focused on providing innovative yield farming solutions, secure staking, and transparent financial tools. Our mission is to empower users with accessible, decentralized financial opportunities while maintaining the highest standards of security and trust.
+  default_persona:
+    account_type: "OFFICIAL"
+    username: "YieldFiOfficial"
+    display_name: "YieldFi"
+
+# Streamlit UI settings
 ui:
+  title: "YieldFi AI Agent 🤖"
+  sidebar_description: "Configure the AI agent's persona and interaction settings."
   theme: light  # Options: light, dark
   show_debug_info: false
 
-data_paths:
-  input: data/input
-  output: data/output
-  knowledge: data/docs
+# Tweet Categories - these are loaded from data/input/categories.json at runtime
+tweet_categories:
+  load_from_json: true # Indicates that categories are primarily managed in categories.json
+  defaults:
+    - announcement
+    - product-updates
+    - community-updates
+    - events
 
-data_sources:
-  type: "mock" # can be "twitter" later
-  mock:
-    tweets_file: "data/input/sample_tweets.json"
-    accounts_file: "data/input/sample_accounts.json" 
+# Knowledge base settings
+knowledge_base:
+  static_json_path: "data/docs/yieldfi_knowledge.json"
+  markdown_docs_path: "data/docs/docs.yield.fi.md"
+  retriever:
+    top_k_per_source: 3
+    global_top_k: 5
+    format_max_length: 1500
+    format_max_chunks: 3
+
+# Default protocol settings
+protocols:
+  default_protocol: "ethena"
+
+# Evaluation settings
+evaluation:
+  golden_set_path: "data/input/evaluation_golden_set.json"
+  metrics_to_run: ["tone_match", "relevance", "factual_accuracy"] 

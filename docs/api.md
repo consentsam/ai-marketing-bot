@@ -20,6 +20,8 @@ This document describes the programmatic APIs provided by the YieldFi AI Agent p
 - `AI__USE_FALLBACK`: Flag to force PaLM fallback (true/false).
 - Base URLs: `AI__XAI_BASE_URL`, `AI__GOOGLE_PALM_BASE_URL`
 - Defaults: `AI__DEFAULT_MAX_TOKENS`, `AI__DEFAULT_TEMPERATURE`
+- `DEFAULT_PROTOCOL`: Default protocol for categories and knowledge (e.g., "ethena").
+- `GROK_IMAGE_API_KEY`: API key for poster image generation feature (Step 24).
 
 ---
 ## 2. Models API
@@ -104,6 +106,7 @@ class AIResponse:
     target_account: Optional[str]
     generation_time: datetime
     tone: Optional[str]
+    image_url: Optional[str] = None
     max_length: Optional[int]
     temperature: Optional[float]
     feedback_score: Optional[float]

@@ -66,6 +66,9 @@ class AIResponse:
     # Additional contextual information
     extra_context: Dict[str, Any] = field(default_factory=dict)
     
+    # Optional URL for a generated poster image
+    image_url: Optional[str] = None
+    
     def __post_init__(self):
         """Validate response after initialization."""
         if not self.content:
@@ -116,7 +119,8 @@ class AIResponse:
             engagement_metrics=data.get('engagement_metrics', {}),
             tags=data.get('tags', []),
             referenced_knowledge=data.get('referenced_knowledge', []),
-            extra_context=data.get('extra_context', {})
+            extra_context=data.get('extra_context', {}),
+            image_url=data.get('image_url'),
         )
     
     def to_dict(self) -> Dict[str, Any]:
@@ -143,5 +147,6 @@ class AIResponse:
             'engagement_metrics': self.engagement_metrics,
             'tags': self.tags,
             'referenced_knowledge': self.referenced_knowledge,
-            'extra_context': self.extra_context
+            'extra_context': self.extra_context,
+            'image_url': self.image_url,
         } 

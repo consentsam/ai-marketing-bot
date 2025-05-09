@@ -146,6 +146,8 @@ def display_category_tweet_ui(active_account_type: AccountType):
         height=100
     )
 
+    # Option to generate a poster image
+    generate_image = st.checkbox("Generate Poster Image", key="generate_image_new_tweet")
     if st.button("Generate New Tweet", key="generate_new_tweet_button"):
         logger.info("'Generate New Tweet' button clicked.")
         if not selected_category:
@@ -165,18 +167,53 @@ def display_category_tweet_ui(active_account_type: AccountType):
         with st.spinner(f"Generating new '{selected_category.name}' tweet..."):
             try:
                 logger.info(f"Calling generate_new_tweet with category='{selected_category.name}', persona='{active_account_type.value}', topic='{topic_brief.strip() if topic_brief.strip() else None}'")
+                
+                # Show progress steps
+                progress = st.progress(0)
+                st.text("Step 1/3: Creating persona and preparing context...")
+                progress.progress(25)
+                time.sleep(0.5)
+                # Create an Account object for the active persona
+                active_account = Account(
+                    account_id=f"yieldfi_{active_account_type.value.lower()}",
+                    username=f"YieldFi{active_account_type.value.capitalize()}",
+                    display_name=f"YieldFi {active_account_type.value.capitalize()}",
+                    account_type=active_account_type,
+                    platform="Twitter",
+                    follower_count=100000, # Placeholder
+                    bio="YieldFi Agent Account", # Placeholder
+                    interaction_history=[],
+                    tags=[]
+                )
+                
+                st.text("Step 2/3: Retrieving knowledge for the topic...")
+                progress.progress(50)
+                time.sleep(0.5)
+                
+                st.text("Step 3/3: Generating AI content...")
+                progress.progress(90)
+                
                 response = generate_new_tweet(
                     category=selected_category,
-                    responding_as_type=active_account_type,
-                    topic=topic_brief.strip() if topic_brief.strip() else None # Pass None if empty
-                    # additional_instructions can be added here if needed
+                    responding_as=active_account,
+                    topic=topic_brief.strip() if topic_brief.strip() else None, # Pass None if empty
+                    generate_image=generate_image
                 )
+                progress.progress(100)
                 logger.info(f"Received response from generate_new_tweet. Model used: {response.model_used}")
                 logger.debug(f"Raw response content from generate_new_tweet: '{response.content}'")
                 
                 # Store in session state for display
                 st.session_state.generated_new_tweet_content = response.content
                 st.session_state.generated_new_tweet_model = response.model_used
+                st.session_state.full_new_tweet_response = response
+                
+                # Get character count for verification
+                char_count = len(response.content)
+                if char_count > 280:
+                    st.warning(f"⚠️ Tweet exceeds Twitter's 280 character limit! Current length: {char_count} characters")
+                else:
+                    st.info(f"✓ Tweet length: {char_count}/280 characters")
                 # Potentially add other response attributes like tone_analysis if relevant for new tweets
                 # and if AIResponse model is updated to include it for new tweets.
 
@@ -207,6 +244,29 @@ def display_category_tweet_ui(active_account_type: AccountType):
         copy_button(tweet_to_display, button_text="Copy Tweet Text")
         if st.session_state.get("generated_new_tweet_model"):
             st.caption(f"Generated using: {st.session_state.generated_new_tweet_model}")
+        
+        # Add debug information in an expandable section
+        if "full_new_tweet_response" in st.session_state:
+            with st.expander("Debug Information", expanded=False):
+                st.markdown("**Response Generation Details:**")
+                st.text(f"Model Used: {st.session_state.full_new_tweet_response.model_used}")
+                st.text(f"Generated at: {st.session_state.full_new_tweet_response.generation_time}")
+                st.text(f"Character Count: {len(st.session_state.full_new_tweet_response.content)}")
+                st.text(f"Response Type: {st.session_state.full_new_tweet_response.response_type}")
+                st.text(f"Category: {selected_category_name}")
+                if hasattr(st.session_state.full_new_tweet_response, 'extra_context') and st.session_state.full_new_tweet_response.extra_context:
+                    st.text("Extra Context:")
+                    st.json(st.session_state.full_new_tweet_response.extra_context)
+                # Show prompt if in debug mode
+                if st.session_state.full_new_tweet_response.prompt_used:
+                    with st.expander("Show Prompt Used", expanded=False):
+                        st.code(st.session_state.full_new_tweet_response.prompt_used, language="markdown")
+        
+        # Display generated poster image if available
+        if hasattr(st.session_state.full_new_tweet_response, 'image_url') and st.session_state.full_new_tweet_response.image_url:
+            st.markdown("**Generated Poster Image:**")
+            st.image(st.session_state.full_new_tweet_response.image_url, caption="Poster Image")
+            copy_button(st.session_state.full_new_tweet_response.image_url, button_text="Copy Image URL")
     
     elif "generated_new_tweet_error" in st.session_state and st.session_state.generated_new_tweet_error and not st.session_state.get("generated_new_tweet_content"):
         # This handles the case where an error occurred and spinner was exited, but no content was generated.

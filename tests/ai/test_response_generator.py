@@ -75,10 +75,9 @@ class TestResponseGenerator(unittest.TestCase):
             target_account_info=TARGET_ACCOUNT_INSTITUTION,
             yieldfi_knowledge_snippet="Mocked Knowledge Snippet",
             interaction_details={},
-            platform="Twitter",
-            original_post_tone=ORIGINAL_TWEET_NEUTRAL.tone # From analyzed_tweet or existing
+            platform="Twitter"
         )
-        mock_xai_instance.get_completion.assert_called_once_with(prompt="<Generated Interaction Prompt>")
+        mock_xai_instance.get_completion.assert_called_once_with(prompt="<Generated Interaction Prompt>", max_tokens=512)
         self.assertEqual(response.source_tweet_id, ORIGINAL_TWEET_NEUTRAL.metadata.tweet_id)
 
     @patch('src.ai.response_generator.XAIClient')
@@ -114,7 +113,7 @@ class TestResponseGenerator(unittest.TestCase):
             platform="Twitter",
             additional_instructions=None
         )
-        mock_xai_instance.get_completion.assert_called_once_with(prompt="<Generated New Tweet Prompt>")
+        mock_xai_instance.get_completion.assert_called_once_with(prompt="<Generated New Tweet Prompt>", max_tokens=512)
 
     @patch('src.ai.response_generator.XAIClient')
     @patch('src.ai.response_generator.generate_interaction_prompt')

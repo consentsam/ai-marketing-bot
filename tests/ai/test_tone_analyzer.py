@@ -76,6 +76,17 @@ class TestToneAnalyzer(unittest.TestCase):
         # The internal _get_analysis_method directly uses textblob if method is not in its map.
         mock_get_config.assert_not_called() 
 
+    def test_analyze_tone_empty_string(self):
+        result = analyze_tone("")
+        self.assertEqual(result["tone"], "neutral")
+        self.assertEqual(result["sentiment_score"], 0.0)
+        self.assertEqual(result["subjectivity"], 0.0)
+        self.assertEqual(result["confidence"], 1.0)
+
+    def test_analyze_tone_non_english(self):
+        result = analyze_tone("これはテストです。")
+        self.assertIn(result["tone"], ["neutral", "positive", "negative"])  # TextBlob may not handle non-English well
+
     def test_analyze_tweet_tone(self):
         sample_tweet = Tweet(
             content="YieldFi's new update is groundbreaking and exciting!",
@@ -93,6 +104,16 @@ class TestToneAnalyzer(unittest.TestCase):
         # This will raise NotImplementedError because 'xai' is not implemented
         with self.assertRaisesRegex(NotImplementedError, "xAI analysis method is not yet implemented."):
             analyze_tweet_tone(sample_tweet, method="xai")
+
+    def test_analyze_tweet_tone_updates_tweet(self):
+        tweet = Tweet(content="I love YieldFi!", metadata=TweetMetadata(tweet_id="1", created_at="2024-01-01T00:00:00Z", author_id="a", author_username="b"))
+        updated = analyze_tweet_tone(tweet)
+        self.assertEqual(updated.tone, "positive")
+        self.assertTrue(hasattr(updated, "sentiment_score"))
+
+    def test_analyze_tone_invalid_method(self):
+        result = analyze_tone("Test", method="invalid_method")
+        self.assertIn(result["tone"], ["neutral", "positive", "negative"])  # Should fallback to TextBlob
 
 if __name__ == '__main__':
     unittest.main() 

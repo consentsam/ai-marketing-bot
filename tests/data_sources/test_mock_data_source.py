@@ -132,6 +132,31 @@ class TestMockTweetDataSource(unittest.TestCase):
         }
         self.assertEqual(self.data_source.capabilities, expected_capabilities)
 
+    def test_get_tweet_by_url(self):
+        # Test with valid Twitter URL
+        valid_url = "https://twitter.com/TestUser1/status/tweet1"
+        tweet = self.data_source.get_tweet_by_url(valid_url)
+        self.assertIsNotNone(tweet)
+        self.assertEqual(tweet.metadata.tweet_id, "tweet1")
+        self.assertEqual(tweet.content, "Hello world from user1")
+
+        # Test with valid X.com URL
+        valid_x_url = "https://x.com/TestUser2/status/tweet2"
+        tweet_x = self.data_source.get_tweet_by_url(valid_x_url)
+        self.assertIsNotNone(tweet_x)
+        self.assertEqual(tweet_x.metadata.tweet_id, "tweet2")
+
+        # Test with URL that doesn\'t match the pattern
+        invalid_pattern_url = "https://example.com/notatweet/123"
+        self.assertIsNone(self.data_source.get_tweet_by_url(invalid_pattern_url))
+
+        # Test with URL that matches pattern but tweet ID doesn\'t exist
+        non_existent_tweet_url = "https://twitter.com/someuser/status/nonexistent_tweet_id_123"
+        self.assertIsNone(self.data_source.get_tweet_by_url(non_existent_tweet_url))
+
+        # Test with an empty URL string
+        self.assertIsNone(self.data_source.get_tweet_by_url(""))
+
     # New tests for data loading and edge cases
 
     @patch("builtins.open", new_callable=mock_open)

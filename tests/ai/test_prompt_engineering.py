@@ -84,7 +84,8 @@ class TestPromptEngineering(unittest.TestCase):
         self.assertIn("Relevant YieldFi Knowledge: YieldFi uses multi-layer security protocols.", prompt)
         self.assertIn("Task: Craft a response", prompt)
         self.assertIn("Keep the response under 280 characters", prompt) # Default platform Twitter
-        self.assertTrue(prompt.endswith("\n\nResponse: "))
+        self.assertIn("CRITICAL INSTRUCTIONS:", prompt)
+        self.assertTrue(prompt.strip().endswith("Response:") or prompt.strip().endswith("Tweet:"))
 
     def test_generate_interaction_prompt_intern_to_intern(self):
         prompt = generate_interaction_prompt(
@@ -98,7 +99,8 @@ class TestPromptEngineering(unittest.TestCase):
         self.assertIn("Use a excited tone.", prompt)
         self.assertIn("Goal: share enthusiasm.", prompt)
         self.assertNotIn("Relevant YieldFi Knowledge:", prompt)
-        self.assertTrue(prompt.endswith("\n\nResponse: "))
+        self.assertIn("CRITICAL INSTRUCTIONS:", prompt)
+        self.assertTrue(prompt.strip().endswith("Response:") or prompt.strip().endswith("Tweet:"))
 
     def test_generate_interaction_prompt_minimal_input(self):
         # Only active account, no original post, no target, no knowledge, no details
@@ -113,7 +115,8 @@ class TestPromptEngineering(unittest.TestCase):
         self.assertNotIn("Interaction Instructions:", prompt) # No target, so no specific instruction set
         self.assertNotIn("Relevant YieldFi Knowledge:", prompt)
         self.assertIn("Goal: engage and inform.", prompt) # Default goal
-        self.assertTrue(prompt.endswith("\n\nResponse: "))
+        self.assertIn("CRITICAL INSTRUCTIONS:", prompt)
+        self.assertTrue(prompt.strip().endswith("Response:") or prompt.strip().endswith("Tweet:"))
 
     def test_generate_interaction_prompt_non_twitter_platform(self):
         prompt = generate_interaction_prompt(
@@ -138,7 +141,8 @@ class TestPromptEngineering(unittest.TestCase):
         self.assertIn("Relevant YieldFi Knowledge: Earn up to 20% APY on new ETH staking.", prompt)
         self.assertIn("Task: Create a new tweet", prompt)
         self.assertIn("Keep the tweet under 280 characters", prompt) # Default platform Twitter
-        self.assertTrue(prompt.endswith("\n\nTweet: "))
+        self.assertIn("CRITICAL INSTRUCTIONS:", prompt)
+        self.assertTrue(prompt.strip().endswith("Tweet:"))
 
     def test_generate_new_tweet_prompt_minimal_category_only(self):
         prompt = generate_new_tweet_prompt(
@@ -149,7 +153,8 @@ class TestPromptEngineering(unittest.TestCase):
         self.assertIn("Tweet Category: Community Update", prompt)
         self.assertNotIn("Specific Topic:", prompt)
         self.assertNotIn("Relevant YieldFi Knowledge:", prompt)
-        self.assertTrue(prompt.endswith("\n\nTweet: "))
+        self.assertIn("CRITICAL INSTRUCTIONS:", prompt)
+        self.assertTrue(prompt.strip().endswith("Tweet:"))
         
     def test_generate_new_tweet_prompt_default_persona_if_no_account(self):
         prompt = generate_new_tweet_prompt(
@@ -158,7 +163,8 @@ class TestPromptEngineering(unittest.TestCase):
         # Should default to OFFICIAL persona
         self.assertIn(get_base_yieldfi_persona(AccountType.OFFICIAL), prompt)
         self.assertIn("Tweet Category: Announcement", prompt)
-        self.assertTrue(prompt.endswith("\n\nTweet: "))
+        self.assertIn("CRITICAL INSTRUCTIONS:", prompt)
+        self.assertTrue(prompt.strip().endswith("Tweet:"))
 
 if __name__ == '__main__':
     unittest.main() 

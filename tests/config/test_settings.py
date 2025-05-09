@@ -245,21 +245,121 @@ class TestConfigSettings(unittest.TestCase):
         """Test that get_config returns a copy for dictionary values to prevent modification."""
         config_settings.load_config()
         ai_config_retrieved = config_settings.get_config('ai') # Should be lowercase 'ai' from normalized env
-        original_ai_config_in_module = config_settings._CONFIG['ai'] # Access internal directly
-        
-        # Ensure it retrieves the correct dict (which includes .env overrides)
-        self.assertEqual(ai_config_retrieved['provider'], 'env_provider')
-        
-        self.assertIsNot(ai_config_retrieved, original_ai_config_in_module)
-        self.assertEqual(ai_config_retrieved, original_ai_config_in_module)
-        
-        if isinstance(ai_config_retrieved, dict):
-            ai_config_retrieved['new_temp_key'] = 'temp_value'
+        self.assertIsNotNone(ai_config_retrieved) # Ensure 'ai' key exists
+        # Assuming _CONFIG['ai'] exists and is a dict
+        if 'ai' in config_settings._CONFIG and isinstance(config_settings._CONFIG['ai'], dict):
+            original_ai_config_in_module = config_settings._CONFIG['ai']
+
+            # Ensure it retrieves the correct dict (which includes .env overrides)
+            self.assertEqual(ai_config_retrieved['provider'], 'env_provider')
+            self.assertEqual(ai_config_retrieved['xai_api_key'], 'env_xai_key')
             
-        self.assertNotIn('new_temp_key', config_settings._CONFIG['ai'])
-        fresh_ai_config = config_settings.get_config('ai')
-        if isinstance(fresh_ai_config, dict):
-            self.assertNotIn('new_temp_key', fresh_ai_config)
+            # Modify the retrieved dict
+            ai_config_retrieved['new_test_key'] = 'test_value'
+            ai_config_retrieved['provider'] = 'modified_provider_in_retrieved'
+            
+            # Verify the original dict in the module is unchanged
+            self.assertNotEqual(original_ai_config_in_module.get('provider'), 'modified_provider_in_retrieved')
+            self.assertNotIn('new_test_key', original_ai_config_in_module)
+            
+            # Verify that a subsequent call to get_config returns the original, unmodified value
+            ai_config_retrieved_again = config_settings.get_config('ai')
+            self.assertEqual(ai_config_retrieved_again['provider'], 'env_provider') # Should be original
+            self.assertNotIn('new_test_key', ai_config_retrieved_again)
+        else:
+            self.fail("config_settings._CONFIG['ai'] was not found or not a dict, prerequisite for this test failed.")
+
+    def test_type_conversions_from_env(self):
+        """Test correct type conversion for boolean, integer, and float from .env variables."""
+        env_content_types = """
+        MY_BOOL_TRUE=True
+        MY_BOOL_FALSE=false
+        MY_INT=123
+        MY_FLOAT=45.67
+        MY_STRING_INT=007
+        MY_STRING_FLOAT=0.0
+        MY_STRING=NotABoolOrNumber
+        """
+        with open(_MOCK_ENV_FILE_PATH, 'w') as f:
+            f.write(env_content_types)
+        
+        # Clear YAML for this test to isolate .env effects
+        with open(_MOCK_CONFIG_YAML_PATH, 'w') as f:
+            yaml.dump({}, f)
+
+        config_settings._CONFIG = {}
+        config_settings._CONFIG_LOADED = False
+        config = config_settings.load_config()
+
+        self.assertIsInstance(config.get('my_bool_true'), bool)
+        self.assertEqual(config.get('my_bool_true'), True)
+        
+        self.assertIsInstance(config.get('my_bool_false'), bool)
+        self.assertEqual(config.get('my_bool_false'), False)
+        
+        self.assertIsInstance(config.get('my_int'), int)
+        self.assertEqual(config.get('my_int'), 123)
+
+        self.assertIsInstance(config.get('my_float'), float)
+        self.assertEqual(config.get('my_float'), 45.67)
+
+        self.assertIsInstance(config.get('my_string_int'), int) # "007" becomes int 7
+        self.assertEqual(config.get('my_string_int'), 7)
+
+        self.assertIsInstance(config.get('my_string_float'), float) # "0.0" becomes float 0.0
+        self.assertEqual(config.get('my_string_float'), 0.0)
+
+        self.assertIsInstance(config.get('my_string'), str)
+        self.assertEqual(config.get('my_string'), 'NotABoolOrNumber')
+
+    def test_set_config_value_simple(self):
+        """Test setting a simple top-level config value."""
+        config_settings.load_config() # Load initial config
+        
+        config_settings.set_config_value('new_runtime_setting', 'runtime_value')
+        self.assertEqual(config_settings.get_config('new_runtime_setting'), 'runtime_value')
+        
+        config_settings.set_config_value('log_level', 'RUNTIME_DEBUG') # Override existing
+        self.assertEqual(config_settings.get_config('log_level'), 'RUNTIME_DEBUG')
+
+    def test_set_config_value_nested(self):
+        """Test setting a nested config value, creating path if necessary."""
+        config_settings.load_config()
+
+        config_settings.set_config_value('new_parent.new_child.deep_setting', 'deep_value')
+        self.assertEqual(config_settings.get_config('new_parent.new_child.deep_setting'), 'deep_value')
+        
+        # Check if parent dicts were created
+        new_parent_config = config_settings.get_config('new_parent')
+        self.assertIsInstance(new_parent_config, dict)
+        self.assertIn('new_child', new_parent_config)
+        self.assertIsInstance(new_parent_config['new_child'], dict)
+        
+        # Override existing nested value
+        config_settings.set_config_value('ai.provider', 'runtime_ai_provider')
+        self.assertEqual(config_settings.get_config('ai.provider'), 'runtime_ai_provider')
+
+    def test_set_config_value_does_not_affect_loaded_copy(self):
+        """Test that set_config_value modifies the internal _CONFIG, not copies from get_config."""
+        config1 = config_settings.load_config()
+        
+        # Get a copy
+        ai_config_copy = config_settings.get_config('ai')
+        original_provider = ai_config_copy['provider'] # Should be 'env_provider'
+        
+        # Modify internal config via set_config_value
+        config_settings.set_config_value('ai.provider', 'runtime_changed_provider')
+        
+        # The initial copy should be unchanged
+        self.assertEqual(ai_config_copy['provider'], original_provider) 
+        
+        # A new call to get_config should reflect the change
+        new_ai_config_copy = config_settings.get_config('ai')
+        self.assertEqual(new_ai_config_copy['provider'], 'runtime_changed_provider')
+        
+        # The first fully loaded config object should also be unchanged if it was a deepcopy
+        self.assertEqual(config1['ai']['provider'], original_provider)
+
 
 if __name__ == '__main__':
     unittest.main() 

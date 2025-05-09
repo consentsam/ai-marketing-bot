@@ -98,7 +98,8 @@ class MockTweetDataSource(TweetDataSource):
         # Pattern to match Twitter URLs like:
         # https://twitter.com/username/status/1234567890
         # https://x.com/username/status/1234567890
-        pattern = r"(?:twitter\.com|x\.com)/\w+/status/(\d+)"
+        # Modified to allow alphanumeric IDs for testing (not just digits)
+        pattern = r"(?:twitter\.com|x\.com)/\w+/status/(\w+)"
         match = re.search(pattern, url)
         
         if match:

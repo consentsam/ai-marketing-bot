@@ -32,8 +32,8 @@ from src.models.response import ResponseType # For typing, if creating different
 from src.models.category import TweetCategory # Added for Step 18
 
 # Logger instance - ensure logging is set up if used
-# from src.utils.logging import get_logger
-# logger = get_logger(__name__) # Use module name for logger
+from src.utils.logging import get_logger # type: ignore
+logger = get_logger(__name__) # Use module name for logger
 
 # Core YieldFi message or mission statement that defines the brand voice
 YIELDFI_CORE_MESSAGE = get_config("yieldfi.core_message", """
@@ -166,7 +166,16 @@ def generate_interaction_prompt(
 
     # Combine all parts into the final prompt
     final_prompt = "\n\n".join(prompt_parts)
-    final_prompt += "\n\nResponse: "
+    final_prompt += """\n\n
+CRITICAL INSTRUCTIONS:
+1. Respond with ONLY the final tweet text
+2. Maximum 280 characters for Twitter
+3. NO explanations, reasoning, or self-talk before or after
+4. NO prefixes like 'Tweet:' or 'Response:'
+5. Do NOT include character counts or drafts
+
+Response:"""
+    logger.debug(f"Generated INTERACTION prompt: {final_prompt}")
     return final_prompt
 
 def generate_new_tweet_prompt(
@@ -194,6 +203,10 @@ def generate_new_tweet_prompt(
     if additional_instructions is None:
         additional_instructions = {}
 
+    # Allow category to be provided as a string
+    if isinstance(category, str):
+        category = TweetCategory(name=category, description="", prompt_keywords=[], style_guidelines={})
+
     # Section 1: Persona Definition
     if active_account_info:
         persona = get_base_yieldfi_persona(active_account_info.account_type)
@@ -213,7 +226,7 @@ def generate_new_tweet_prompt(
         prompt_parts.append(f"Category Keywords: {', '.join(category.prompt_keywords)}")
     
     if topic:
-        prompt_parts.append(f"Specific Topic/Brief: {topic}")
+        prompt_parts.append(f"Specific Topic: {topic}")
 
     # Section 4: Style Guidelines from Category
     if category.style_guidelines:
@@ -227,8 +240,13 @@ def generate_new_tweet_prompt(
         prompt_parts.append(f"Relevant YieldFi Knowledge: {yieldfi_knowledge_snippet}")
 
     # Section 6: Task Instructions
+    # Define initial task instruction, using 'tweet' wording for Twitter
+    if platform.lower() == "twitter":
+        initial_instruction = "Task: Create a new tweet that aligns with the persona, core message, and the specified category details."
+    else:
+        initial_instruction = f"Task: Create a new {platform} post that aligns with the persona, core message, and the specified category details."
     task_instructions_list = [
-        f"Task: Create a new {platform} post that aligns with the persona, core message, and the specified category details."
+        initial_instruction
     ]
 
     # Incorporate additional_instructions
@@ -254,7 +272,16 @@ def generate_new_tweet_prompt(
 
     # Combine all parts into the final prompt
     final_prompt = "\n\n".join(prompt_parts)
-    final_prompt += "\n\nTweet Text: " # Changed from "Tweet: " for clarity
+    final_prompt += """\n\n
+CRITICAL INSTRUCTIONS:
+1. Respond with ONLY the final tweet text
+2. Maximum 280 characters for Twitter
+3. NO explanations, reasoning, or self-talk before or after
+4. NO prefixes like 'Tweet:' or 'Response:'
+5. Do NOT include character counts or drafts
+
+Tweet:"""
+    logger.debug(f"Generated NEW TWEET prompt: {final_prompt}")
     return final_prompt
 
 # The old `create_prompt` and its helpers (`_get_system_context`, `_get_examples`, `_get_response_instructions`)

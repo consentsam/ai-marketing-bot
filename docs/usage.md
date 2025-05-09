@@ -1,4 +1,4 @@
-Ethena AI Agent Usage Guide
+YieldFi AI Agent Usage Guide
 
 This document explains how to use the Ethena (YieldFi) AI Agent Streamlit application once deployed.
 
@@ -10,32 +10,45 @@ Running Locally
 pip install -r requirements.txt
 
 
-   2. Set up environment variables in .env (or however your config expects):
+   2. Set up environment variables in `.env` (or however your config expects):
 
+      ```bash
 XAI_API_KEY=your_xai_api_key
+      # GOOGLE_API_KEY=your_google_api_key_here # If PaLM fallback is configured
 TWITTER_BEARER_TOKEN=your_twitter_token
-... etc ...
+      DEFAULT_PROTOCOL=ethena # Default protocol for categories and knowledge
+      GROK_IMAGE_API_KEY=your_grok_image_api_key_here # For poster image generation via XAI/Grok (Step 24)
+      ```
 
 
    3. Run the app:
 
-streamlit run src/app.py
+   ```bash
+   streamlit run app.py
+   ```
 
    •  By default, it will launch on http://localhost:8501.
 
 ⸻
 
 Using the Application
-   1. Sidebar Configuration: Choose which account persona to respond as (Official or Intern).
+   1. Sidebar Configuration:
+      - Select the YieldFi account persona to respond as (Official or Intern).
+      - Select an Interaction Mode (e.g., Default, Professional, Degen).
+      - (Optional) Check "Generate Poster Image" under the tweet input area to generate an accompanying image for the response.
+      <!-- TODO: Insert screenshot of the tweet input area showing the "Generate Poster Image" checkbox -->
    2. Interaction Type:
    •  Generate Tweet Reply:
    •  Provide a Tweet URL or paste tweet content manually.
-   •  Click “Generate Reply.” The AI will produce a context-aware response.
+   •  Optionally, check "Generate Poster Image" before generating.
+   •  Click "Generate Reply." The AI will produce a context-aware response and an image if requested.
    •  Create New Tweet by Category:
    •  Select a category (Announcement, Product Update, etc.).
    •  Enter a topic or key message.
-   •  Click “Generate New Tweet.”
-   3. Copy to Clipboard: Each AI output has a “Copy” button for quick copying.
+   •  Optionally, check "Generate Poster Image" before generating (if available in this UI section).
+   •  Click "Generate New Tweet."
+   3. Copy to Clipboard: Each AI output has a "Copy" button for quick copying.
+   4. Image Display: If an image is generated, it will be displayed below the tweet text with its own copy button for the URL.
 
 ⸻
 
@@ -56,4 +69,5 @@ Troubleshooting
 Next Steps
    •  Customize categories in data/input/categories.json.
    •  Expand or refine instruction sets in data/docs/InstructionsFor*.md.
-   •  Possibly add “Image Generation” or “Interaction Modes” if continuing the plan from the Implementation steps.
+   •  Possibly add "Image Generation" or "Interaction Modes" if continuing the plan from the Implementation steps.
+   •  The "Image Generation" feature (Step 24) using GROK_IMAGE_API_KEY is now implemented.

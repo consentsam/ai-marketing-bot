@@ -1,0 +1,324 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Project-Wide Cursor Rules for LLM-Driven-Marketing-Assistant
+
+**Preamble (Formerly “0. Session Initialization”):**  
+At the start of every new conversation, the user provides an initial context prompt, specifying your role as an AI/Web3 software developer for the YieldFi AI Agent, referencing key documents (Implementation Plan, Roadmap, docs, etc.), and referencing these rules. You must follow that context to focus on the **Current Step** in the Implementation Plan, and any tasks or user instructions given. Acknowledge the context and proceed accordingly, prioritizing the user’s specified step and tasks.
+
+---
+## 1. Adhere Strictly to the Implementation Plan
+- **Master Document**: `data/docs/YieldFi-Ai-Agent-Implementation.md` is your single source of truth for tasks & ordering.
+- **Step-by-Step Execution**: Only work on the step the user designates. Don’t skip or combine steps.
+- **Contextual Awareness**: Always reference the step you’re on. Check any “Step Dependencies” are done.
+- **User Instructions Fulfillment**: If the step’s user instructions require external input, request it from the user and wait for it if needed.
+
+---
+## 2. Understand Before Acting
+- **Summaries**: Read top-of-file summaries or front matter in relevant source files. Summaries should clarify purpose, usage, needed TODOs.
+- **File Changelog**: When modifying a file, prepend an entry to a `# Changelog:` block with date/time, step reference, and brief description.
+- **Plan Details**: Verify the step tasks, files to be updated, user instructions, then proceed.
+
+---
+## 3. Comprehensive Action and Response within a Single Step
+1. **Think & Strategize**: State which step you’re doing, outline your approach, mention edge cases.
+2. **Identify Changes**: List files to modify or create.
+3. **Implement**: Make code changes in small, reviewable increments. 
+   - **Incremental Commits**: If changes are large, break them into multiple commits so the user can review them progressively.
+4. **Self-Test & Iterate**:
+   - **Predict** the outcome of a test or command.
+   - **Execute** it.
+   - **Compare** results with expectation.
+   - **Iterate** if there’s a discrepancy.
+5. **Propose Final**: Show final code, how you tested it, and how the user can verify. 
+6. **Await User Approval**: If not approved, revise as per feedback.
+7. **Document Step Completion**: Mark step done in the Implementation Plan. Update logs or README if needed.
+
+---
+## 4. Document Step Completion in `data/docs/YieldFi-Ai-Agent-Implementation.md`
+- After approval, mark the step’s checkbox (`[ ]` → `[x]`).
+- Add a “**Step Completion Summary (YYYY-MM-DD HH:MM)**” block showing modified files and a summary of changes.
+
+---
+## 5. Follow Clean Code & Documentation Guidelines
+- Use meaningful names, prefer constants over magic strings.
+- Keep functions single-responsibility.
+- Add docstrings or summary blocks in each new or significantly modified file.
+- See `documentation-guidelines.mdc` for details.
+
+---
+## 6. Versioning and Overall Change Logging
+- Optionally link commit hashes or PRs if using Git. 
+- Keep minimal, well-labeled commits so the user can track changes.
+
+---
+## 7. Minimal Disruption for MVP
+- Make only the changes essential for the current step unless critical. 
+- If the user explicitly approves bigger refactors, proceed with user confirmation.
+
+---
+## 8. Cursor Navigation Best Practices
+- Use semantic or exact symbol search to find relevant code. 
+- Reference files by name, linking if needed.
+
+---
+## 9. Testing & Quality Assurance
+- Write or update tests per the plan’s step (e.g., Step 20). 
+- If you fix a bug, try writing a test that reproduces it and confirm it’s fixed.
+
+---
+## 10. Handling Ambiguity and Missing Information
+- State what info is missing or unclear. 
+- Propose a default assumption if needed. 
+- Await user confirmation if the ambiguity is significant.
+
+---
+## 11. Actionable Output and Code Presentation
+- Present new code in full, well-formatted blocks for easy copy-paste. 
+- For file modifications, show the relevant updated function, class, or entire file if needed, with the “Changelog” entry added at the top. 
+- Provide brief explanations of what/why you did each part, linking it back to the plan step.
+
+
+
+---
+description: 
+globs: 
+alwaysApply: true
+---
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Backend Rules for YieldFi AI Agent
+
+> **Summary**  
+> - Purpose: Define server/API conventions & best practices for `app.py` & `src/`.  
+> - Rationale: Maintain consistent error handling, logging, config usage.  
+> - Usage: For all backend dev tasks & code reviews.  
+> - TODOs: Add DB migration/caching guidelines if a dedicated DB is used.
+
+---
+
+## 1. File & Folder Organization
+- Group code by domain under `src/` (e.g., `src/ai`, `src/knowledge`).  
+- Keep `app.py` or the main entry point minimal—focus on orchestrating calls, not business logic.  
+- Use snake_case for filenames (`response_generator.py`).  
+- Keep dedicated modules for `handlers` (if relevant), `services` (business logic), `models`, `utils`.
+
+---
+
+## 2. Error Handling & Logging
+- Use structured logging (Python’s `logging`, possibly JSON logs if integrating with observability tools).  
+- Log exceptions with stack traces (`logger.exception()`).  
+- Implement custom exception classes for known error conditions (like `APIError`).  
+- Return user-friendly error messages or fallback suggestions from user-facing functions.  
+- Avoid exposing sensitive stack traces externally.
+
+---
+
+## 3. Request/Response Schema & Validation (If Building an API)
+- Use Pydantic/Marshmallow for request/response models if you have a web API.  
+- Validate inputs at the boundary.  
+- Standardize error responses, e.g.:
+  ```json
+  {"error": {"code": "FETCH_FAILED", "message": "Could not retrieve tweet data."}}
+
+
+⸻
+
+4. Configuration & Secrets Management
+	•	Load config from .env or environment via python-dotenv and src/config/settings.py.
+	•	No secrets in source control (use .env.example).
+	•	(Optional) Follow 12-factor principle: no config in code, only in env or config files.
+
+⸻
+
+5. Testing: Unit & Integration
+	•	Use pytest for unit tests on core logic, mocking external dependencies.
+	•	For integration tests, mock only the final external calls.
+	•	Use fixtures to manage sample data (Tweet, Account) and setup/teardown logic.
+
+⸻
+
+6. Backend Debugging Approach
+	1.	Analyze the problem, referencing logs & error messages.
+	2.	Hypothesize causes; plan solutions.
+	3.	Implement the best approach.
+	4.	Test & Verify with relevant scripts or commands.
+	5.	Iterate if issues remain.
+	6.	Escalate with a clear summary if stuck after multiple attempts.
+
+
+
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Documentation & Structure Guidelines for YieldFi AI Agent Project
+
+> **Summary**  
+> - Purpose: Standardize project docs (README, code comments).  
+> - Rationale: Maintain clarity and navigability.  
+> - Usage: For `README.md`, docstrings, changes logs.  
+> - TODOs: Possibly automate a changelog from commits.
+
+---
+
+## 1. README Layout & Content
+- **Project Description**: Summarize the AI Agent’s purpose.  
+- **Setup Instructions**: Steps for installing requirements, setting up `.env`.  
+- **Usage Guide**: How to run (`streamlit run app.py`), input data, interpret output.  
+- **Configuration**: Key environment variables, `config.yaml` details.  
+- **Project Structure**: Summaries of `src/ai`, `src/knowledge`, etc.  
+- **Changelog**: Keep a section for major changes with dates.
+
+---
+
+## 2. Code-Level Documentation (Docstrings & Comments)
+- Use docstrings in Python following **reST** (reStructuredText) style (e.g., Sphinx-compatible).  
+- Docstrings for all public classes & functions.  
+- Inline comments only for complex or non-obvious logic.
+
+---
+
+## 3. Change-Log & Versioning Format (in README.md)
+- Use date-based or semantic version headings.  
+- Summarize features & fixes under each version/date.  
+- Example:
+  ```markdown
+  ## Changelog
+
+  ### v0.2.0 (2025-05-10)
+  - Added KOL account type interactions
+  - Improved tone adaptation
+
+  ### v0.1.0 (2025-05-06)
+  - Initial release
+
+
+⸻
+
+4. Conversation-Log Structure
+	•	If logging interactions, record timestamps (UTC), input context, generated prompt, AI response, any errors.
+
+⸻
+
+5. Linking Conventions (within Docs)
+	•	Use relative paths (./docs/deployment.md), or reference with backticks for code names.
+	•	For cross-file references, consistent style with [Link Text](relative/path.md).
+
+
+
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Frontend Rules for YieldFi AI Agent (Streamlit App)
+
+> **Summary**  
+> - Purpose: Provide UI structure & best practices for Streamlit.  
+> - Rationale: Consistent user experience, clarity in code.  
+> - Usage: For `app.py` & `src/ui/` components.  
+> - TODOs: Add more details if switching from Streamlit to another framework.
+
+---
+
+## 1. Component Naming & File Structure
+- Use clear function names in `app.py` or `src/ui/` (e.g. `display_tweet_input()`).  
+- Group related UI helpers in `src/ui/`.  
+- Keep `app.py` as the orchestrator for major layout & flow.
+
+---
+
+## 2. UI Testing Patterns
+- Test underlying backend logic thoroughly; UI is often tested manually in Streamlit.  
+- **User Acceptance Testing**: Keep a short test script for manual checks (e.g., “Load app, select Mode: Degen, verify slang in output.”).  
+- Optionally, mock `st.*` calls if writing unit tests for UI helper functions.
+
+---
+
+## 3. State & Props Conventions (Streamlit)
+- Use `st.session_state` for cross-rerun persistence.  
+- Initialize needed session vars at script start.  
+- Pass data to UI components via function args or session state—avoid hidden global state.
+
+---
+
+## 4. Styling (Streamlit Defaults & Custom CSS)
+- Prefer built-in layout containers.  
+- If needed, inject minimal custom CSS via `st.markdown(unsafe_allow_html=True)`.  
+- Maintain a consistent, minimal design.
+
+---
+
+## 5. Accessibility
+- Provide descriptive labels for inputs (`st.text_input`, etc.).  
+- Make the flow logical; test the reading order.  
+- Keep color usage and layout mindful of accessibility best practices.
+
+
+
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# YieldFi AI Agent - Prompt Generation Guidelines
+
+> **Summary**  
+> - Purpose: Provide consistent prompts for tweet replies or new tweets.  
+> - Rationale: Ensure context-aware, accurate, brand-aligned outputs.  
+> - Usage: For constructing prompts in `src/ai/prompt_engineering.py` or similar.
+
+---
+
+## 1. Prompt Structure & Persona Definition
+- Clearly define the agent’s persona & goal at the top (“You are the YieldFi social media assistant…”).  
+- Break the prompt into labeled sections (`Original_Tweet_Content`, `YieldFi_Knowledge_Context`, etc.).  
+- State the task explicitly: “Generate a Twitter reply.”
+
+---
+
+## 2. Generation Process & Constraints
+- Outline an internal plan: analyze tweet, apply knowledge, verify length < 280 chars.  
+- Enforce brand style, disclaim if missing data.  
+- If an environment uses “system” vs. “assistant” roles, clarify which portion belongs to each.
+
+---
+
+## 3. Context Gathering & Validation
+- Request relevant data from `{{yieldfi_context}}` or `{{style_guidelines}}`.  
+- Check if the tweet is old or referencing new features.  
+- If critical info is missing, produce a safe/neutral or incomplete response.
+
+---
+
+## 4. Output Format & Validation
+- Output only the final reply text, under 280 chars.  
+- No extra “Here’s your reply:” wording—just the text.  
+- Validate the final text: length, tone, no sensitive data.
+
+---
+
+## 5. Evaluation & Versioning
+- Keep test prompts for each scenario (Official->Partner, etc.).  
+- Tag prompt versions (e.g. `twitter_reply_v1.1`) if you iterate.
+
+---
+
+## 6. Additional Agent-Specific Rules
+- Consider a short note if “system prompts” or “assistant messages” differ in your environment.  
+- If referencing images or links, ensure correctness.  
+- Optionally propose an internal follow-up if the tweet triggers something (e.g., “DM user for more details”), but do not include that in the public reply.

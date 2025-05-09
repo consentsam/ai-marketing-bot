@@ -13,8 +13,8 @@ if [ -z "$PORT" ]; then
 fi
 
 # Check for the Streamlit app file
-if [ ! -f "src/app.py" ]; then
-  # Fail silently if missing
+if [ ! -f "app.py" ]; then
+  echo "app.py not found" >&2
   exit 1
 fi
 
@@ -22,4 +22,4 @@ fi
 pip install --upgrade --no-cache-dir -r requirements.txt -q
 
 # Run the Streamlit app
-exec streamlit run src/app.py --server.port "$PORT" --server.address 0.0.0.0
+exec streamlit run app.py --server.port "$PORT" --server.address 0.0.0.0

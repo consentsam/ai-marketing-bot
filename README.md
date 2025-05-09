@@ -58,8 +58,10 @@ This project aims to streamline social media management, ensure brand consistenc
     * Edit the `.env` file and add your API keys:
         ```
         XAI_API_KEY=your_xai_api_key_here
-        # GOOGLE_API_KEY=your_google_api_key_here # If Google Palm is used as a fallback
+        # GOOGLE_API_KEY=your_google_api_key_here # If Google PaLM is used as a fallback
         # TWITTER_BEARER_TOKEN=... (and other Twitter keys for when live API is integrated)
+        DEFAULT_PROTOCOL=ethena # Default protocol for categories and knowledge
+        GROK_IMAGE_API_KEY=your_grok_image_api_key_here # For poster image generation via XAI/Grok
         ```
 
 5.  **Review Configuration:**
@@ -187,6 +189,12 @@ Adhere to the rules defined in `.cursor/rules/project-wide-cursor-rules.mdc`.
     - Created `__init__.py` files for Python package structure.
     - Instructed user on manual creation of `.env.example`.
 ---
+### 2025-05-09
+- **Step 22: Vercel Deployment Setup**: Configured `vercel.json`, `runtime.txt`, and `scripts/start.sh` for Vercel deployment; updated `docs/deployment.md`.
+- **Step 23: Documentation & Final Updates**: Refreshed README and documentation to reflect new features (environment variables, usage updates); updated `docs/usage.md` and `docs/api.md`.
+---
+### YYYY-MM-DD (Current Date)
+- **Step 24: Image Generation**: Implemented image generation using XAI/Grok API. Added `GROK_IMAGE_API_KEY` to environment variables. Integrated image generation into the response flow and UI, allowing users to optionally generate and view a poster image alongside tweets.
 
 ## Documentation
 

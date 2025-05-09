@@ -158,7 +158,8 @@ if __name__ == '__main__':
             print(f"Retrieved {len(retrieved_chunks)} chunks globally:")
             for i, r_chunk in enumerate(retrieved_chunks):
                 print(f"  {i+1}. Source: {r_chunk.source_name}, Score: {r_chunk.score:.2f}, Path: {r_chunk.metadata.get('path', 'N/A')}")
-                print(f"     Content sample: {r_chunk.content[:100].replace('\n', ' ')}...")
+                content_sample = r_chunk.content[:100].replace('\n', ' ')
+                print(f"     Content sample: {content_sample}...")
             
             formatted_output = retriever.format_retrieved_knowledge(retrieved_chunks, max_length=500, max_chunks_to_format=2)
             print(f"\nFormatted Output (max_length=500, max_chunks=2):\n{formatted_output}")

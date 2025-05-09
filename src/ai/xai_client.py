@@ -87,24 +87,19 @@ class XAIClient:
 
         try:
             if use_xai_api:
-                logger.info(f"Attempting to call xAI API. Endpoint: {self.xai_base_url}/chat/completions, Model: {self.xai_model}")
-                # Construct the messages payload for chat completions
-                messages = [
-                    {"role": "system", "content": "You are a helpful assistant."},
-                    {"role": "user", "content": prompt}
-                ]
+                logger.info(f"Attempting to call xAI API. Endpoint: {self.xai_base_url}/completions, Model: {self.xai_model}")
+                # Construct the payload for xAI completions
                 payload = {
-                    "messages": messages,
+                    "prompt": prompt,
                     "model": self.xai_model,
                     "max_tokens": current_max_tokens,
                     "temperature": current_temperature,
-                    "stream": False,
                     **kwargs
                 }
                 headers["Authorization"] = f"Bearer {self.xai_api_key}"
                 logger.debug(f"xAI API Request Payload (excluding Authorization header): {payload}")
                 
-                response = requests.post(f"{self.xai_base_url}/chat/completions", json=payload, headers=headers, timeout=30)
+                response = requests.post(f"{self.xai_base_url}/completions", json=payload, headers=headers, timeout=30)
                 logger.info(f"xAI API raw response status: {response.status_code}")
                 logger.debug(f"xAI API raw response text: {response.text}")
                 response.raise_for_status() # Will raise HTTPError for bad responses (4xx or 5xx)
@@ -178,10 +173,6 @@ class XAIClient:
             # Catch any other unexpected error during the process
             logger.error(f"An unexpected error occurred in XAIClient.get_completion: {e}", exc_info=True)
             raise APIError(f"An unexpected error occurred in XAIClient.get_completion: {str(e)}", status_code=500) from e
-
-# Helper for the JSON error response test if MESSAGE_KEY is used in XAIClient for extracting error messages from JSON.
-# If not, the literal string 'message' should be used in the assertEqual.
-MESSAGE_KEY = 'message' # Or whatever key the actual XAI client uses for the error message in JSON
 
 # Helper for the JSON error response test if MESSAGE_KEY is used in XAIClient for extracting error messages from JSON.
 # If not, the literal string 'message' should be used in the assertEqual.

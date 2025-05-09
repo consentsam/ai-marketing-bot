@@ -251,5 +251,8 @@ def get_protocol_path(*parts: str) -> str:
 
 # Removed automatic load_config() on import
 
+# Default protocol setting, used throughout the app
+DEFAULT_PROTOCOL = get_config("protocols.default_protocol", "yieldfi")
+
 # Export publicly
-__all__ = ['get_config', 'load_config', 'set_config_value', 'get_protocol_path'] 
+__all__ = ['get_config', 'load_config', 'set_config_value', 'get_protocol_path', 'DEFAULT_PROTOCOL'] 

@@ -63,7 +63,8 @@ def generate_tweet_reply(
     # knowledge_retriever: Optional[KnowledgeRetriever] = None # For Step 11
     knowledge_retriever: Optional[MockKnowledgeRetriever] = None, # Using Mock for now
     generate_image: bool = False,
-    interaction_mode: str = "Default"  # Added for Step 25
+    interaction_mode: str = "Default",  # Added for Step 25
+    protocol_name: str = None  # Added for Step 408 - Parameterized prompts
 ) -> AIResponse:
     """
     Generates a reply to a given tweet.
@@ -78,6 +79,7 @@ def generate_tweet_reply(
         knowledge_retriever: Service to get relevant knowledge
         generate_image: Whether to generate an image for the tweet
         interaction_mode: Mode to use for response (Default, Professional, Degen)
+        protocol_name: Name of the protocol to use for prompt templates (e.g., "yieldfi")
     
     Returns:
         An AIResponse object with the generated content
@@ -122,10 +124,10 @@ def generate_tweet_reply(
             'target_account_info': target_account,
             'yieldfi_knowledge_snippet': knowledge_snippet,
             'interaction_details': interaction_details if interaction_details else {},
-            'platform': platform
+            'platform': platform,
+            'mode': interaction_mode if interaction_mode and interaction_mode != InteractionMode.DEFAULT.value else None,
+            'protocol_name': protocol_name
         }
-        if interaction_mode and interaction_mode != InteractionMode.DEFAULT.value:
-            prompt_kwargs['mode'] = interaction_mode
         prompt_str = generate_interaction_prompt(**prompt_kwargs)
         logger.debug(f"Generated interaction prompt: {prompt_str[:300]}...")
         # Step 26: Append relevancy facts to the prompt if any
@@ -257,28 +259,30 @@ def generate_tweet_reply(
     return response
 
 def generate_new_tweet(
-    category,
+    category: TweetCategory,
     responding_as: Account,
     topic: Optional[str] = None,
-    knowledge_retriever: Optional[MockKnowledgeRetriever] = None,  # Using Mock for now
+    knowledge_retriever: Optional[MockKnowledgeRetriever] = None, # Using Mock for now
     platform: str = "Twitter",
     additional_instructions: Optional[Dict[str, Any]] = None,
     generate_image: bool = False,
-    interaction_mode: str = "Default"  # Added for Step 25
+    interaction_mode: str = "Default",  # Added for Step 25
+    protocol_name: str = None  # Added for Step 408 - Parameterized prompts
 ) -> AIResponse:
     """
     Generates a new tweet based on a category, topic, and other details.
     Orchestrates knowledge retrieval (mocked), prompt engineering, and AI client call.
     
     Args:
-        category: The category for the tweet (string or TweetCategory object)
+        category: The category of tweet to generate
         responding_as: The account persona to use for the tweet
-        topic: Specific topic for the tweet
+        topic: Specific topic to generate a tweet about
         knowledge_retriever: Service to get relevant knowledge
         platform: Social media platform (default: "Twitter")
-        additional_instructions: Additional context for tweet generation
+        additional_instructions: Additional context for response generation
         generate_image: Whether to generate an image for the tweet
-        interaction_mode: Mode to use for the tweet (Default, Professional, Degen)
+        interaction_mode: Mode to use for response (Default, Professional, Degen)
+        protocol_name: Name of the protocol to use for prompt templates (e.g., "yieldfi")
     
     Returns:
         An AIResponse object with the generated content
@@ -326,7 +330,8 @@ def generate_new_tweet(
             'active_account_info': responding_as_account,
             'yieldfi_knowledge_snippet': knowledge_snippet,
             'platform': platform,
-            'additional_instructions': additional_instructions
+            'additional_instructions': additional_instructions,
+            'protocol_name': protocol_name
         }
         if interaction_mode and interaction_mode != InteractionMode.DEFAULT.value:
             new_prompt_kwargs['mode'] = interaction_mode
@@ -766,7 +771,8 @@ if __name__ == '__main__':
     reply_response = generate_tweet_reply(
         original_tweet=test_tweet,
         responding_as=official_account,
-        target_account=target_user_account
+        target_account=target_user_account,
+        protocol_name="yieldfi"  # Added for Step 498 - Testing with protocol_name parameter
     )
     print(f"Generated Reply AIResponse content: {reply_response.content}")
     print(f"Generated Reply AIResponse type: {reply_response.response_type}")
@@ -780,7 +786,8 @@ if __name__ == '__main__':
     new_tweet_response = generate_new_tweet(
         category=test_category, # Pass TweetCategory object
         responding_as=official_account,
-        topic="Announcing our new YieldBoost feature!"
+        topic="Announcing our new YieldBoost feature!",
+        protocol_name="yieldfi"  # Added for Step 498 - Testing with protocol_name parameter
     )
     print(f"Generated New Tweet AIResponse content: {new_tweet_response.content}")
     print(f"Generated New Tweet AIResponse type: {new_tweet_response.response_type}")

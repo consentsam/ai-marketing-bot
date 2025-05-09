@@ -1330,3 +1330,15 @@ Tweet Generated History
       }
     }
   ]
+
+
+
+
+
+
+  --------
+
+
+
+
+  Please ensure that you are in venv virtual environment. Once you are in the virtual environment, your job is to ensure that all the steps inside the implementation plan @YieldFi-Ai-Agent-Implementation.md has been implemented correctly. Please do a detailed analysis corresponding to each of the step and ensure that the specific test passes all of its test cases, if the test cases doesn't cover the edge cases, then please fix it (by improving them or adding few more ) and continue until you have analysed all the 28 steps. If it would take much more resources then we would move forward by batch of 10 steps at once.

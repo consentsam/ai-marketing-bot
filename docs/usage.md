@@ -32,8 +32,8 @@ This document explains how to use the Ethena (YieldFi) AI Agent Streamlit applic
 
 ### 1. Sidebar Configuration
 - **Account Persona**: Select the YieldFi account persona to respond as (Official or Intern).
-
 - **Interaction Mode**: Select your preferred interaction style (Default, Professional, Degen).
+- **Category Selection**: Select the tweet category for generating new tweets (e.g., Announcement, Product Update, Event).
 
 ### 2. Interaction Types
 

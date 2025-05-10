@@ -1342,3 +1342,207 @@ Tweet Generated History
 
 
   Please ensure that you are in venv virtual environment. Once you are in the virtual environment, your job is to ensure that all the steps inside the implementation plan @YieldFi-Ai-Agent-Implementation.md has been implemented correctly. Please do a detailed analysis corresponding to each of the step and ensure that the specific test passes all of its test cases, if the test cases doesn't cover the edge cases, then please fix it (by improving them or adding few more ) and continue until you have analysed all the 28 steps. If it would take much more resources then we would move forward by batch of 10 steps at once.
+
+
+
+------------
+
+
+This is the file @YieldFi-Ai-Agent-Implementation - which contains the list of all the steps we followed to build a AI Agent which lets user to generate reply from their various social media handles and generate new tweet from different handles and lets them post across a list of category. So, when we are generating a new tweet then we have categories to choose from whether it is a product update or whether it is just an announcement, etc. 
+Similarly, when we work with replying to the tweets then we have a list of accounts and based on the relationship between the replying account handle of our protocol, we will have different tone/style that we will follow to reply. So, let's say there will be a different protocol of the category BIG_ACCOUNT, we will generate the tone, style and persona accordingly.
+
+So, basically, what I am saying is - when we are generating a new post/tweet then we would think in terms of the interaction between our handle and the target category in which we are posting the tweet.That will decide the tone, style and persona of the tweet.
+BUT
+When we are replying to a tweet then the reply would be based on which account of our protocol i.e. official or intern or developer, etc is replying to the tweet and what kind of that account it is. Let's say WatcherGuru is a Big Account then we we will have specific tone, style and persona for that account types corresponding to each of our social media handles. This account types will be mentioned in the file @data/protocols/{protocol}/accounts.json . For example, if we are replying to a tweet from a Intern account then we will follow the instructions inside by fetching the file @data/protocols/{protocol}/modes/InstructionsFrom{[PROTOCOL_TWITTER_HANDLE_TYPE]}To{[TARGET_ACCOUNT_TYPE]}Account.json
+
+So, now that we have two ways in which we want to generate tweets.
+1. We will be replying to the tweets to the other accounts
+2. We will be posting a new tweet from the account
+
+Case 1: Replying to tweets to the other accounts
+    a. Input 
+        - Input tweet and the relevant tweet metadata (if any)
+        - ReplyingProtocolAccountHandle
+        - ReplyingProtocolAccountType (ProtocolOfficialTwitterHandle, ProtocolInternTwitterHandle)
+        - TargetAccountHandle
+        - TargetAccountType (BigAccount, SmallAccount, Influencer, KOL,etc)
+        - doesGeneratePosterTweet (True/False)
+
+    b. Output
+        - ResponseTweet
+        - ResponseTweetMetadata
+        - PosterTweet
+        - PosterTweetMetadata
+    
+    c. So, basically corresponding to each protocol, we will have list of twitter accounts in the protocol's twitter accounts json file at the path @data/protocols/{protocol}/accounts.json with their type (whether it is big account, small account, influencer, etc). We will have a mapping between the target account type and the posting account type, we will generate the response tweet. For example, if the protocol's official account is replying to a institutional account, then it will follow the instructions inside the file at the path data/protocols/{protocol}/modes/InstructionsFrom{[PROTOCOL_TWITTER_HANDLE_TYPE]}To{[TARGET_ACCOUNT_TYPE]}Account.json
+
+    This file will contain the following fields
+        - CUSTOM_MODE_NAME : OfficialToPartner
+        - tone of the tweet
+        - style of the tweet
+        - relevant hashtags
+        - examples of the tweet
+
+
+
+
+Case 2: Posting a new tweet from the account
+    a. Input
+        - PostingProtocolAccountHandle
+        - PostingProtocolAccountType (ProtocolOfficialTwitterHandle, ProtocolInternTwitterHandle)
+        - tweetCategory (ProductUpdate, MilestoneAndPartnership, CommunityAndEducation, SecurityAndRiskAlert, YieldUpdate, GovernanceVote)
+        - doesGeneratePosterTweet (True/False)
+        - contentType
+    b. Output
+        - PosterTweet
+        - PosterTweetMetadata
+
+
+
+
+Explanation of Folder Structure inside data/protocols/{protocol}
+
+```
+tree
+.
+├── accounts.json
+├── categories.json
+├── docs.md
+├── knowledge.json
+├── mode-instructions
+│   ├── InstructionsForOfficialToInstitutionAccounts.md
+│   ├── InstructionsFromInternToInternAccounts.md
+│   └── InstructionsFromInternToOfficialToPartnerAccount.md
+├── prompt_templates.json
+├── relevancy_facts.json
+└── tweets
+    ├── replies_to_tweets.json
+    └── sample_tweet_posted.json
+
+3 directories, 11 files
+```
+
+- knowledge.json : This file will contain the knowledge about the protocol. This will be used to generate the tweets.    
+- tweets : This folder will contain the tweets that are generated by the protocol's account either as a reply or a new tweet. Both kept in separate files named replies_to_tweets.json and sample_tweet_posted.json
+- mode-instructions : This folder will contain the instructions for a given pair of handles. 
+    For example, if the protocol's official account is replying to a institutional account, then it will follow the instructions inside the file at the path data/protocols/{protocol}/mode-instructions/InstructionsForOfficialToInstitutionAccounts.json
+
+    SIMILARLY,
+    If the protocol's intern account is posting a new tweet in the category ProductUpdate, then it will follow the instructions inside the file at the path data/protocols/{protocol}/mode-instructions/InstructionsFromInternToProductUpdateAccounts.json. The name of the file would be fetched from the accounts.json file. The name of the file would be InstructionsFrom{[PROTOCOL_TWITTER_HANDLE_TYPE]}To{[POST_CATEGORY]}Accounts.json
+
+- categories.json : This file will contain the categories in which the tweets can be generated. This will be used to generate the tweets.
+- accounts.json : This file will contain the accounts that are used to generate the tweets. The accounts file would be like this 
+```
+{
+    "protocol-accounts": [
+        {
+            "account_name": "EthenaOfficial",
+            "account_type": "ProtocolOfficialTwitterHandle",
+            "account_handle": "@ethena_labs"
+        },
+        {
+            "account_name": "EthenaIntern",
+            "account_type": "ProtocolInternTwitterHandle",
+            "account_handle": "@ethena_intern"
+        }
+    ],
+    "target-accounts": [
+        {
+            "account_name": "WatcherGuru",
+            "account_type": "BigAccount",
+            "account_handle": "@WatcherGuru"
+        },
+        {
+            "account_name": "SmallAccount",
+            "account_type": "SmallAccount",
+            "account_handle": "@SmallAccount"
+        }
+    ],
+    "replies-interaction-mapping": [
+        {
+            "protocol-account": "EthenaOfficial",
+            "target-account": "BigAccount",
+            "interaction-mode": "OfficialToPartner"
+        },
+        {
+            "protocol-account": "EthenaOfficial",
+            "target-account": "SmallAccount",
+            "interaction-mode": "OfficialToSmallAccount"
+        },
+        {
+            "protocol-account": "EthenaIntern",
+            "target-account": "BigAccount",
+            "interaction-mode": "InternToPartner"
+        },
+        {
+            "protocol-account": "EthenaIntern",
+            "target-account": "SmallAccount",
+            "interaction-mode": "InternToSmallAccount"
+        },
+        {
+            "protocol-account": "EthenaDeveloper",
+            "target-account": "BigAccount",
+            "interaction-mode": "DeveloperToPartner"
+        },
+        {
+            "protocol-account": "EthenaDeveloper",
+            "target-account": "SmallAccount",
+            "interaction-mode": "DeveloperToSmallAccount"
+        },
+        {
+            "protocol-account": "EthenaCommunity",
+            "target-account": "BigAccount",
+            "interaction-mode": "CommunityToPartner"
+        },
+        {
+            "protocol-account": "EthenaCommunity",
+            "target-account": "SmallAccount",
+            "interaction-mode": "CommunityToSmallAccount"
+        }
+    ],
+    "new-tweet-interaction-mapping": [
+        {
+            "protocol-account": "EthenaOfficial",
+            "category_type": "ProductUpdate",
+            "interaction-mode": "OfficialToNewTweet"
+        },
+        {
+            "protocol-account": "EthenaIntern",
+            "category_type": "MilestonePartnership",
+            "interaction-mode": "InternToNewTweet"
+        },
+        {
+            "protocol-account": "EthenaDeveloper",
+            "category_type": "CommunityEducation",
+            "interaction-mode": "DeveloperToNewTweet"
+        },
+        {
+            "protocol-account": "EthenaCommunity",
+            "category_type": "CommunityEducation",
+            "interaction-mode": "CommunityToNewTweet"
+        }
+    ]
+}
+```
+- docs.md : This file will contain the documentation for the protocol. This will be used to generate the tweets.
+- relevancy_facts.json : This file will contain the relevancy facts for the protocol. This will be used to generate the tweets. Trending news or sentiments from X or other sources.
+```
+{
+    "market_bearish": "BTC and ETH have fallen more than 10% over the past 7 days (as of 2025‑05‑09), risk‑off sentiment dominates and yields may compress.",
+    "market_bullish": "Bitcoin reclaimed the $70 k level on 2025‑05‑09, pushing overall market sentiment solidly bullish and lifting funding rates.",
+    "usde_tvl_record": "USDe market cap surpassed $3 billion on 2025‑05‑08, marking a new all‑time high for Ethena’s synthetic dollar.",
+    "susde_high_yield": "sUSDe 7‑day rolling APY is above 18 %, signalling exceptionally strong funding‑rate income for stakers this week.",
+    "susde_yield_drop": "sUSDe APY dipped below 10 % this week as perpetual funding rates cooled; messaging should emphasise long‑term yield stability and insurance reserve.",
+    "ena_price_rally": "ENA token rallied over 20 % in the last 24 h following a major CEX listing announcement on 2025‑05‑09.",
+    "ena_price_correction": "ENA price retraced 15 % this week after post‑airdrop profit‑taking; acknowledge price action and refocus on fundamentals.",
+    "collateral_added_sol": "Solana (SOL) was approved as collateral by governance proposal ENA‑12 on 2025‑05‑05, expanding USDe backing diversity.",
+    "audit_passed_peckshield": "PeckShield completed and published a full smart‑contract audit for Ethena on 2025‑03‑10 with no critical issues.",
+    "upcoming_spaces": "Ethena Labs is hosting a Twitter Spaces AMA on 2025‑05‑14 at 18:00 UTC to discuss USDe multi‑chain expansion—invite followers proactively.",
+    "post_spaces_thanks": "Thank the community for joining the 2025‑05‑14 Spaces; share key takeaways and link to the recording.",
+    "funding_rates_positive": "BTC/ETH perpetual swap funding remains positive, averaging +0.03 % per 8h over the last three days—favourable for sUSDe yield.",
+    "funding_rates_negative": "Funding rates turned slightly negative (‑0.01 % per 8h) today; hedging costs may compress short‑term sUSDe returns.",
+    "macro_cpi_hot": "US CPI print released 2025‑05‑08 was hotter‑than‑expected at 4.1 % YoY, increasing macro uncertainty—position messaging cautiously.",
+    "macro_rate_cut": "The Fed signalled a potential rate cut for June 2025 in its latest minutes; risk‑on appetite may rise across crypto."
+}
+```
+for that protocol.

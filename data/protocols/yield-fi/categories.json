@@ -1,7 +1,6 @@
 [
     {
-        "name": "Product Update",
-        "category_type": "ProductUpdate",
+        "name": "Product Launch",
         "description": "Announce brand‑new releases or major upgrades for Ethena products (USDe, sUSDe, ENA staking portals, new chains, etc.). Emphasise how the launch benefits users.",
         "prompt_keywords": [
             "USDe 2.0 is live",
@@ -21,7 +20,6 @@
     },
     {
         "name": "Milestone & Partnership",
-        "category_type": "MilestonePartnership",
         "description": "Share significant TVL milestones, major exchange listings, strategic investments, or integrations with other DeFi protocols.",
         "prompt_keywords": [
             "TVL crosses",
@@ -41,7 +39,6 @@
     },
     {
         "name": "Community & Education",
-        "category_type": "CommunityEducation",
         "description": "Educate and engage the community with tutorials, polls, trivia, and spotlight stories from USDe users.",
         "prompt_keywords": [
             "Did you know?",
@@ -61,7 +58,6 @@
     },
     {
         "name": "Security & Risk Alert",
-        "category_type": "SecurityRiskAlert",
         "description": "Provide transparency on audits, risk parameter changes, insurance fund updates, or phishing alerts.",
         "prompt_keywords": [
             "audit complete",
@@ -81,7 +77,6 @@
     },
     {
         "name": "Yield Update",
-        "category_type": "YieldUpdate",
         "description": "Highlight changes in sUSDe APY, funding‑rate trends, or distribution of staking rewards.",
         "prompt_keywords": [
             "sUSDe APY spikes",
@@ -101,7 +96,6 @@
     },
     {
         "name": "Governance Vote",
-        "category_type": "GovernanceVote",
         "description": "Announce upcoming or active ENA governance proposals, voting deadlines, and summaries of key decisions.",
         "prompt_keywords": [
             "Vote live",

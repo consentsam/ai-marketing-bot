@@ -20,7 +20,7 @@ class TestPersistence(unittest.TestCase):
         
         import src.utils.persistence as persistence
         persistence.OUTPUT_DIR = Path(self.temp_dir.name)
-        persistence.GENERATED_FILE = Path(self.temp_dir.name) / 'test_generated_tweets.json'
+        persistence.GENERATED_FILE = Path(self.temp_dir.name) / 'test_replies_to_tweets.json'
     
     def tearDown(self):
         # Restore original paths

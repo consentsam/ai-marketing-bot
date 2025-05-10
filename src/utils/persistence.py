@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 # Determine output directory and file name from config
 OUTPUT_DIR = Path(get_config('data_paths.output', 'data/output'))
 # Use a fixed file name; could make configurable
-GENERATED_FILE = OUTPUT_DIR / 'generated_tweets.json'
+GENERATED_FILE = OUTPUT_DIR / 'replies_to_tweets.json'
 
 
 def save_response(
@@ -22,7 +22,7 @@ def save_response(
     metadata: Dict[str, Any]
 ) -> None:
     """
-    Save an AIResponse along with metadata to the generated_tweets.json file.
+    Save an AIResponse along with metadata to the replies_to_tweets.json file.
 
     Args:
         response: The AIResponse object to save.

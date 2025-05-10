@@ -1,0 +1,364 @@
+{
+    "Changelog": [
+        "2025-05-07 20:12 – Step 10.2 – Initial creation with placeholder YieldFi knowledge.",
+        "2025-05-07 20:30 – Step 10.3 – Expanded knowledge base with additional products, FAQs, and security information.",
+        "2025-05-09 19:45 – Migrated placeholder content to Ethena protocol. Added USDe, sUSDe, ENA, USDtb, FAQs, security audits, tokenomics, and updated metrics.",
+        "2025-05-09 21:15 – Merged Google‑sourced extended attributes: social media links, Discord, detailed audits, team & investors, operational metrics, new products (iUSDe, Converge), and smart‑contract addresses."
+    ],
+    "protocol_name": "Ethena",
+    "description": "Ethena is a synthetic‑dollar protocol on Ethereum that issues USDe – a crypto‑native, censorship‑resistant stablecoin – and sUSDe, its yield‑bearing 'Internet Bond'. Peg stability is achieved through delta‑neutral hedging of crypto collateral with short futures positions.",
+    "website": "https://ethena.fi/",
+    "documentation": "https://docs.ethena.fi/",
+    "social_media": {
+        "twitter": "https://x.com/ethena_labs",
+        "discord": "https://discord.gg/ethena",
+        "blog": "https://mirror.xyz/0xF99d0E4E3435cc9C9868D1C6274DfaB3e2721341",
+        "github": "https://github.com/ethena-labs",
+        "telegram": "N/A"
+    },
+    "products": [
+        {
+            "id": "prod_001",
+            "name": "USDe",
+            "type": "Synthetic Dollar Stablecoin",
+            "description": "Crypto‑backed stablecoin pegged to USD via delta‑neutral hedging.",
+            "current_apy": "N/A",
+            "tvl": "$3.2 B (market cap)",
+            "details_link": "https://ethena.fi/",
+            "key_features": [
+                "Stable $1 peg",
+                "100 % collateralised",
+                "Bank‑independent"
+            ],
+            "tags": [
+                "stablecoin",
+                "delta‑neutral",
+                "usd‑peg",
+                "crypto‑backed"
+            ]
+        },
+        {
+            "id": "prod_002",
+            "name": "sUSDe",
+            "type": "Yield‑Bearing Staked Token / Internet Bond",
+            "description": "Non‑rebasing token representing staked USDe that accrues yield from funding‑rate income.",
+            "current_apy": "≈18 % (12‑month avg)",
+            "tvl": "$1.9 B",
+            "details_link": "https://ethena.fi/stake",
+            "key_features": [
+                "Yield‑bearing",
+                "Value accrual",
+                "Global savings"
+            ],
+            "tags": [
+                "staking",
+                "yield",
+                "stablecoin",
+                "internet‑bond"
+            ]
+        },
+        {
+            "id": "prod_003",
+            "name": "USDtb",
+            "type": "Treasury‑Backed Stablecoin",
+            "description": "Stablecoin collateralised by tokenised U.S. Treasury bills (BlackRock BUIDL) plus reserve stables.",
+            "current_apy": "≈4.8 % (t‑bill yield)",
+            "tvl": "$250 M",
+            "details_link": "https://docs.ethena.fi/products/usdtb",
+            "key_features": [
+                "TradFi collateral",
+                "Institutional‑grade"
+            ],
+            "tags": [
+                "stablecoin",
+                "treasury‑backed",
+                "yield"
+            ]
+        },
+        {
+            "id": "prod_004",
+            "name": "ENA",
+            "type": "Governance Token",
+            "description": "Governs protocol, elects Risk Committee, and can be staked for sENA.",
+            "current_apy": "Variable via sENA",
+            "tvl": "—",
+            "details_link": "https://docs.ethena.fi/token/ena",
+            "key_features": [
+                "Governance voting",
+                "Future fee share"
+            ],
+            "tags": [
+                "governance",
+                "token",
+                "vote"
+            ]
+        },
+        {
+            "id": "prod_005",
+            "name": "sENA",
+            "type": "Staked ENA",
+            "description": "Liquid staked ENA earning redistributed incentives and partner airdrops.",
+            "current_apy": "Variable",
+            "tvl": "$420 M",
+            "details_link": "https://docs.ethena.fi/token/staking",
+            "key_features": [
+                "Rewards",
+                "Liquid governance"
+            ],
+            "tags": [
+                "staking",
+                "governance",
+                "rewards"
+            ]
+        },
+        {
+            "id": "prod_006",
+            "name": "iUSDe",
+            "type": "Institutional Wrapped sUSDe",
+            "description": "KYC‑compliant wrapper for institutional investors, enabling regulated exposure to sUSDe yields.",
+            "current_apy": "Mirrors sUSDe",
+            "tvl": "—",
+            "details_link": "https://docs.ethena.fi/products/iusde",
+            "key_features": [
+                "Institutional access",
+                "Compliance‑ready"
+            ],
+            "tags": [
+                "institutional",
+                "yield",
+                "wrapped"
+            ]
+        },
+        {
+            "id": "prod_007",
+            "name": "Converge (upcoming)",
+            "type": "EVM Layer‑2 Blockchain",
+            "description": "Ethena’s forthcoming L2 built with Securitize, designed for institutional‑grade DeFi. USDe/USDtb will act as gas tokens.",
+            "current_apy": "N/A",
+            "tvl": "N/A",
+            "details_link": "https://docs.ethena.fi/converge",
+            "key_features": [
+                "Low fees",
+                "KYC‑enabled options"
+            ],
+            "tags": [
+                "layer2",
+                "blockchain",
+                "roadmap"
+            ]
+        }
+    ],
+    "faqs": [
+        {
+            "id": "faq_001",
+            "question": "How does USDe maintain its $1 peg?",
+            "answer": "USDe is minted against crypto collateral while the protocol shorts equivalent perpetual futures, creating a delta‑neutral position. This hedge offsets price swings, and authorised market makers arbitrage any deviation via mint/redeem."
+        },
+        {
+            "id": "faq_002",
+            "question": "Where does sUSDe yield come from?",
+            "answer": "Yield primarily stems from positive funding payments on the protocol’s short futures plus staking rewards on collateral LSTs. The yield auto‑accrues to sUSDe’s price."
+        },
+        {
+            "id": "faq_003",
+            "question": "Who can directly mint or redeem USDe?",
+            "answer": "Direct access is gated to KYC‑approved market makers and institutions. Retail users access USDe via DEX/CEX liquidity."
+        },
+        {
+            "id": "faq_004",
+            "question": "What are the main risks?",
+            "answer": "Exchange counter‑party risk, funding‑rate inversion, collateral depeg, smart‑contract exploits, and regulatory shifts. Ethena mitigates with off‑exchange custody, insurance fund, audits, and expert Risk Committee oversight."
+        },
+        {
+            "id": "faq_005",
+            "question": "Which chains support USDe?",
+            "answer": "USDe is native to Ethereum and bridged to 20+ chains via LayerZero, including Arbitrum, Base, Optimism, Solana, BNB Chain, Avalanche, zkSync, Aptos and more."
+        }
+    ],
+    "general_info": {
+        "about_us": "Ethena builds synthetic, yield‑bearing dollars that are transparent, fully collateralised, and bank‑independent.",
+        "mission": "Provide a censorship‑resistant, scalable digital dollar and a globally accessible savings instrument.",
+        "contact_email": "support@ethena.fi"
+    },
+    "key_metrics_snapshot": {
+        "last_updated": "2025-05-09",
+        "usde_supply": "~$5.7 B",
+        "susde_supply": "~$1.8 B",
+        "ena_market_cap": "~$2.2 B",
+        "total_tvl": "$5.4 B",
+        "active_users": "500 000+",
+        "supported_chains": [
+            "Ethereum",
+            "Arbitrum",
+            "Base",
+            "Optimism",
+            "BNB Chain",
+            "Solana",
+            "zkSync",
+            "Aptos",
+            "Mantle",
+            "LineA",
+            "etc."
+        ]
+    },
+    "security": {
+        "audits": [
+            {
+                "firm": "Trail of Bits",
+                "scope": "Core contracts",
+                "date": "2024‑12‑15",
+                "status": "Passed",
+                "report_link": "https://docs.ethena.fi/audits/trailofbits"
+            },
+            {
+                "firm": "PeckShield",
+                "scope": "Core contracts",
+                "date": "2025‑03‑10",
+                "status": "Passed",
+                "report_link": "https://docs.ethena.fi/audits/peckshield"
+            },
+            {
+                "firm": "Spearbit",
+                "scope": "v1",
+                "date": "2023‑10‑18",
+                "status": "Passed",
+                "report_link": "https://…"
+            },
+            {
+                "firm": "Quantstamp",
+                "scope": "v1",
+                "date": "2023‑10‑18",
+                "status": "Passed",
+                "report_link": "https://…"
+            },
+            {
+                "firm": "Pashov",
+                "scope": "v2 contracts & sENA",
+                "date": "2024‑09‑02",
+                "status": "Passed",
+                "report_link": "https://…"
+            },
+            {
+                "firm": "Cyfrin",
+                "scope": "USDtb",
+                "date": "2024‑10‑31",
+                "status": "Passed",
+                "report_link": "https://…"
+            }
+        ],
+        "bug_bounty_program": "Planned with Immunefi",
+        "security_features": [
+            "Institutional off‑exchange custody (Copper ClearLoop, Fireblocks)",
+            "4/7 multi‑sig treasury",
+            "Time‑locked upgrades",
+            "24/7 on‑chain proof‑of‑reserve",
+            "Insurance/reserve fund"
+        ],
+        "insurance_partners": [
+            "Nexus Mutual",
+            "InsurAce"
+        ]
+    },
+    "tokenomics": {
+        "ena_token": {
+            "name": "Ethena (ENA)",
+            "total_supply": "15,000,000,000",
+            "circulating_supply": "≈1.5 B",
+            "utility": [
+                "Governance voting",
+                "Staking for sENA rewards",
+                "Elect Risk Committee",
+                "Potential fee accrual"
+            ],
+            "distribution": [
+                {
+                    "category": "Core Contributors",
+                    "percentage": 30
+                },
+                {
+                    "category": "Investors",
+                    "percentage": 25
+                },
+                {
+                    "category": "Ethena Foundation",
+                    "percentage": 15
+                },
+                {
+                    "category": "Ecosystem & Airdrops",
+                    "percentage": 30
+                }
+            ],
+            "vesting_schedule": {
+                "contributors": "25 % cliff after 1 yr, then 3‑year linear vest",
+                "investors": "Same as contributors",
+                "airdrops": "Seasonal, some require lock‑ups"
+            }
+        }
+    },
+    "team_and_advisors": {
+        "core_team": [
+            {
+                "name": "Guy Young",
+                "role": "Founder & CEO"
+            },
+            {
+                "name": "Elliot Parker",
+                "role": "COO"
+            },
+            {
+                "name": "Nick Chong",
+                "role": "Head of Strategy"
+            }
+        ],
+        "investors_and_backers": [
+            "Dragonfly",
+            "Maelstrom Capital",
+            "BH Digital",
+            "Binance Labs",
+            "OKX Ventures",
+            "Franklin Templeton",
+            "F‑Prime (Fidelity)",
+            "Wintermute",
+            "Galaxy Digital",
+            "Pantera",
+            "Lightspeed",
+            "Mirana"
+        ],
+        "total_funding": "$136 M+"
+    },
+    "integrations_and_partnerships": {
+        "cex_listings": [
+            "Bybit",
+            "OKX",
+            "KuCoin",
+            "Gate.io",
+            "Bitget",
+            "MEXC"
+        ],
+        "defi_integrations": [
+            "Curve Finance",
+            "Pendle Finance",
+            "Balancer",
+            "Hyperliquid",
+            "Lendle"
+        ],
+        "technology_partners": [
+            "Securitize",
+            "BlackRock BUIDL",
+            "LayerZero",
+            "Symbiotic"
+        ],
+        "custodians": [
+            "Copper",
+            "Ceffu",
+            "Anchorage"
+        ]
+    },
+    "supported_chains_usde": "Native Ethereum, bridged to 20+ L1/L2s via LayerZero (TON, BNB, Solana, Arbitrum, Optimism, Base, Polygon, Avalanche, Aptos, Mantle, Blast, zkSync, Linea, Manta, Scroll, Fraxtal, Mode, XLayer, Metis, Kava, Zircuit).",
+    "key_smart_contract_addresses_ethereum": {
+        "usde_token": "0x4c9EDD5852cd905f086C759E8383e09bff1E68B3",
+        "ena_token": "0x57e114b691db790c35207b2e685d4a43181e6061",
+        "mint_redeem_contract": "0xe3490297a08d6fC8Da46Edb7B6142E4F461b62D3"
+    },
+    "api_documentation_link": "https://docs.ethena.fi/api-documentation/overview"
+}
